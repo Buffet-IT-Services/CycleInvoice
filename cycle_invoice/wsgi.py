@@ -1,5 +1,5 @@
 """
-WSGI config for cycleInvoice project.
+WSGI config for cycle_invoice project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cycleInvoice.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cycle_invoice.settings")
 
 application = get_wsgi_application()
