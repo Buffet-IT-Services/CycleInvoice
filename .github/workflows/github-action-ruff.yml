@@ -1,7 +1,6 @@
 name: Ruff Check
 run-name: Ruff Check
 on:
-  push:
   pull_request:
 jobs:
   ruff_check:
