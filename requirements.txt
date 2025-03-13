@@ -1,1 +1,2 @@
-Django~=5.1.7
+Django~=5.1.7 # obvious
+ruff~=0.9.10 # for linting
