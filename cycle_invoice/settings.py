@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "simple_history",  # to track changes in the database
     "contact.apps.ContactConfig",
 ]
 
@@ -47,6 +48,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",  # to track changes in the database
 ]
 
 ROOT_URLCONF = "cycle_invoice.urls"
