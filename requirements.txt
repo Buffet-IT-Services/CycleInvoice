@@ -1,1 +1,2 @@
 Django~=5.1.7
+django-simple-history~=3.8.0

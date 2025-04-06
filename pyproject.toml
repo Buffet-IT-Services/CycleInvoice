@@ -17,7 +17,12 @@ indent-width = 4
 target-version = "py312"
 
 [tool.ruff.lint]
-ignore = ["D203", "D212", "COM812"]
+ignore = [
+    "D203", # conflicting with D211 (no blank line before class docstring)
+    "D212", # conflicting with D213 (multiline docstring summary should start at the first line)
+    "COM812", # does not work well with autoformatter
+    "D415", # conflicting with D400 (first line should end with a period)
+]
 select = [
     "ALL",
 ]
@@ -30,7 +35,7 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
-line-ending = "auto"
+line-ending = "lf"
 docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
