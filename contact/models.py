@@ -81,7 +81,7 @@ class Address(models.Model):
     street = models.CharField(_("street"), max_length=255)
     number = models.CharField(_("number"), max_length=10)
     city = models.CharField(_("city"), max_length=255)
-    zip_code = models.CharField(_("zip code"), max_length=4)
+    zip_code = models.CharField(_("zip code"), max_length=12)
     country = models.CharField(_("country"), max_length=255)
 
     class Meta:
