@@ -1,4 +1,4 @@
-"""Register the Contact model with the admin site."""
+"""Register the Contact models with the admin site."""
 
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
