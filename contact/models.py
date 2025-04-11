@@ -10,8 +10,8 @@ class Organisation(ChangeLoggerAll):
     """Model representing an organisation."""
 
     name = models.CharField(_("name"), max_length=255, unique=True)
-    email = models.EmailField(_("email"), max_length=255)
-    phone = models.CharField(_("phone"), max_length=20)
+    email = models.EmailField(_("email"), max_length=255, blank=True)
+    phone = models.CharField(_("phone"), max_length=20, blank=True)
     address = models.ForeignKey(
         "Address",
         on_delete=models.PROTECT,
@@ -20,7 +20,7 @@ class Organisation(ChangeLoggerAll):
         null=True,
         blank=True,
     )
-    uid = models.CharField(_("uid"), max_length=20, unique=True)
+    uid = models.CharField(_("uid"), max_length=20, unique=True, blank=True, null=True)
 
     class Meta:
         """Meta options for the Organisation model."""
@@ -38,8 +38,8 @@ class Contact(ChangeLoggerAll):
 
     first_name = models.CharField(_("first name"), max_length=255)
     last_name = models.CharField(_("last name"), max_length=255)
-    email = models.EmailField(_("email"), max_length=255)
-    phone = models.CharField(_("phone"), max_length=20)
+    email = models.EmailField(_("email"), max_length=255, blank=True)
+    phone = models.CharField(_("phone"), max_length=20, blank=True)
     address = models.ForeignKey(
         "Address", on_delete=models.PROTECT, related_name="contacts", verbose_name=_("address"), null=True, blank=True
     )
@@ -75,11 +75,12 @@ class CompanyContact(ChangeLoggerAll):
         return f"{self.company} - {self.contact} - {self.role}"
 
 
-class Address(models.Model):
+class Address(ChangeLoggerAll):
     """Model representing an address."""
 
     street = models.CharField(_("street"), max_length=255)
     number = models.CharField(_("number"), max_length=10)
+    additional = models.CharField(_("additional"), max_length=255, blank=True)
     city = models.CharField(_("city"), max_length=255)
     zip_code = models.CharField(_("zip code"), max_length=12)
     country = models.CharField(_("country"), max_length=255)
@@ -92,4 +93,5 @@ class Address(models.Model):
 
     def __str__(self) -> str:
         """Return a string representation of the address."""
-        return f"{self.street} {self.number}, {self.zip_code} {self.city}, {self.country}"
+        additional = f", {self.additional}" if self.additional else ""
+        return f"{self.street} {self.number}{additional}, {self.zip_code} {self.city}, {self.country}"
