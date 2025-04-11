@@ -20,14 +20,22 @@ class Account(ChangeLoggerAll):
 
     def __str__(self) -> str:
         """Return a string representation of the account."""
-        return self.name
+        return f"{self.name} ({self.number})"
 
 
 def get_default_account_buy() -> Account:
     """Get the default account for buying."""
-    return Account.objects.get(number="4000") if Account.objects.filter(number="4000").exists() else None
+    account, created = Account.objects.get_or_create(
+        number=4000,
+        defaults={"name": "Default Account Buy"},
+    )
+    return account
 
 
 def get_default_account_sell() -> Account:
     """Get the default account for buying."""
-    return Account.objects.get(number="3000") if Account.objects.filter(number="3000").exists() else None
+    account, created = Account.objects.get_or_create(
+        number=3000,
+        defaults={"name": "Default Account Sell"},
+    )
+    return account

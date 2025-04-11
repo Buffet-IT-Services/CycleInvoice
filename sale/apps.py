@@ -1,4 +1,5 @@
 """Config for the sale app."""
+
 from django.apps import AppConfig
 
 

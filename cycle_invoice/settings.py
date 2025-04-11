@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "contact.apps.ContactConfig",
+    "sale.apps.SaleConfig",
+    "sale_work.apps.SaleWorkConfig",
+    "accounting.apps.AccountingConfig",
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
 ]
