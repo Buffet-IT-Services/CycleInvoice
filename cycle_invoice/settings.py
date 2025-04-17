@@ -80,16 +80,14 @@ WSGI_APPLICATION = "cycle_invoice.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'cycleinvoice',
-        'PASSWORD': 'cycleinvoice',
-        'HOST': '192.168.0.35',
-        'PORT': '5432',
-        'OPTIONS': {
-            'options': '-c search_path=cycle_invoice'
-        },
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "cycleinvoice",
+        "PASSWORD": "cycleinvoice",
+        "HOST": "192.168.0.35",
+        "PORT": "5432",
+        "OPTIONS": {"options": "-c search_path=cycle_invoice"},
     }
 }
 
