@@ -33,7 +33,7 @@ def get_default_account_buy() -> Account:
 
 
 def get_default_account_sell() -> Account:
-    """Get the default account for buying."""
+    """Get the default account for selling."""
     account, created = Account.objects.get_or_create(
         number=3000,
         defaults={"name": "Default Account Sell"},
