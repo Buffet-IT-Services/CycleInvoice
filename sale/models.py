@@ -14,13 +14,13 @@ class SaleItem(ChangeLoggerAll):
     account_buy = models.ForeignKey(
         Account,
         on_delete=models.SET_DEFAULT,
-        default=get_default_account_buy(),
+        default=get_default_account_buy,
         related_name="sale_items_buy_account",
     )
     account_sell = models.ForeignKey(
         Account,
         on_delete=models.SET_DEFAULT,
-        default=get_default_account_sell(),
+        default=get_default_account_sell,
         related_name="sale_items_sell_account",
     )
     status = models.CharField(
