@@ -23,19 +23,19 @@ class Account(ChangeLoggerAll):
         return f"{self.name} ({self.number})"
 
 
-def get_default_account_buy() -> Account:
+def get_default_account_buy() -> id:
     """Get the default account for buying."""
     account, created = Account.objects.get_or_create(
         number=4000,
         defaults={"name": "Default Account Buy"},
     )
-    return account
+    return account.number
 
 
-def get_default_account_sell() -> Account:
+def get_default_account_sell() -> id:
     """Get the default account for selling."""
     account, created = Account.objects.get_or_create(
         number=3000,
         defaults={"name": "Default Account Sell"},
     )
-    return account
+    return account.number

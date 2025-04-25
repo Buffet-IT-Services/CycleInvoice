@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "sale.apps.SaleConfig",
     "sale_work.apps.SaleWorkConfig",
     "accounting.apps.AccountingConfig",
+    "domain.apps.DomainConfig",
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
 ]
