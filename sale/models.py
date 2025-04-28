@@ -2,12 +2,14 @@
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from djmoney.models.fields import MoneyField
+from recurring.models import RecurrenceRule
 
 from accounting.models import Account, get_default_account_buy, get_default_account_sell
 from common.models import ChangeLoggerAll
 
 
-class SaleProduct(ChangeLoggerAll):
+class Product(ChangeLoggerAll):
     """Model representing a sale product."""
 
     name = models.CharField(_("name"), max_length=255)
@@ -23,23 +25,26 @@ class SaleProduct(ChangeLoggerAll):
         default=get_default_account_sell,
         related_name="sale_products_sell_account",
     )
+    subscription_only = models.BooleanField(verbose_name=_("subscription only"), default=False)
+    price = MoneyField(max_digits=14, decimal_places=2, default_currency="CHF", verbose_name=_("price"))
 
     class Meta:
-        """Meta options for the SaleProduct model."""
+        """Meta options for the Product model."""
 
-        verbose_name = "Sale Item"
-        verbose_name_plural = "Sale Items"
+        verbose_name = "Product"
+        verbose_name_plural = "Products"
 
     def __str__(self) -> str:
         """Return a string representation of the SaleProduct."""
         return self.name
 
 
-class SubscriptionItem(ChangeLoggerAll):
+class Subscription(ChangeLoggerAll):
     """Model representing a subscription."""
 
-    start_date = models.DateField(_("start date"))
-    billed_until = models.DateField(_("billed until"), null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="subscriptions")
+    price = MoneyField(max_digits=14, decimal_places=2, default_currency="CHF", verbose_name=_("price"))
+    recurrence = models.ForeignKey(RecurrenceRule, on_delete=models.CASCADE, related_name="recurrences")
 
     class Meta:
         """Meta options for the Subscription model."""

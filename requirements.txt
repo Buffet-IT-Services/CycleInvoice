@@ -1,3 +1,4 @@
 Django~=5.1.7
 django-simple-history~=3.8.0
 django-debug-toolbar~=5.1.0
+django-money~=3.5.4

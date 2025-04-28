@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "accounting.apps.AccountingConfig",
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
+    "djmoney",  # for money fields
+    "recurring",  # for recurring dates
 ]
 
 MIDDLEWARE = [
