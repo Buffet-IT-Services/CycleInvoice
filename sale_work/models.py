@@ -1,1 +1,0 @@
-"""A Sale Item model for representing work in a sale."""
