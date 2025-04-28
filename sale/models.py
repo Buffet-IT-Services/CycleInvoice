@@ -2,8 +2,6 @@
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from djmoney.models.fields import MoneyField
-from recurring.models import RecurrenceRule
 
 from accounting.models import Account, get_default_account_buy, get_default_account_sell
 from common.models import ChangeLoggerAll
@@ -26,7 +24,7 @@ class Product(ChangeLoggerAll):
         related_name="sale_products_sell_account",
     )
     subscription_only = models.BooleanField(verbose_name=_("subscription only"), default=False)
-    price = MoneyField(max_digits=14, decimal_places=2, default_currency="CHF", verbose_name=_("price"))
+    price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
 
     class Meta:
         """Meta options for the Product model."""
@@ -42,9 +40,20 @@ class Product(ChangeLoggerAll):
 class Subscription(ChangeLoggerAll):
     """Model representing a subscription."""
 
+    RECURRENCE_CHOICES = [
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly'),
+        ('yearly', 'Yearly'),
+    ]
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="subscriptions")
-    price = MoneyField(max_digits=14, decimal_places=2, default_currency="CHF", verbose_name=_("price"))
-    recurrence = models.ForeignKey(RecurrenceRule, on_delete=models.CASCADE, related_name="recurrences")
+    price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
+    recurrence = models.CharField(
+        max_length=10,
+        choices=RECURRENCE_CHOICES,
+        default='yearly',
+    )
 
     class Meta:
         """Meta options for the Subscription model."""
