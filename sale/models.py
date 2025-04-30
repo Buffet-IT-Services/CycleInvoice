@@ -41,10 +41,10 @@ class Subscription(ChangeLoggerAll):
     """Model representing a subscription."""
 
     RECURRENCE_CHOICES = [
-        ('daily', 'Daily'),
-        ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'),
-        ('yearly', 'Yearly'),
+        ("daily", "Daily"),
+        ("weekly", "Weekly"),
+        ("monthly", "Monthly"),
+        ("yearly", "Yearly"),
     ]
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="subscriptions")
@@ -52,7 +52,7 @@ class Subscription(ChangeLoggerAll):
     recurrence = models.CharField(
         max_length=10,
         choices=RECURRENCE_CHOICES,
-        default='yearly',
+        default="yearly",
     )
 
     class Meta:
