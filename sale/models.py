@@ -2,8 +2,9 @@
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from extra_settings.models import Setting
 
-from accounting.models import Account, get_default_account_buy, get_default_account_sell
+from accounting.models import Account
 from common.models import ChangeLoggerAll
 
 
@@ -14,13 +15,13 @@ class Product(ChangeLoggerAll):
     account_buy = models.ForeignKey(
         Account,
         on_delete=models.SET_DEFAULT,
-        default=get_default_account_buy,
+        default=Setting.get("ACCOUNTING_DEFAULT_ACCOUNT_BUY"),
         related_name="sale_product_buy_account",
     )
     account_sell = models.ForeignKey(
         Account,
         on_delete=models.SET_DEFAULT,
-        default=get_default_account_sell,
+        default=Setting.get("ACCOUNTING_DEFAULT_ACCOUNT_SELL"),
         related_name="sale_products_sell_account",
     )
     subscription_only = models.BooleanField(verbose_name=_("subscription only"), default=False)

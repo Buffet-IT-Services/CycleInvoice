@@ -28,8 +28,8 @@ class Migration(migrations.Migration):
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
                 ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('account_buy', models.ForeignKey(blank=True, db_constraint=False, default=accounting.models.get_default_account_buy, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='accounting.account')),
-                ('account_sell', models.ForeignKey(blank=True, db_constraint=False, default=accounting.models.get_default_account_sell, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='accounting.account')),
+                ('account_buy', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='accounting.account')),
+                ('account_sell', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='accounting.account')),
                 ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -47,8 +47,8 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255, verbose_name='name')),
                 ('subscription_only', models.BooleanField(default=False, verbose_name='subscription only')),
                 ('price', models.DecimalField(decimal_places=2, max_digits=14, verbose_name='price')),
-                ('account_buy', models.ForeignKey(default=accounting.models.get_default_account_buy, on_delete=django.db.models.deletion.SET_DEFAULT, related_name='sale_product_buy_account', to='accounting.account')),
-                ('account_sell', models.ForeignKey(default=accounting.models.get_default_account_sell, on_delete=django.db.models.deletion.SET_DEFAULT, related_name='sale_products_sell_account', to='accounting.account')),
+                ('account_buy', models.ForeignKey(on_delete=django.db.models.deletion.SET_DEFAULT, related_name='sale_product_buy_account', to='accounting.account')),
+                ('account_sell', models.ForeignKey(on_delete=django.db.models.deletion.SET_DEFAULT, related_name='sale_products_sell_account', to='accounting.account')),
             ],
             options={
                 'verbose_name': 'Product',

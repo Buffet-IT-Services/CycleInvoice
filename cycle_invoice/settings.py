@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "contact.apps.ContactConfig",
     "sale.apps.SaleConfig",
-    "accounting.apps.AccountingConfig",
+    "accounting",
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
     "recurring",  # for recurring dates
