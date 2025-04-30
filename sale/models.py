@@ -24,8 +24,7 @@ class Product(ChangeLoggerAll):
         default=Setting.get("ACCOUNTING_DEFAULT_ACCOUNT_SELL"),
         related_name="sale_products_sell_account",
     )
-    subscription_only = models.BooleanField(verbose_name=_("subscription only"), default=False)
-    price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
+    price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"), null=True, blank=True)
 
     class Meta:
         """Meta options for the Product model."""
@@ -61,3 +60,7 @@ class Subscription(ChangeLoggerAll):
 
         verbose_name = "Subscription"
         verbose_name_plural = "Subscriptions"
+
+    def __str__(self) -> str:
+        """Return a string representation of the Subscription."""
+        return f"{self.product.name} - {self.recurrence}"
