@@ -3,8 +3,9 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
-from .models import Address, CompanyContact, Contact, Organisation
+from .models import Address, CompanyContact, Contact, Customer, Organisation
 
+admin.site.register(Customer, SimpleHistoryAdmin)
 admin.site.register(Contact, SimpleHistoryAdmin)
 admin.site.register(Organisation, SimpleHistoryAdmin)
 admin.site.register(CompanyContact, SimpleHistoryAdmin)

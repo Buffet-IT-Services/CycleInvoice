@@ -6,7 +6,25 @@ from django.utils.translation import gettext_lazy as _
 from common.models import ChangeLoggerAll
 
 
-class Organisation(ChangeLoggerAll):
+class Customer(ChangeLoggerAll):
+    """Model representing a customer."""
+
+    class Meta:
+        """Meta options for the Customer model."""
+
+        verbose_name = _("customer")
+        verbose_name_plural = _("customers")
+
+    def __str__(self) -> str:
+        """Return the string representation of the subclass."""
+        if hasattr(self, "organisation"):
+            return str(self.organisation)
+        if hasattr(self, "contact"):
+            return str(self.contact)
+        return super().__str__()
+
+
+class Organisation(Customer):
     """Model representing an organisation."""
 
     name = models.CharField(_("name"), max_length=255, unique=True)
@@ -33,7 +51,7 @@ class Organisation(ChangeLoggerAll):
         return self.name
 
 
-class Contact(ChangeLoggerAll):
+class Contact(Customer):
     """Model representing a contact."""
 
     first_name = models.CharField(_("first name"), max_length=255)

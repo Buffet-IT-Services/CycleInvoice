@@ -2,9 +2,8 @@
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from extra_settings.models import Setting
 
-from accounting.models import Account
+from accounting.models import Account, get_default_buy_account, get_default_sell_account
 from common.models import ChangeLoggerAll
 
 
@@ -15,13 +14,13 @@ class Product(ChangeLoggerAll):
     account_buy = models.ForeignKey(
         Account,
         on_delete=models.SET_DEFAULT,
-        default=Setting.get("ACCOUNTING_DEFAULT_ACCOUNT_BUY"),
+        default=get_default_buy_account,
         related_name="sale_product_buy_account",
     )
     account_sell = models.ForeignKey(
         Account,
         on_delete=models.SET_DEFAULT,
-        default=Setting.get("ACCOUNTING_DEFAULT_ACCOUNT_SELL"),
+        default=get_default_sell_account,
         related_name="sale_products_sell_account",
     )
     price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"), null=True, blank=True)
@@ -37,7 +36,7 @@ class Product(ChangeLoggerAll):
         return self.name
 
 
-class Subscription(ChangeLoggerAll):
+class SubscriptionProduct(ChangeLoggerAll):
     """Model representing a subscription."""
 
     RECURRENCE_CHOICES = [
@@ -47,7 +46,7 @@ class Subscription(ChangeLoggerAll):
         ("yearly", "Yearly"),
     ]
 
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="subscriptions")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="subscriptionproduct")
     price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
     recurrence = models.CharField(
         max_length=10,
@@ -58,8 +57,8 @@ class Subscription(ChangeLoggerAll):
     class Meta:
         """Meta options for the Subscription model."""
 
-        verbose_name = "Subscription"
-        verbose_name_plural = "Subscriptions"
+        verbose_name = "Subscription Product"
+        verbose_name_plural = "Subscription Products"
 
     def __str__(self) -> str:
         """Return a string representation of the Subscription."""
