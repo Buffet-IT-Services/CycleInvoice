@@ -45,7 +45,7 @@ class Account(ChangeLoggerAll):
             current_default = Account.objects.filter(pk=self.pk, default_buy=True).exists()
             if current_default:
                 raise ValidationError(_("You cannot remove default_buy from this account."))
-        
+
         if not self.default_sell and self.pk:
             # Check if this account is the current default_sell account
             current_default = Account.objects.filter(pk=self.pk, default_sell=True).exists()
