@@ -9,28 +9,11 @@ from common.models import ChangeLoggerAll
 class Customer(ChangeLoggerAll):
     """Model representing a customer."""
 
-    @property
-    def display_name(self) -> str:
-        """Return the display name of the customer."""
-        if hasattr(self, "organisation"):
-            return str(self.organisation)
-        if isinstance(self, Contact):
-            return str(self)
-        return ""
-
     class Meta:
         """Meta options for the Customer model."""
 
         verbose_name = _("customer")
         verbose_name_plural = _("customers")
-
-    def __str__(self) -> str:
-        """Return the string representation of the subclass."""
-        if hasattr(self, "organisation"):
-            return str(self.organisation)
-        if hasattr(self, "contact"):
-            return str(self.contact)
-        return super().__str__()
 
 
 class Organisation(Customer):

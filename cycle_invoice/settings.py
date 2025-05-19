@@ -87,12 +87,9 @@ DATABASES = {
         "NAME": "postgres",
         "USER": "cycleinvoice",
         "PASSWORD": "cycleinvoice",
-        "HOST": "192.168.0.35",
+        "HOST": os.environ.get("CYCLEINVOICE_DJANGO_DB_HOST", "192.168.0.35"),
         "PORT": "5432",
-        **(
-            {"OPTIONS": {"options": "-c search_path=cycle_invoice"}}
-            if "test" not in sys.argv else {}
-        ),
+        **({"OPTIONS": {"options": "-c search_path=cycle_invoice"}} if "test" not in sys.argv else {}),
     }
 }
 
