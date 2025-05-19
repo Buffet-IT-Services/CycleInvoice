@@ -9,6 +9,15 @@ from common.models import ChangeLoggerAll
 class Customer(ChangeLoggerAll):
     """Model representing a customer."""
 
+    @property
+    def name(self) -> str:
+        """Return the name of the customer."""
+        if hasattr(self, "organisation"):
+            return str(self.organisation)
+        if hasattr(self, "contact"):
+            return str(self.contact)
+        return ""
+
     class Meta:
         """Meta options for the Customer model."""
 
