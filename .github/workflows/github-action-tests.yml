@@ -53,5 +53,5 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          coverage run --source='.' manage.py test
-          coverage report --fail-under=90
+          coverage run --rcfile=.coveragerc manage.py test
+          coverage report --fail-under=99
