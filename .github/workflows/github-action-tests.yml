@@ -59,11 +59,3 @@ jobs:
         run: |
           coverage run --rcfile=.coveragerc manage.py test
           coverage report --fail-under=95
-          coverage html
-
-      - name: Upload coverage HTML report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-html
-          path: htmlcov
-
