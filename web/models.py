@@ -1,8 +1,10 @@
 """Models for the web application."""
+
 from django.db import models
 
 from common.models import ChangeLoggerAll
 from contact.models import Customer
+
 
 class Domain(ChangeLoggerAll):
     """Model representing a domain."""

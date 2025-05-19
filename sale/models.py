@@ -65,6 +65,7 @@ class SubscriptionProduct(ChangeLoggerAll):
         """Return a string representation of the Subscription."""
         return f"{self.product.name} - {self.recurrence}"
 
+
 class Subscription(ChangeLoggerAll):
     """Model representing a subscription."""
 

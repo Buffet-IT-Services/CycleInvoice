@@ -1,4 +1,5 @@
 """Application configuration for the web app."""
+
 from django.apps import AppConfig
 
 
