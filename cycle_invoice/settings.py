@@ -38,10 +38,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "contact.apps.ContactConfig",
     "sale.apps.SaleConfig",
-    "sale_work.apps.SaleWorkConfig",
     "accounting.apps.AccountingConfig",
+    "web",  # for web application
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
+    "recurring",  # for recurring dates
 ]
 
 MIDDLEWARE = [

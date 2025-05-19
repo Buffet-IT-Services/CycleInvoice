@@ -24,6 +24,8 @@ ignore = [
     "COM812", # does not work well with autoformatter
     "D415", # conflicting with D400 (first line should end with a period)
     "RUF012", # too many false positives
+    "ANN002", # in django projects, *args comes from the parent class
+    "ANN003", # in django projects, **kwargs comes from the parent class
 ]
 select = [
     "ALL",
@@ -44,3 +46,6 @@ docstring-code-line-length = "dynamic"
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["D"]
 "manage.py" = ["TRY003", "EM101", "ANN201", "EXE001"]
+
+[tool.ruff.lint.flake8-unused-arguments]
+ignore-variadic-names = true
