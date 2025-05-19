@@ -87,7 +87,7 @@ DATABASES = {
         "NAME": "postgres",
         "USER": "cycleinvoice",
         "PASSWORD": "cycleinvoice",
-        "HOST": os.environ["CYCLEINVOICE_DJANGO_DB_HOST"],
+        "HOST": os.environ.get("CYCLEINVOICE_DJANGO_DB_HOST", "192.168.0.35"),
         "PORT": "5432",
         **(
             {"OPTIONS": {"options": "-c search_path=cycle_invoice"}}
