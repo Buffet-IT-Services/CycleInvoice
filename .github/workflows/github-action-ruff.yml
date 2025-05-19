@@ -1,9 +1,7 @@
 name: Ruff Check
 run-name: Ruff Check
-
 on:
   pull_request:
-
 jobs:
   ruff_check:
     permissions:
