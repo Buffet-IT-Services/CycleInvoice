@@ -24,7 +24,7 @@ jobs:
 
     env:
       DATABASE_URL: postgres://cycleinvoice:cycleinvoice@localhost:5432/postgres
-      DJANGO_SECRET_KEY: supersecretkey12345
+      CYCLEINVOICE_DJANGO_SECRET_KEY: supersecretkey12345
 
     steps:
       - name: Checkout repository
@@ -45,7 +45,7 @@ jobs:
         run: |
           until pg_isready -h localhost -p 5432; do
             echo "Waiting for postgres..."
-            sleep 1
+            sleep 5
           done
 
       - name: Run tests with coverage
