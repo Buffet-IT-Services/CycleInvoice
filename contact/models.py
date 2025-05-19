@@ -10,8 +10,8 @@ class Customer(ChangeLoggerAll):
     """Model representing a customer."""
 
     @property
-    def name(self) -> str:
-        """Return the name of the customer."""
+    def display_name(self) -> str:
+        """Return the display name of the customer."""
         if hasattr(self, "organisation"):
             return str(self.organisation)
         if isinstance(self, Contact):
