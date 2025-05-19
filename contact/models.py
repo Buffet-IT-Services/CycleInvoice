@@ -14,8 +14,8 @@ class Customer(ChangeLoggerAll):
         """Return the name of the customer."""
         if hasattr(self, "organisation"):
             return str(self.organisation)
-        if hasattr(self, "contact"):
-            return str(self.contact)
+        if isinstance(self, Contact):
+            return str(self)
         return ""
 
     class Meta:
