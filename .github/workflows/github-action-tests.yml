@@ -26,7 +26,7 @@ jobs:
           --health-retries 5
 
     env:
-      CYCLEINVOICE_DJANGO_DB_HOST: postgres://cycleinvoice:cycleinvoice@localhost:5432/postgres
+      CYCLEINVOICE_DJANGO_DB_HOST: localhost
       CYCLEINVOICE_DJANGO_SECRET_KEY: supersecretkey12345
 
     steps:
