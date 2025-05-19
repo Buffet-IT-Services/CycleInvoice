@@ -5,6 +5,9 @@ on:
 
 jobs:
   test-coverage:
+
+    name: Run Django tests and check coverage
+
     permissions:
       contents: read
 
@@ -44,11 +47,12 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install coverage
 
-      - name: Wait for Postgres
+      - name: Wait for Postgres to be healthy
         run: |
-          until pg_isready -h localhost -p 5432; do
-            echo "Waiting for postgres..."
-            sleep 5
+          for i in {1..10}; do
+            pg_isready -h localhost -p 5432 && break
+            echo "Waiting for Postgres..."
+            sleep 3
           done
 
       - name: Run tests with coverage
