@@ -12,5 +12,5 @@ from accounting.models import Account
 def prevent_default_account_deletion(sender: Model, instance: Model, **kwargs) -> None:  # noqa: ARG001
     """Prevents the deletion of default accounts."""
     if instance.default_buy or instance.default_sell:
-        msg = "This account is set as the default and cannot be deleted."
+        msg = "Cannot delete this account as it is set as the default for buy or sell."
         raise ValidationError(msg)

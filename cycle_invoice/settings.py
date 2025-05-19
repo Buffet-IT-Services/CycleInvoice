@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -88,7 +89,10 @@ DATABASES = {
         "PASSWORD": "cycleinvoice",
         "HOST": "192.168.0.35",
         "PORT": "5432",
-        "OPTIONS": {"options": "-c search_path=cycle_invoice"},
+        **(
+            {"OPTIONS": {"options": "-c search_path=cycle_invoice"}}
+            if "test" not in sys.argv else {}
+        ),
     }
 }
 
