@@ -6,7 +6,7 @@ from contact.models import Organisation
 
 
 class OrganisationTest(TestCase):
-    """Test cases for the Customer model."""
+    """Test cases for the Organisation model."""
 
     def test_str(self) -> None:
         """Test the __str__ of organisation."""
