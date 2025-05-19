@@ -26,7 +26,7 @@ ignore = [
     "RUF012", # too many false positives
     "ANN002", # in django projects, *args comes from the parent class
     "ANN003", # in django projects, **kwargs comes from the parent class
-    "PT027", # for django tests, we need to use the test client
+    "PT027", "PT009", # for django tests, we need to use the test client
 ]
 
 select = [
