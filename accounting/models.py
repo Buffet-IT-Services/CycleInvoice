@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from common.models import ChangeLoggerAll
+from sale.models import DocumentInvoice
 
 
 class Account(ChangeLoggerAll):
@@ -83,3 +84,32 @@ def get_default_sell_account() -> int:
             default_sell=True,
         )
         return account.id
+
+class Transaction(ChangeLoggerAll):
+    """Model representing a transaction."""
+    date = models.DateField(_("transaction date"), auto_now_add=True)
+    account_from = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name="transactions_from",
+        verbose_name=_("account from"),
+    )
+    account_to = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name="transactions_to",
+        verbose_name=_("account to"),
+    )
+    amount = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("amount"))
+
+
+class Payment(Transaction):
+    """Model representing a payment transaction."""
+    payment_method = models.CharField(max_length=50, verbose_name=_("payment method"))
+    invoice = models.ForeignKey(DocumentInvoice, on_delete=models.CASCADE, verbose_name=_("invoice"))
+
+    class Meta:
+        """Meta options for the Payment model."""
+
+        verbose_name = "Payment"
+        verbose_name_plural = "Payments"

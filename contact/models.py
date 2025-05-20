@@ -15,6 +15,13 @@ class Customer(ChangeLoggerAll):
         verbose_name = _("customer")
         verbose_name_plural = _("customers")
 
+    @property
+    def address_block(self) -> str:
+        """Return the address block for the customer."""
+        if hasattr(self, "address"):
+            return str(self.address).replace(",", "\n")
+        return "No Address set"
+
 
 class Organisation(Customer):
     """Model representing an organisation."""
