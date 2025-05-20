@@ -6,6 +6,10 @@ from django.test import TestCase
 from accounting.models import Account, get_default_buy_account, get_default_sell_account
 
 
+def fake_account() -> Account:
+    """Create a fake account."""
+    return Account.objects.create(name="Test Account", number="1234567890", default_buy=True, default_sell=False)
+
 class AccountTest(TestCase):
     """Test cases for the Account model."""
 

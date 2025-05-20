@@ -91,7 +91,7 @@ class WorkType(ChangeLoggerAll):
 
     name = models.CharField(max_length=255, verbose_name=_("name"))
     account = models.ForeignKey(
-        Account,
+        "accounting.Account",
         on_delete=models.SET_DEFAULT,
         default=get_default_sell_account,
         related_name="work_type_account",
@@ -122,7 +122,7 @@ class WorkTypePrice(ChangeLoggerAll):
 
     def __str__(self) -> str:
         """Return a string representation of the WorkTypePrice."""
-        return f"{self.work_type.name} - {self.price}"
+        return f"{self.work_type.name} - {self.price:.2f}"
 
 
 class DocumentInvoice(ChangeLoggerAll):
@@ -143,7 +143,7 @@ class DocumentInvoice(ChangeLoggerAll):
 
     def __str__(self) -> str:
         """Return a string representation of the DocumentInvoice."""
-        return f"Invoice {self.id} - {self.customer}"
+        return f"{self.invoice_number} - {self.customer}"
 
 
 class DocumentItem(ChangeLoggerAll):
