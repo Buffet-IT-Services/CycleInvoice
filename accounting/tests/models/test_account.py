@@ -10,6 +10,7 @@ def fake_account() -> Account:
     """Create a fake account."""
     return Account.objects.create(name="Test Account", number="1234567890", default_buy=True, default_sell=False)
 
+
 class AccountTest(TestCase):
     """Test cases for the Account model."""
 
