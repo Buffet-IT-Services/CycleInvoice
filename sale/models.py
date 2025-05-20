@@ -63,7 +63,7 @@ class SubscriptionProduct(ChangeLoggerAll):
 
     def __str__(self) -> str:
         """Return a string representation of the Subscription."""
-        return f"{self.product.name} - {self.recurrence}"
+        return f"{self.product.name} - {self.get_recurrence_display()}"
 
 
 class Subscription(ChangeLoggerAll):
