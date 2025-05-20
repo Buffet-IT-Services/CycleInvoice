@@ -1,4 +1,4 @@
-#file: noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection
+#file: noinspection SpellCheckingInspection
 name: Django Test Coverage
 
 on:
