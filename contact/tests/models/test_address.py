@@ -27,8 +27,8 @@ class AddressTest(TestCase):
 
     def test_str(self) -> None:
         """Test the __str__ of Address."""
-        address = fake_address()
+        address = fake_address_with_additional()
         self.assertEqual("Main St 1, c/o Company, 1234 Anytown, Switzerland", str(address))
 
-        address = fake_address_with_additional()
+        address = fake_address()
         self.assertEqual("Main St 1, 1234 Anytown, Switzerland", str(address))
