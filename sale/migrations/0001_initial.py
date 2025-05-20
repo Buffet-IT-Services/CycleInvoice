@@ -8,7 +8,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -22,14 +21,24 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='name')),
-                ('price', models.DecimalField(blank=True, decimal_places=2, max_digits=14, null=True, verbose_name='price')),
+                ('price',
+                 models.DecimalField(blank=True, decimal_places=2, max_digits=14, null=True, verbose_name='price')),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('account_buy', models.ForeignKey(blank=True, db_constraint=False, default=accounting.models.get_default_buy_account, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='accounting.account')),
-                ('account_sell', models.ForeignKey(blank=True, db_constraint=False, default=accounting.models.get_default_sell_account, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='accounting.account')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('history_type',
+                 models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
+                ('account_buy',
+                 models.ForeignKey(blank=True, db_constraint=False, default=accounting.models.get_default_buy_account,
+                                   null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+',
+                                   to='accounting.account')),
+                ('account_sell',
+                 models.ForeignKey(blank=True, db_constraint=False, default=accounting.models.get_default_sell_account,
+                                   null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+',
+                                   to='accounting.account')),
+                ('history_user',
+                 models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+',
+                                   to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'historical Product',
@@ -44,9 +53,14 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='name')),
-                ('price', models.DecimalField(blank=True, decimal_places=2, max_digits=14, null=True, verbose_name='price')),
-                ('account_buy', models.ForeignKey(default=accounting.models.get_default_buy_account, on_delete=django.db.models.deletion.SET_DEFAULT, related_name='sale_product_buy_account', to='accounting.account')),
-                ('account_sell', models.ForeignKey(default=accounting.models.get_default_sell_account, on_delete=django.db.models.deletion.SET_DEFAULT, related_name='sale_products_sell_account', to='accounting.account')),
+                ('price',
+                 models.DecimalField(blank=True, decimal_places=2, max_digits=14, null=True, verbose_name='price')),
+                ('account_buy', models.ForeignKey(default=accounting.models.get_default_buy_account,
+                                                  on_delete=django.db.models.deletion.SET_DEFAULT,
+                                                  related_name='sale_product_buy_account', to='accounting.account')),
+                ('account_sell', models.ForeignKey(default=accounting.models.get_default_sell_account,
+                                                   on_delete=django.db.models.deletion.SET_DEFAULT,
+                                                   related_name='sale_products_sell_account', to='accounting.account')),
             ],
             options={
                 'verbose_name': 'Product',
@@ -58,13 +72,20 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
                 ('price', models.DecimalField(decimal_places=2, max_digits=14, verbose_name='price')),
-                ('recurrence', models.CharField(choices=[('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly'), ('yearly', 'Yearly')], default='yearly', max_length=10)),
+                ('recurrence', models.CharField(
+                    choices=[('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly'), ('yearly', 'Yearly')],
+                    default='yearly', max_length=10)),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('product', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='sale.product')),
+                ('history_type',
+                 models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
+                ('history_user',
+                 models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+',
+                                   to=settings.AUTH_USER_MODEL)),
+                ('product', models.ForeignKey(blank=True, db_constraint=False, null=True,
+                                              on_delete=django.db.models.deletion.DO_NOTHING, related_name='+',
+                                              to='sale.product')),
             ],
             options={
                 'verbose_name': 'historical Subscription Product',
@@ -79,8 +100,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('price', models.DecimalField(decimal_places=2, max_digits=14, verbose_name='price')),
-                ('recurrence', models.CharField(choices=[('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly'), ('yearly', 'Yearly')], default='yearly', max_length=10)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscriptionproduct', to='sale.product')),
+                ('recurrence', models.CharField(
+                    choices=[('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly'), ('yearly', 'Yearly')],
+                    default='yearly', max_length=10)),
+                ('product',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscriptionproduct',
+                                   to='sale.product')),
             ],
             options={
                 'verbose_name': 'Subscription Product',

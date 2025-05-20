@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from accounting.models import Account
 
 
+# noinspection PyUnusedLocal,PyUnresolvedReferences
 @receiver(pre_delete, sender=Account)
 def prevent_default_account_deletion(sender: Model, instance: Model, **kwargs) -> None:  # noqa: ARG001
     """Prevents the deletion of default accounts."""

@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Django Internal" pattern="file:*/migrations/*||file:*/__init__.py" />
+</component>

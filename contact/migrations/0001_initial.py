@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -39,7 +38,8 @@ class Migration(migrations.Migration):
                 ('last_name', models.CharField(max_length=255, verbose_name='last name')),
                 ('email', models.EmailField(blank=True, max_length=255, verbose_name='email')),
                 ('phone', models.CharField(blank=True, max_length=20, verbose_name='phone')),
-                ('address', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='contacts', to='contact.address', verbose_name='address')),
+                ('address', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT,
+                                              related_name='contacts', to='contact.address', verbose_name='address')),
             ],
             options={
                 'verbose_name': 'contact',
@@ -51,7 +51,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('role', models.CharField(max_length=255, verbose_name='role')),
-                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contact.contact', verbose_name='contact')),
+                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contact.contact',
+                                              verbose_name='contact')),
             ],
             options={
                 'verbose_name': 'company contact',
@@ -71,8 +72,11 @@ class Migration(migrations.Migration):
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('history_type',
+                 models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
+                ('history_user',
+                 models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+',
+                                   to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'historical address',
@@ -93,9 +97,14 @@ class Migration(migrations.Migration):
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('address', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='contact.address', verbose_name='address')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('history_type',
+                 models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
+                ('address', models.ForeignKey(blank=True, db_constraint=False, null=True,
+                                              on_delete=django.db.models.deletion.DO_NOTHING, related_name='+',
+                                              to='contact.address', verbose_name='address')),
+                ('history_user',
+                 models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+',
+                                   to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'historical contact',
@@ -116,9 +125,14 @@ class Migration(migrations.Migration):
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('address', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='contact.address', verbose_name='address')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('history_type',
+                 models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
+                ('address', models.ForeignKey(blank=True, db_constraint=False, null=True,
+                                              on_delete=django.db.models.deletion.DO_NOTHING, related_name='+',
+                                              to='contact.address', verbose_name='address')),
+                ('history_user',
+                 models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+',
+                                   to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'historical company',
@@ -136,7 +150,9 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(blank=True, max_length=255, verbose_name='email')),
                 ('phone', models.CharField(blank=True, max_length=20, verbose_name='phone')),
                 ('uid', models.CharField(blank=True, max_length=20, null=True, unique=True, verbose_name='uid')),
-                ('address', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='organisations', to='contact.address', verbose_name='address')),
+                ('address', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT,
+                                              related_name='organisations', to='contact.address',
+                                              verbose_name='address')),
             ],
             options={
                 'verbose_name': 'company',
@@ -151,10 +167,17 @@ class Migration(migrations.Migration):
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('contact', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='contact.contact', verbose_name='contact')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('company', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='contact.organisation', verbose_name='company')),
+                ('history_type',
+                 models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
+                ('contact', models.ForeignKey(blank=True, db_constraint=False, null=True,
+                                              on_delete=django.db.models.deletion.DO_NOTHING, related_name='+',
+                                              to='contact.contact', verbose_name='contact')),
+                ('history_user',
+                 models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+',
+                                   to=settings.AUTH_USER_MODEL)),
+                ('company', models.ForeignKey(blank=True, db_constraint=False, null=True,
+                                              on_delete=django.db.models.deletion.DO_NOTHING, related_name='+',
+                                              to='contact.organisation', verbose_name='company')),
             ],
             options={
                 'verbose_name': 'historical company contact',
@@ -172,7 +195,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='companycontact',
             name='company',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contact.organisation', verbose_name='company'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contact.organisation',
+                                    verbose_name='company'),
         ),
         migrations.AddConstraint(
             model_name='companycontact',

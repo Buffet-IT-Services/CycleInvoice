@@ -7,7 +7,7 @@ from contact.models import Address
 
 def fake_address() -> Address:
     """Create a fake address."""
-    return Address.objects.create(street="Main St", number="1", city="Anytown", zip_code="1234", country="Switzerland")
+    return Address.objects.create(street="Main St", number="1", city="Any town", zip_code="1234", country="Switzerland")
 
 
 def fake_address_with_additional() -> Address:
@@ -16,7 +16,7 @@ def fake_address_with_additional() -> Address:
         street="Main St",
         number="1",
         additional="c/o Company",
-        city="Anytown",
+        city="Any town",
         zip_code="1234",
         country="Switzerland",
     )
@@ -28,7 +28,7 @@ class AddressTest(TestCase):
     def test_str(self) -> None:
         """Test the __str__ of Address."""
         address = fake_address_with_additional()
-        self.assertEqual("Main St 1, c/o Company, 1234 Anytown, Switzerland", str(address))
+        self.assertEqual("Main St 1, c/o Company, 1234 Any town, Switzerland", str(address))
 
         address = fake_address()
-        self.assertEqual("Main St 1, 1234 Anytown, Switzerland", str(address))
+        self.assertEqual("Main St 1, 1234 Any town, Switzerland", str(address))
