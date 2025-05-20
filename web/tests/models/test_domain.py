@@ -12,5 +12,5 @@ class DomainTest(TestCase):
     def test_str(self) -> None:
         """Test the __str__ of Domain."""
         organisation = fake_organisation()
-        domain = Domain.objects.create(name="testdomain.com", customer=organisation)
-        self.assertEqual("testdomain.com", str(domain))
+        domain = Domain.objects.create(name="domain.com", customer=organisation)
+        self.assertEqual("domain.com", str(domain))

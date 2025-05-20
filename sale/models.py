@@ -81,4 +81,4 @@ class Subscription(ChangeLoggerAll):
 
     def __str__(self) -> str:
         """Return a string representation of the Subscription."""
-        return f"{self.product.product.name} - {self.customer.name}"
+        return f"{self.product.product.name} - {self.customer}"

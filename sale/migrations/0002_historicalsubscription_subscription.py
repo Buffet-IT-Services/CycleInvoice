@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('contact', '0003_alter_customer_options'),
         ('recurring', '0004_calendarentry_created_at_calendarentry_updated_at'),
@@ -23,11 +22,20 @@ class Migration(migrations.Migration):
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('calendar_entry', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='recurring.calendarentry')),
-                ('customer', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='contact.customer')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('product', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='sale.subscriptionproduct')),
+                ('history_type',
+                 models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
+                ('calendar_entry', models.ForeignKey(blank=True, db_constraint=False, null=True,
+                                                     on_delete=django.db.models.deletion.DO_NOTHING, related_name='+',
+                                                     to='recurring.calendarentry')),
+                ('customer', models.ForeignKey(blank=True, db_constraint=False, null=True,
+                                               on_delete=django.db.models.deletion.DO_NOTHING, related_name='+',
+                                               to='contact.customer')),
+                ('history_user',
+                 models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+',
+                                   to=settings.AUTH_USER_MODEL)),
+                ('product', models.ForeignKey(blank=True, db_constraint=False, null=True,
+                                              on_delete=django.db.models.deletion.DO_NOTHING, related_name='+',
+                                              to='sale.subscriptionproduct')),
             ],
             options={
                 'verbose_name': 'historical Subscription',
@@ -41,9 +49,12 @@ class Migration(migrations.Migration):
             name='Subscription',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('calendar_entry', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recurring.calendarentry')),
-                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscription', to='contact.customer')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscription', to='sale.subscriptionproduct')),
+                ('calendar_entry',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recurring.calendarentry')),
+                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscription',
+                                               to='contact.customer')),
+                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscription',
+                                              to='sale.subscriptionproduct')),
             ],
             options={
                 'verbose_name': 'Subscription',

@@ -24,25 +24,23 @@ class AccountTest(TestCase):
     def test_only_one_default_buy_account(self) -> None:
         """Test that only one account can be set as default buy."""
         acc1 = Account.objects.create(name="A1", number="1", default_buy=True)
-        acc2 = Account.objects.create(name="A2", number="2", default_buy=False)
+        acc2 = Account.objects.create(name="A2", number="2")
 
         acc2.default_buy = True
         acc2.full_clean()
 
-        acc1.refresh_from_db()
-        self.assertFalse(acc1.default_buy)
+        self.assertFalse(Account.objects.get(id=acc1.id).default_buy)
         self.assertTrue(acc2.default_buy)
 
     def test_only_one_default_sell_account(self) -> None:
         """Test that only one account can be set as default sell."""
         acc1 = Account.objects.create(name="A1", number="1", default_sell=True)
-        acc2 = Account.objects.create(name="A2", number="2", default_sell=False)
+        acc2 = Account.objects.create(name="A2", number="2")
 
         acc2.default_sell = True
         acc2.full_clean()
 
-        acc1.refresh_from_db()
-        self.assertFalse(acc1.default_sell)
+        self.assertFalse(Account.objects.get(id=acc1.id).default_sell)
         self.assertTrue(acc2.default_sell)
 
     def test_remove_default_buy_account(self) -> None:

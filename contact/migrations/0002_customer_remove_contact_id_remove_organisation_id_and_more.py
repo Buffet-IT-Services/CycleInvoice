@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('contact', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -34,23 +33,29 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='contact',
             name='customer_ptr',
-            field=models.OneToOneField(auto_created=True, default=1, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='contact.customer'),
+            field=models.OneToOneField(auto_created=True, default=1, on_delete=django.db.models.deletion.CASCADE,
+                                       parent_link=True, primary_key=True, serialize=False, to='contact.customer'),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='historicalcontact',
             name='customer_ptr',
-            field=models.ForeignKey(auto_created=True, blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, parent_link=True, related_name='+', to='contact.customer'),
+            field=models.ForeignKey(auto_created=True, blank=True, db_constraint=False, null=True,
+                                    on_delete=django.db.models.deletion.DO_NOTHING, parent_link=True, related_name='+',
+                                    to='contact.customer'),
         ),
         migrations.AddField(
             model_name='historicalorganisation',
             name='customer_ptr',
-            field=models.ForeignKey(auto_created=True, blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, parent_link=True, related_name='+', to='contact.customer'),
+            field=models.ForeignKey(auto_created=True, blank=True, db_constraint=False, null=True,
+                                    on_delete=django.db.models.deletion.DO_NOTHING, parent_link=True, related_name='+',
+                                    to='contact.customer'),
         ),
         migrations.AddField(
             model_name='organisation',
             name='customer_ptr',
-            field=models.OneToOneField(auto_created=True, default=1, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='contact.customer'),
+            field=models.OneToOneField(auto_created=True, default=1, on_delete=django.db.models.deletion.CASCADE,
+                                       parent_link=True, primary_key=True, serialize=False, to='contact.customer'),
             preserve_default=False,
         ),
         migrations.CreateModel(
@@ -60,8 +65,11 @@ class Migration(migrations.Migration):
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('history_type',
+                 models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
+                ('history_user',
+                 models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+',
+                                   to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'historical customer',
