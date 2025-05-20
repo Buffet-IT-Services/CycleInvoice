@@ -3,7 +3,6 @@
 from django.test import TestCase
 
 from contact.tests.models.test_organisation import fake_organisation
-from sale.models import Product
 from web.models import Domain
 
 

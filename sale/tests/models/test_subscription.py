@@ -4,7 +4,7 @@ from django.test import TestCase
 from recurring.models import CalendarEntry
 
 from contact.models import Organisation
-from sale.models import Product, SubscriptionProduct, Subscription
+from sale.models import Product, Subscription, SubscriptionProduct
 
 
 class SubscriptionTest(TestCase):
@@ -17,6 +17,7 @@ class SubscriptionTest(TestCase):
         organisation = Organisation.objects.create(name="Test Organisation")
         calendar_entry = CalendarEntry.objects.create(name="Test Calendar Entry")
 
-        subscription = Subscription.objects.create(product=subscription_product, customer=organisation,
-                                                   calendar_entry=calendar_entry)
+        subscription = Subscription.objects.create(
+            product=subscription_product, customer=organisation, calendar_entry=calendar_entry
+        )
         self.assertEqual("Test Product - Test Organisation", str(subscription))
