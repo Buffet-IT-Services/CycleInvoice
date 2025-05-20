@@ -1,5 +1,6 @@
 """A module for sale models."""
-from abc import abstractmethod, ABC
+
+from abc import abstractmethod
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -131,8 +132,8 @@ class DocumentInvoice(ChangeLoggerAll):
     invoice_number = models.CharField(max_length=255, unique=True, verbose_name=_("invoice number"))
     date = models.DateField(verbose_name=_("date"))
     due_date = models.DateField(verbose_name=_("due date"))
-    header_text = models.TextField(verbose_name=_("header text"), blank=True, null=True)
-    footer_text = models.TextField(verbose_name=_("footer text"), blank=True, null=True)
+    header_text = models.TextField(verbose_name=_("header text"), blank=True)
+    footer_text = models.TextField(verbose_name=_("footer text"), blank=True)
 
     class Meta:
         """Meta options for the DocumentInvoice model."""
@@ -145,7 +146,7 @@ class DocumentInvoice(ChangeLoggerAll):
         return f"Invoice {self.id} - {self.customer}"
 
 
-class DocumentItem(ChangeLoggerAll, ABC):
+class DocumentItem(ChangeLoggerAll):
     """Model representing a document item."""
 
     price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
@@ -156,28 +157,26 @@ class DocumentItem(ChangeLoggerAll, ABC):
 
     @property
     @abstractmethod
-    def title_str(self):
+    def title_str(self) -> str:
         """Each child must implement a `title` property."""
-        pass
 
     @property
     @abstractmethod
-    def comment_str(self):
+    def comment_str(self) -> str:
         """Each child must implement a `comment` property."""
-        pass
 
     @property
-    def price_str(self):
+    def price_str(self) -> str:
         """Return the price as a string."""
         return f"{self.price:.2f}"
 
     @property
-    def quantity_str(self):
+    def quantity_str(self) -> str:
         """Return the quantity as a string."""
         return f"{self.quantity:.2f}"
 
     @property
-    def total_str(self):
+    def total_str(self) -> str:
         """Return the total price as a string."""
         total = self.price * self.quantity * (1 - self.discount)
         return f"total: {total:.2f}"
@@ -185,7 +184,7 @@ class DocumentItem(ChangeLoggerAll, ABC):
     @property
     def discount_str(self) -> str:
         """Return the discount percentage as a string."""
-        return f"{100 * self.discount:.2f%}" if self.discount else ""
+        return f"{(100 * self.discount):.2f%}" if self.discount else ""
 
 
 class DocumentProduct(DocumentItem):
@@ -204,14 +203,14 @@ class DocumentProduct(DocumentItem):
         return f"{self.product.name} - {self.quantity}"
 
     @property
-    def title_str(self):
+    def title_str(self) -> str:
         """Return the product name as the title."""
         return self.product.name
 
     @property
-    def comment_str(self):
+    def comment_str(self) -> str:
         """Return the product description as the comment."""
-        return self.product.description if hasattr(self.product, 'description') else ""
+        return self.product.description if hasattr(self.product, "description") else ""
 
 
 class DocumentWork(DocumentItem):
@@ -230,11 +229,11 @@ class DocumentWork(DocumentItem):
         return f"{self.work} - {self.quantity}"
 
     @property
-    def title_str(self):
+    def title_str(self) -> str:
         """Return the work type name as the title."""
         return self.work.work_type.name
 
     @property
-    def comment_str(self):
+    def comment_str(self) -> str:
         """Return the work type description as the comment."""
-        return self.work.work_type.description if hasattr(self.work.work_type, 'description') else ""
+        return self.work.work_type.description if hasattr(self.work.work_type, "description") else ""
