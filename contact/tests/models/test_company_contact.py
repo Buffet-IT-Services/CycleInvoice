@@ -3,6 +3,8 @@
 from django.test import TestCase
 
 from contact.models import CompanyContact, Contact, Organisation
+from contact.tests.models.test_contact import fake_contact
+from contact.tests.models.test_organisation import fake_organisation
 
 
 class CompanyContactTest(TestCase):
@@ -10,7 +12,7 @@ class CompanyContactTest(TestCase):
 
     def test_str(self) -> None:
         """Test the __str__ of CompanyContact."""
-        contact = Contact.objects.create(first_name="John", last_name="Doe")
-        organisation = Organisation.objects.create(name="Test Org")
-        company_contact = CompanyContact.objects.create(contact=contact, company=organisation, role="Manager")
-        self.assertEqual(str(company_contact), "Test Org - John Doe - Manager")
+        company_contact = CompanyContact.objects.create(contact=fake_contact(),
+                                                        company=fake_organisation(),
+                                                        role="Manager")
+        self.assertEqual(str(company_contact), "Fake Org - John Doe - Manager")
