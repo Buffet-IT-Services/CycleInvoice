@@ -1,4 +1,4 @@
-# Contributing to [Your Organization Name]
+# Contributing to Cycle Invoice
 
 Thank you for your interest in contributing to this project!
 
