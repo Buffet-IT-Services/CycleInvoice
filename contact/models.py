@@ -9,6 +9,15 @@ from common.models import ChangeLoggerAll
 class Customer(ChangeLoggerAll):
     """Model representing a customer."""
 
+    address = models.ForeignKey(
+        "Address",
+        on_delete=models.PROTECT,
+        related_name="organisations",
+        verbose_name=_("address"),
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         """Meta options for the Customer model."""
 
@@ -18,9 +27,9 @@ class Customer(ChangeLoggerAll):
     @property
     def address_block(self) -> str:
         """Return the address block for the customer."""
-        if hasattr(self, "address"):
-            return str(self.address).replace(",", "\n")
-        return "No Address set"
+        if self.address is not None:
+            return str(self) + "\n" + address_block(self.address)
+        return str(self)
 
 
 class Organisation(Customer):
@@ -29,14 +38,6 @@ class Organisation(Customer):
     name = models.CharField(_("name"), max_length=255, unique=True)
     email = models.EmailField(_("email"), max_length=255, blank=True)
     phone = models.CharField(_("phone"), max_length=20, blank=True)
-    address = models.ForeignKey(
-        "Address",
-        on_delete=models.PROTECT,
-        related_name="organisations",
-        verbose_name=_("address"),
-        null=True,
-        blank=True,
-    )
     uid = models.CharField(_("uid"), max_length=20, unique=True, blank=True, null=True)
 
     class Meta:
@@ -57,9 +58,6 @@ class Contact(Customer):
     last_name = models.CharField(_("last name"), max_length=255)
     email = models.EmailField(_("email"), max_length=255, blank=True)
     phone = models.CharField(_("phone"), max_length=20, blank=True)
-    address = models.ForeignKey(
-        "Address", on_delete=models.PROTECT, related_name="contacts", verbose_name=_("address"), null=True, blank=True
-    )
     company = models.ManyToManyField(Organisation, through="CompanyContact")
 
     class Meta:
@@ -95,9 +93,9 @@ class CompanyContact(ChangeLoggerAll):
 class Address(ChangeLoggerAll):
     """Model representing an address."""
 
+    additional = models.CharField(_("additional"), max_length=255, blank=True)
     street = models.CharField(_("street"), max_length=255)
     number = models.CharField(_("number"), max_length=10)
-    additional = models.CharField(_("additional"), max_length=255, blank=True)
     city = models.CharField(_("city"), max_length=255)
     zip_code = models.CharField(_("zip code"), max_length=12)
     country = models.CharField(_("country"), max_length=255)
@@ -110,5 +108,11 @@ class Address(ChangeLoggerAll):
 
     def __str__(self) -> str:
         """Return a string representation of the address."""
-        additional = f", {self.additional}" if self.additional else ""
-        return f"{self.street} {self.number}{additional}, {self.zip_code} {self.city}, {self.country}"
+        additional = f"{self.additional}, " if self.additional else ""
+        return f"{additional}{self.street} {self.number}, {self.zip_code} {self.city}, {self.country}"
+
+
+def address_block(address: Address) -> str:
+    """Return the address block for the given address."""
+    additional = f"{address.additional}\n" if address.additional else ""
+    return f"{additional}{address.street} {address.number}\n{address.zip_code} {address.city}\n{address.country}"
