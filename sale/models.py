@@ -1,6 +1,7 @@
 """A module for sale models."""
 
 from abc import abstractmethod
+from decimal import Decimal
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -168,23 +169,27 @@ class DocumentItem(ChangeLoggerAll):
     @property
     def price_str(self) -> str:
         """Return the price as a string."""
-        return f"{self.price}"
+        return f"{self.price:.2f}"
 
     @property
     def quantity_str(self) -> str:
         """Return the quantity as a string."""
-        return f"{self.quantity:.2f}"
+        return f"{self.quantity}"
+
+    @property
+    def total(self) -> Decimal:
+        """Return the total price."""
+        return round(self.price * self.quantity * (1 - self.discount), 2)
 
     @property
     def total_str(self) -> str:
         """Return the total price as a string."""
-        total = self.price * self.quantity * (1 - self.discount)
-        return f"total: {total:.2f}"
+        return f"{self.total:.2f}"
 
     @property
     def discount_str(self) -> str:
         """Return the discount percentage as a string."""
-        return f"{(100 * self.discount):.2f%}" if self.discount else ""
+        return f"{(100 * self.discount):.2f}%" if self.discount != 0 else ""
 
 
 class DocumentProduct(DocumentItem):
