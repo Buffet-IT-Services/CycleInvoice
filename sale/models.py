@@ -15,6 +15,7 @@ class Product(ChangeLoggerAll):
     """Model representing a sale product."""
 
     name = models.CharField(_("name"), max_length=255)
+    description = models.TextField(_("description"), blank=True)
     account_buy = models.ForeignKey(
         Account,
         on_delete=models.SET_DEFAULT,
@@ -192,7 +193,7 @@ class DocumentItem(ChangeLoggerAll):
         return f"{(100 * self.discount):.2f}%" if self.discount != 0 else ""
 
 
-class DocumentProduct(DocumentItem):
+class DocumentItemProduct(DocumentItem):
     """Model representing a document product."""
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="document_product")
@@ -202,10 +203,6 @@ class DocumentProduct(DocumentItem):
 
         verbose_name = "Document Product"
         verbose_name_plural = "Document Products"
-
-    def __str__(self) -> str:
-        """Return a string representation of the DocumentProduct."""
-        return f"{self.product.name} - {self.quantity}"
 
     @property
     def title_str(self) -> str:
@@ -218,9 +215,10 @@ class DocumentProduct(DocumentItem):
         return self.product.description if hasattr(self.product, "description") else ""
 
 
-class DocumentWork(DocumentItem):
+class DocumentItemWork(DocumentItem):
     """Model representing a document work."""
 
+    comment = models.TextField(verbose_name=_("description"), blank=True)
     work = models.ForeignKey(WorkTypePrice, on_delete=models.CASCADE, related_name="document_work")
 
     class Meta:
@@ -228,10 +226,6 @@ class DocumentWork(DocumentItem):
 
         verbose_name = "Document Work"
         verbose_name_plural = "Document Works"
-
-    def __str__(self) -> str:
-        """Return a string representation of the DocumentWork."""
-        return f"{self.work} - {self.quantity}"
 
     @property
     def title_str(self) -> str:
@@ -241,4 +235,4 @@ class DocumentWork(DocumentItem):
     @property
     def comment_str(self) -> str:
         """Return the work type description as the comment."""
-        return self.work.work_type.description if hasattr(self.work.work_type, "description") else ""
+        return self.comment if not None else ""
