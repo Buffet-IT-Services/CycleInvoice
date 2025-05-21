@@ -235,4 +235,4 @@ class DocumentItemWork(DocumentItem):
     @property
     def comment_str(self) -> str:
         """Return the work type description as the comment."""
-        return self.comment if not None else ""
+        return self.comment if self.comment else ""
