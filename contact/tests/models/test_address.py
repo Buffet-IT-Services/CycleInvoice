@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 
-from contact.models import Address
+from contact.models import Address, address_block
 
 
 def fake_address() -> Address:
@@ -28,7 +28,15 @@ class AddressTest(TestCase):
     def test_str(self) -> None:
         """Test the __str__ of Address."""
         address = fake_address_with_additional()
-        self.assertEqual("Main St 1, c/o Company, 1234 Any town, Switzerland", str(address))
+        self.assertEqual("c/o Company, Main St 1, 1234 Any town, Switzerland", str(address))
 
         address = fake_address()
         self.assertEqual("Main St 1, 1234 Any town, Switzerland", str(address))
+
+    def test_address_block(self) -> None:
+        """Test the address block function."""
+        address = fake_address_with_additional()
+        self.assertEqual("c/o Company\nMain St 1\n1234 Any town\nSwitzerland", address_block(address))
+
+        address = fake_address()
+        self.assertEqual("Main St 1\n1234 Any town\nSwitzerland", address_block(address))
