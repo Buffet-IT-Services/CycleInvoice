@@ -7,7 +7,7 @@ from sale.models import DocumentItem
 
 def fake_document_item() -> DocumentItem:
     """Create a fake document item."""
-    return DocumentItem.objects.create(price=5.0, quantity=2, discount=0.1, item_group="Test Group")
+    return DocumentItem.objects.create(price=5.0, quantity=2, discount=0.1)
 
 
 class DocumentItemTest(TestCase):
