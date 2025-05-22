@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "storages",  # for S3 storage
     "contact.apps.ContactConfig",
     "sale.apps.SaleConfig",
     "accounting.apps.AccountingConfig",
@@ -135,3 +136,32 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": "nmFI4p3D9tL1v4kPK3Hs",
+            "secret_key": "jX01XUg8nSrzDMm0dlLAsr1FvBT5S1m5xi7DdZ75",
+            "bucket_name": "cycleinvoice",
+            "endpoint_url": "https://minio.buffetitcloud.ch",
+            "addressing_style": "path",
+            "use_ssl": True,
+            "default_acl": None,
+            "signature_version": "s3v4",
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": "nmFI4p3D9tL1v4kPK3Hs",
+            "secret_key": "jX01XUg8nSrzDMm0dlLAsr1FvBT5S1m5xi7DdZ75",
+            "bucket_name": "cycleinvoice",
+            "endpoint_url": "https://minio.buffetitcloud.ch",
+            "addressing_style": "path",
+            "use_ssl": True,
+            "default_acl": None,
+            "signature_version": "s3v4",
+        },
+    },
+}
