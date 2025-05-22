@@ -98,6 +98,11 @@ class WorkType(ChangeLoggerAll):
         default=get_default_sell_account,
         related_name="work_type_account",
     )
+    price_per_hour = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        verbose_name=_("price per hour")
+    )
 
     class Meta:
         """Meta options for the WorkType model."""
@@ -107,24 +112,7 @@ class WorkType(ChangeLoggerAll):
 
     def __str__(self) -> str:
         """Return a string representation of the WorkType."""
-        return self.name
-
-
-class WorkTypePrice(ChangeLoggerAll):
-    """Model representing a work type price."""
-
-    work_type = models.ForeignKey(WorkType, on_delete=models.CASCADE, related_name="work_type_price")
-    price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
-
-    class Meta:
-        """Meta options for the WorkTypePrice model."""
-
-        verbose_name = "Work Type Price"
-        verbose_name_plural = "Work Type Prices"
-
-    def __str__(self) -> str:
-        """Return a string representation of the WorkTypePrice."""
-        return f"{self.work_type.name} - {self.price:.2f}"
+        return f"{self.name} - {self.price_per_hour:.2f}"
 
 
 class DocumentInvoice(ChangeLoggerAll):
@@ -218,7 +206,7 @@ class DocumentItemWork(DocumentItem):
     """Model representing a document work."""
 
     comment = models.TextField(verbose_name=_("description"), blank=True)
-    work = models.ForeignKey(WorkTypePrice, on_delete=models.CASCADE, related_name="document_work")
+    work = models.ForeignKey(WorkType, on_delete=models.CASCADE, related_name="document_work")
 
     class Meta:
         """Meta options for the DocumentWork model."""
@@ -229,7 +217,7 @@ class DocumentItemWork(DocumentItem):
     @property
     def title_str(self) -> str:
         """Return the work type name as the title."""
-        return self.work.work_type.name
+        return self.work.name
 
     @property
     def comment_str(self) -> str:
