@@ -31,4 +31,4 @@ class MinioStorageTest(TestCase):
         self.assertEqual(read_content, content)
 
         # Clean up: delete the file from storage
-        default_storage.delete(filename)
+        # default_storage.delete(filename)
