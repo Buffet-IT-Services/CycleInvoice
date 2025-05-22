@@ -1,14 +1,14 @@
-"""This module contains tests for the MinIO storage backend."""
+"""Contains tests for the MinIO storage backend."""
 
-from django.test import TestCase
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.test import TestCase
 
 
 class MinioStorageTest(TestCase):
     """Test case for MinIO storage backend."""
 
-    def test_file_save_and_read(self):
+    def test_file_save_and_read(self) -> None:
         """Test saving and reading a file from MinIO storage."""
         filename = "testfile2.txt"
         content = b"Hello, MinIO from Django test!"
@@ -31,4 +31,3 @@ class MinioStorageTest(TestCase):
         self.assertEqual(read_content, content)
 
         # Clean up: delete the file from storage
-        # default_storage.delete(filename)
