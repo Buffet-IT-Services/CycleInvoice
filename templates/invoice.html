@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice</title>
+    <style>
+        @page {
+            margin: 0 0 0 0;
+            size: A4;
+        }
+
+        /* Special class for customer address that only appears on first page */
+        .customer-address-first-page {
+            position: relative;
+            top: 45mm;
+            /* Position below the header */
+            left: 15mm;
+            z-index: 1000;
+        }
+
+        table {
+            max-width: 200mm;
+        }
+
+        body {
+            font-family: Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #000;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+
+        .invoice-dates-table {
+            border-collapse: collapse;
+        }
+
+        .customer-message {
+            line-height: 1.4;
+        }
+
+        table.items {
+            margin-top: 5mm;
+            border-collapse: collapse;
+        }
+
+        table.items th {
+            padding: 3px;
+            font-weight: 800;
+            text-align: center;
+            border-bottom: 1px solid #6679c5;
+            color: #6679c5;
+        }
+
+        table.items td {
+            padding: 6px;
+            vertical-align: top;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .item-pos {
+            width: 5%;
+            text-align: center;
+        }
+
+        .item-description {
+            width: 40%;
+        }
+
+        .item-quantity {
+            width: 10%;
+            text-align: center;
+        }
+
+        .item-price,
+        .item-total {
+            width: 10%;
+            text-align: right;
+        }
+
+        .item-discount {
+            width: 10%;
+            text-align: center;
+        }
+
+        .item-description ul {
+            margin: 5px 0 5px 15px;
+            padding: 0;
+        }
+
+        .item-description li {
+            margin-bottom: 3px;
+        }
+
+        /* Page counter styles */
+        #page-counter {
+            position: absolute;
+            right: 20mm;
+            bottom: 4mm;
+            font-size: 26px;
+            color: #ffffff;
+            z-index: 1000;
+        }
+
+        .page {
+            page-break-after: always;
+        }
+
+        #master-table table {
+            page-break-inside: auto;
+            border-collapse: collapse;
+        }
+
+        /* Ensure table headers repeat on each page */
+        #master-table thead {
+            display: table-header-group;
+        }
+
+        #master-table tfoot {
+            display: table-footer-group;
+        }
+
+        #master-table {
+            font-size: 10px;
+            margin-top: 10mm;
+            /* Space before the table */
+        }
+
+        #master-table tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+
+        /* Add spacing after table to ensure proper spacing before footer */
+        #master-table + * {
+            margin-top: 10mm;
+        }
+
+        /* Specific styling for table headers to ensure they have proper spacing */
+        #master-table thead {
+            display: table-header-group;
+        }
+
+        /* Add extra spacing after table header when it repeats on a new page */
+        #master-table thead tr th {
+            padding-top: 8mm;
+        }
+
+
+        /* Styles for repeating header and footer */
+        .page-header,
+        .page-header-space {
+            height: 35mm;
+            padding-top: 8mm;
+        }
+
+        .page-footer,
+        .page-footer-space {
+            height: 20mm;
+            /* Further increased height to prevent content overlap */
+        }
+
+        .page-footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 100;
+            clear: both;
+            height: 20mm;
+        }
+
+        .page-footer div {
+            font-size: 8px;
+        }
+
+        .page-header {
+            position: fixed;
+            top: 0;
+            height: 35mm;
+            width: 100%;
+        }
+
+        .marker {
+            width: 20px;
+            height: 2px;
+            background-color: #cc6000;
+            z-index: 1000;
+        }
+
+        .page-header .marker-left-top {
+            position: absolute;
+            top: 97mm;
+            left: 0;
+        }
+
+        .page-header .marker-left-bottom {
+            position: absolute;
+            top: 196mm;
+            left: 0;
+        }
+
+        .page-header .marker-right-top {
+            position: absolute;
+            top: 97mm;
+            right: 0;
+        }
+
+        .page-header .marker-right-bottom {
+            position: absolute;
+            top: 196mm;
+            right: 0;
+        }
+
+        .flex-container-header {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            align-content: flex-start;
+            margin: 2mm 15mm 0 15mm;
+        }
+
+        .flex-items-header {
+            display: block;
+            flex-grow: 0;
+            flex-shrink: 1;
+            flex-basis: auto;
+            align-self: auto;
+            order: 0;
+            font-size: 8px;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Page header and footer structure for repeating on every page -->
+<div class="page-header">
+    <div class="marker marker-right-top"></div>
+    <div class="marker marker-right-bottom"></div>
+    <div class="marker marker-left-top"></div>
+    <div class="marker marker-left-bottom"></div>
+    <div class="flex-container-header">
+        <div class="flex-items-header">
+            <img src="{{ company_info.company_logo_url }}" alt="Logo" style="width: 200px;">
+        </div>
+        <div class="flex-items-header" style="position: absolute; top: 0; right: 0;">
+            <img src="{% static 'images/header.svg' %}" alt="Header">
+        </div>
+        <div class="flex-items-header" style="position: absolute; top: 25mm; right: 15mm;">
+            <table cellspacing="0" cellpadding="0"
+                   style="border-collapse: collapse; line-height: 0.8; border-spacing: 0;">
+                <tr style="height: 3mm; margin: 0; padding: 0;">
+                    <td
+                            style="text-align: right; font-size: 11px; padding-right: 3px; padding-top: 0; padding-bottom: 0;">
+                        {{ company_info.company_phone }}</td>
+                    <td style="width: 3.5mm;background-color: #000;"><img alt="call"
+                                                                          src="{% static 'images/call.svg' %}"
+                                                                          style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
+                    </td>
+                </tr>
+                <tr style="height: 3mm; margin: 0; padding: 0;">
+                    <td
+                            style="text-align: right; font-size: 11px; padding-right: 3px; padding-top: 0; padding-bottom: 0;">
+                        {{ company_info.company_email }}</td>
+                    <td style="width: 3.5mm;background-color: #000;"><img alt="email"
+                                                                          src="{% static 'images/email.svg' %}"
+                                                                          style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
+                    </td>
+                </tr>
+                <tr style="height: 3mm; margin: 0; padding: 0;">
+                    <td
+                            style="text-align: right; font-size: 11px; padding-right: 3px; padding-top: 0; padding-bottom: 0;">
+                        {{ company_info.company_website }}</td>
+                    <td style="width: 3.5mm;background-color: #000;"><img alt="web"
+                                                                          src="{% static 'images/web.svg' %}"
+                                                                          style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
+                    </td>
+                </tr>
+                <tr style="height: 3mm; margin: 0; padding: 0;">
+                    <td
+                            style="text-align: right; font-size: 11px; padding-right: 3px; padding-top: 0; padding-bottom: 0;">
+                        {{ company_info.company_registration_id }}</td>
+                    <td style="width: 3.5mm;background-color: #000;"><img alt="user"
+                                                                          src="{% static 'images/user.svg' %}"
+                                                                          style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Customer address moved to main content with first-page-only class -->
+    </div>
+</div>
+
+<div class="page-footer">
+    <div style="position: absolute; right: 0; bottom: 0px;">
+        <img src="{% static 'images/footer.svg' %}" style="width: 210mm;">
+    </div>
+    <div style="position: absolute; left: 5mm; top: 19px; color: #ffffff; font-size: 11px; font-weight: semibold;">
+        <span>{{ company_info.company_name }}</span>
+    </div>
+    {% if show_page_number %}
+        <div id="page-counter">
+            Seite <span id="pagenumber"></span> von <span id="pagecount">{{ total_pages }}</span>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Customer address positioned absolutely so it only appears on first page -->
+<div class="customer-address-first-page">
+    <div style="font-size: 10px;">Abs: {{ company_info.company_name }} | {{ company_info.company_address }}
+        | {{ company_info.zip }} {{ company_info.city }}</div>
+    <br>
+    <div style="font-size: 12px; margin-left: 5mm;">
+        <div>{{ customer_info.to_address.name }}</div>
+        <div>{{ customer_info.to_address.street }}</div>
+        <div>{{ customer_info.to_address.zip }} {{ customer_info.to_address.city }}</div>
+        <div>{{ customer_info.to_address.country }}</div>
+    </div>
+</div>
+
+<!-- Main content table with proper structure for header and footer -->
+<table style="width: 100%;padding-left: 15mm;padding-right: 15mm;">
+    <thead>
+    <tr>
+        <td>
+            <!--place holder for the fixed-position header-->
+            <div class="page-header-space"></div>
+        </td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <!-- Content container -->
+            <div class="page" id="master-table">
+                <!-- Add spacer div to ensure content doesn't overlap with footer -->
+                <table style="width: 100%; margin-top: 5mm;">
+                    <tr style=" border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;">
+                        <td style="padding: 1mm 2mm;font-size: 12px;">RG-2024-00007</td>
+                    </tr>
+                </table>
+
+                <table class="invoice-dates-table">
+                    <tr>
+                        <td style="width: 10%;">Datum:</td>
+                        <td style="width: 20%;">{{ invoice_details.created_date }}</td>
+                        <td style="width: 20%; text-align: right;">Zahlbar bis:</td>
+                        <td style="width: 10%; text-align: right;">{{ invoice_details.delivery_date }}</td>
+                    </tr>
+                </table>
+
+                <div style="margin-top: 20px; border-top: 1px solid #ccc;">
+                </div>
+
+                <div class="customer-message" style="margin-top: 20px;">
+                    <p>Sehr geehrter Herr xy,</p>
+                    <p>Vielen Dank für das uns entgegengebrachte Vertrauen. Wir erlauben uns, die erbrachten
+                        Warendienstleistungen wie folgt in Rechnung zu stellen. Mir ist natürlich bewusst,
+                        dass
+                        aufgrund meiner Neugründung und der damit verzögerten Rechnungsstellung eine
+                        grössere
+                        Summe zusammengekommen ist. Um nicht alle Tage zu belasten, ist bei einer Zahlung
+                        bis
+                        17.04. eine Reduktion von CHF 100.- ausreichend, um die komplette Rechnung zu
+                        begleichen. Also buchhalterisch ausgedrückt: CHF 133.33 Skonto bei einer Zahlung bis
+                        zum
+                        12.04.</p>
+                </div>
+
+                <table class="items">
+                    <thead>
+                    <tr>
+                        <th class="item-pos">Pos.</th>
+                        <th class="item-description">Beschreibung</th>
+                        <th class="item-quantity">Menge</th>
+                        <th class="item-price">Einzelpreis</th>
+                        <th class="item-discount">Rabatt</th>
+                        <th class="item-total">Preis in CHF</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in line_items %}
+                        <tr>
+                            <td class="item-pos">{{ forloop.counter }}</td>
+                            <td class="item-description">
+                                <strong>{{ item.product.name }}</strong>
+                                <div>{{ item.product.description|safe }}</div>
+                            </td>
+                            <td class="item-quantity">{{ item.quantity }}</td>
+                            <td class="item-price">{{ item.total_net_price }}</td>
+                            <td class="item-discount">{{ item.discount_in_percent }}</td>
+                            <td class="item-total">{{ item.total_net_price }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Total section -->
+                <div style="margin-top: 20px; width: 100%;">
+                    <table style="width: 100%; margin-left: auto; border-collapse: collapse;">
+                        <tr>
+                            <td style="text-align: left; padding: 1mm 2mm;">Betrag (von Steuer befreit)</td>
+                            <td style="text-align: right; padding: 1mm 2mm;">{{ financial_details.subtotal_sum
+                                    }}</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; padding: 1mm 2mm;">Zahlungseingang</td>
+                            <td style="text-align: right; padding: 1mm 2mm;">0,00</td>
+                        </tr>
+                        <tr style="border-top: 1px solid #000;">
+                            <td style="text-align: left; padding: 1mm 2mm; font-weight: bold;">Restbetrag</td>
+                            <td style="text-align: right; padding: 1mm 2mm; font-weight: bold;">{{
+                                    financial_details.subtotal_sum }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Add message after total -->
+                <div style="margin-top: 3mm">
+                    <p>Sollten Sie Fragen zu dieser Rechnung haben, zögern Sie nicht, sich bei uns zu melden.
+                    </p>
+                    <p>Freundliche Grüsse</p>
+                    <p>{{ company_info.company_name }}</p>
+                </div>
+                <!-- QR Bill Section -->
+                {% if qr_bill_svg %}
+                    <div style="text-align: center">
+                        <!-- QR Code -->
+                        <div style="width: 180mm; margin: 0 auto;">
+                            {{ qr_bill_svg|safe }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td>
+            <!--place holder for the fixed-position footer-->
+            <div class="page-footer-space"></div>
+        </td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>
