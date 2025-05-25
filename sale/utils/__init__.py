@@ -4,5 +4,5 @@ from sale.utils.invoice_pdf_generation import (
 )
 
 __all__ = [
-    'generate_invoice_pdf_two_pass',
+    "generate_invoice_pdf_two_pass",
 ]
