@@ -1,12 +1,14 @@
-from django.template.loader import render_to_string
-from django.http import FileResponse
-from weasyprint import HTML
-from io import BytesIO
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
-from PyPDF2 import PdfReader, PdfWriter
-from sale.utils.swiss_qr import generate_swiss_qr
 from dataclasses import dataclass
+from io import BytesIO
+from urllib.parse import quote
+
+from PyPDF2 import PdfReader, PdfWriter
+from django.template.loader import render_to_string
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from weasyprint import HTML
+
+from sale.utils.swiss_qr import generate_swiss_qr
 
 
 def prepare_invoice_context(context_data):
@@ -157,60 +159,26 @@ def create_pdf_content(pdf_stream, invoice_id):
     return PDFContent(content=content, filename=filename)
 
 
-def generate_qr_code_pdf(svg_content, request):
+def generate_qr_code_pdf(svg_content, context_data, request):
     """
     Generate a PDF containing only the QR code.
 
     Args:
         svg_content (str): The SVG content of the QR code
+        context_data (dict): The context data for the HTML Render
         request: The HTTP request object for building absolute URLs
 
     Returns:
         PdfReader: A PdfReader object containing the QR code PDF
     """
     # Create HTML for the QR code page
-    qr_html = f'''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>QR Code</title>
-        <style>
-            @page {{
-                size: A4 portrait;
-                margin: 0;
-            }}
-            body {{
-                margin: 0;
-                padding: 0;
-                font-family: Arial, sans-serif;
-            }}
-            .qr-container {{
-                position: absolute;
-                bottom: 0;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 100%;
-                text-align: center;
-            }}
-            .qr-svg {{
-                width: 100%;
-                height: auto;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="qr-container">
-            <div class="qr-svg">{svg_content}</div>
-        </div>
-    </body>
-    </html>
-    '''
-    
+    svg_content = quote(svg_content)
+    qr_html = render_to_string('qr_code.html', {**context_data, 'svg_content': svg_content})
+
     # Generate PDF from the HTML string directly using WeasyPrint
     qr_document = HTML(string=qr_html, base_url=request.build_absolute_uri('/'), encoding="utf-8").render()
     qr_pdf_bytes = qr_document.write_pdf()
-    
+
     # Create a PDF reader for the QR page
     return PdfReader(BytesIO(qr_pdf_bytes))
 
@@ -240,24 +208,24 @@ def generate_invoice_pdf_two_pass(request, context_data):
 
     # Step 4: Add page numbers to the PDF
     pdf_with_page_numbers = add_page_numbers_to_pdf(pdf_data, total_pages)
-    
+
     # Step 5: Generate QR code PDF and combine with invoice PDF
     final_output = PdfWriter()
-    
+
     # Add all pages from the invoice PDF with page numbers
     numbered_pdf = PdfReader(pdf_with_page_numbers)
     for page in numbered_pdf.pages:
         final_output.add_page(page)
-    
+
     # Generate and add the QR code page
-    qr_pdf = generate_qr_code_pdf(prepared_context['qr_bill_svg'], request)
+    qr_pdf = generate_qr_code_pdf(prepared_context['qr_bill_svg'], context_data, request)
     final_output.add_page(qr_pdf.pages[0])
-    
+
     # Write the final PDF to a BytesIO stream
     final_stream = BytesIO()
     final_output.write(final_stream)
     final_stream.seek(0)
-    
+
     # Create and return the PDF content
     return create_pdf_content(
         final_stream, context_data["invoice_details"]["invoice_id"]
