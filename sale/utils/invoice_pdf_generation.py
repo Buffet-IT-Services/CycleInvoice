@@ -53,7 +53,7 @@ def generate_base_pdf(html_content, base_url=None):
     Returns:
         tuple: (PDF bytes, total page count)
     """
-    document = HTML(string=html_content, base_url=base_url).render()
+    document = HTML(string=html_content, base_url=base_url, encoding="utf-8").render()
     total_pages = len(document.pages)
     pdf_file = document.write_pdf()
 
@@ -208,7 +208,7 @@ def generate_qr_code_pdf(svg_content, request):
     '''
     
     # Generate PDF from the HTML string directly using WeasyPrint
-    qr_document = HTML(string=qr_html, base_url=request.build_absolute_uri('/')).render()
+    qr_document = HTML(string=qr_html, base_url=request.build_absolute_uri('/'), encoding="utf-8").render()
     qr_pdf_bytes = qr_document.write_pdf()
     
     # Create a PDF reader for the QR page
