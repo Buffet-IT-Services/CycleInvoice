@@ -35,6 +35,8 @@
 
         .invoice-dates-table {
             border-collapse: collapse;
+            margin-top: 2mm;
+            margin-bottom: 2mm;
         }
 
         .customer-message {
@@ -183,37 +185,6 @@
             width: 100%;
         }
 
-        .marker {
-            width: 20px;
-            height: 2px;
-            background-color: #cc6000;
-            z-index: 1000;
-        }
-
-        .page-header .marker-left-top {
-            position: absolute;
-            top: 97mm;
-            left: 0;
-        }
-
-        .page-header .marker-left-bottom {
-            position: absolute;
-            top: 196mm;
-            left: 0;
-        }
-
-        .page-header .marker-right-top {
-            position: absolute;
-            top: 97mm;
-            right: 0;
-        }
-
-        .page-header .marker-right-bottom {
-            position: absolute;
-            top: 196mm;
-            right: 0;
-        }
-
         .flex-container-header {
             display: flex;
             flex-direction: row;
@@ -239,10 +210,6 @@
 <body>
 <!-- Page header and footer structure for repeating on every page -->
 <div class="page-header">
-    <div class="marker marker-right-top"></div>
-    <div class="marker marker-right-bottom"></div>
-    <div class="marker marker-left-top"></div>
-    <div class="marker marker-left-bottom"></div>
     <div class="flex-container-header">
         <div class="flex-items-header">
             <img src="{{ company_info.company_logo_url }}" alt="Logo" style="width: 200px;">
@@ -255,8 +222,9 @@
                    style="border-collapse: collapse; line-height: 0.8; border-spacing: 0;">
                 <tr style="height: 3mm; margin: 0; padding: 0;">
                     <td
-                            style="text-align: right; font-size: 11px; padding-right: 3px; padding-top: 0; padding-bottom: 0;">
-                        {{ company_info.company_phone }}</td>
+                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
+                        {{ company_info.company_phone }}
+                    </td>
                     <td style="width: 3.5mm;background-color: #000;"><img alt="call"
                                                                           src="{% static 'images/call.svg' %}"
                                                                           style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
@@ -264,8 +232,9 @@
                 </tr>
                 <tr style="height: 3mm; margin: 0; padding: 0;">
                     <td
-                            style="text-align: right; font-size: 11px; padding-right: 3px; padding-top: 0; padding-bottom: 0;">
-                        {{ company_info.company_email }}</td>
+                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
+                        {{ company_info.company_email }}
+                    </td>
                     <td style="width: 3.5mm;background-color: #000;"><img alt="email"
                                                                           src="{% static 'images/email.svg' %}"
                                                                           style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
@@ -273,8 +242,9 @@
                 </tr>
                 <tr style="height: 3mm; margin: 0; padding: 0;">
                     <td
-                            style="text-align: right; font-size: 11px; padding-right: 3px; padding-top: 0; padding-bottom: 0;">
-                        {{ company_info.company_website }}</td>
+                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
+                        {{ company_info.company_website }}
+                    </td>
                     <td style="width: 3.5mm;background-color: #000;"><img alt="web"
                                                                           src="{% static 'images/web.svg' %}"
                                                                           style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
@@ -282,8 +252,9 @@
                 </tr>
                 <tr style="height: 3mm; margin: 0; padding: 0;">
                     <td
-                            style="text-align: right; font-size: 11px; padding-right: 3px; padding-top: 0; padding-bottom: 0;">
-                        {{ company_info.company_registration_id }}</td>
+                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
+                        {{ company_info.company_registration_id }}
+                    </td>
                     <td style="width: 3.5mm;background-color: #000;"><img alt="user"
                                                                           src="{% static 'images/user.svg' %}"
                                                                           style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
@@ -312,7 +283,8 @@
 <!-- Customer address positioned absolutely so it only appears on first page -->
 <div class="customer-address-first-page">
     <div style="font-size: 10px;">Abs: {{ company_info.company_name }} | {{ company_info.company_address }}
-        | {{ company_info.zip }} {{ company_info.city }}</div>
+        | {{ company_info.zip }} {{ company_info.city }}
+    </div>
     <br>
     <div style="font-size: 12px; margin-left: 5mm;">
         <div>{{ customer_info.to_address.name }}</div>
@@ -339,8 +311,8 @@
             <div class="page" id="master-table">
                 <!-- Add spacer div to ensure content doesn't overlap with footer -->
                 <table style="width: 100%; margin-top: 5mm;">
-                    <tr style=" border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;">
-                        <td style="padding: 1mm 2mm;font-size: 12px;">RG-2024-00007</td>
+                    <tr style=" border-top: 1px solid #6679c5;border-bottom: 1px solid #6679c5">
+                        <td style="padding: 1mm 2mm;font-size: 12px;">{{ invoice_details.invoice_number }}</td>
                     </tr>
                 </table>
 
@@ -353,22 +325,12 @@
                     </tr>
                 </table>
 
-                <div style="margin-top: 20px; border-top: 1px solid #ccc;">
+                <div style="border-top: 1px solid #6679c5">
                 </div>
 
                 <div class="customer-message" style="margin-top: 20px;">
-                    <p>Sehr geehrter Herr xy,</p>
-                    <p>Vielen Dank für das uns entgegengebrachte Vertrauen. Wir erlauben uns, die erbrachten
-                        Warendienstleistungen wie folgt in Rechnung zu stellen. Mir ist natürlich bewusst,
-                        dass
-                        aufgrund meiner Neugründung und der damit verzögerten Rechnungsstellung eine
-                        grössere
-                        Summe zusammengekommen ist. Um nicht alle Tage zu belasten, ist bei einer Zahlung
-                        bis
-                        17.04. eine Reduktion von CHF 100.- ausreichend, um die komplette Rechnung zu
-                        begleichen. Also buchhalterisch ausgedrückt: CHF 133.33 Skonto bei einer Zahlung bis
-                        zum
-                        12.04.</p>
+                    <p>Sehr geehrter {{ customer_info.name }},</p>
+                    <p>{{ invoice_details.message }}</p>
                 </div>
 
                 <table class="items">
@@ -404,8 +366,8 @@
                     <table style="width: 100%; margin-left: auto; border-collapse: collapse;">
                         <tr>
                             <td style="text-align: left; padding: 1mm 2mm;">Betrag (von Steuer befreit)</td>
-                            <td style="text-align: right; padding: 1mm 2mm;">{{ financial_details.subtotal_sum
-                                    }}</td>
+                            <td style="text-align: right; padding: 1mm 2mm;">{{ financial_details.subtotal_sum }}
+                            </td>
                         </tr>
                         <tr>
                             <td style="text-align: left; padding: 1mm 2mm;">Zahlungseingang</td>
@@ -413,8 +375,8 @@
                         </tr>
                         <tr style="border-top: 1px solid #000;">
                             <td style="text-align: left; padding: 1mm 2mm; font-weight: bold;">Restbetrag</td>
-                            <td style="text-align: right; padding: 1mm 2mm; font-weight: bold;">{{
-                                    financial_details.subtotal_sum }}</td>
+                            <td style="text-align: right; padding: 1mm 2mm; font-weight: bold;">{{ financial_details.subtotal_sum }}
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -426,15 +388,6 @@
                     <p>Freundliche Grüsse</p>
                     <p>{{ company_info.company_name }}</p>
                 </div>
-                <!-- QR Bill Section -->
-                {% if qr_bill_svg %}
-                    <div style="text-align: center">
-                        <!-- QR Code -->
-                        <div style="width: 180mm; margin: 0 auto;">
-                            {{ qr_bill_svg|safe }}
-                        </div>
-                    </div>
-                {% endif %}
             </div>
         </td>
     </tr>
@@ -449,4 +402,5 @@
     </tfoot>
 </table>
 </body>
+
 </html>
