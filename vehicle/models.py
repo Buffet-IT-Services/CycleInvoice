@@ -10,8 +10,8 @@ from sale.models import DocumentItem
 class Vehicle(ChangeLoggerAll):
     """Model representing a vehicle."""
 
-    name_internal = models.CharField(_("name"), max_length=255, unique=True)
-    name_external = models.CharField(_("type"), max_length=50)
+    name_internal = models.CharField(_("internal name"), max_length=255, unique=True)
+    name_external = models.CharField(_("external name"), max_length=50)
     km_buy = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("km buy"), null=True, blank=True)
     km_sell = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("km sell"), null=True, blank=True)
 
@@ -20,6 +20,10 @@ class Vehicle(ChangeLoggerAll):
 
         verbose_name = "Vehicle"
         verbose_name_plural = "Vehicles"
+
+    def __str__(self) -> str:
+        """Return the internal name of the vehicle."""
+        return self.name_internal
 
 
 class DocumentItemKilometers(DocumentItem):
