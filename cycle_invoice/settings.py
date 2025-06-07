@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "contact.apps.ContactConfig",
     "sale.apps.SaleConfig",
     "accounting.apps.AccountingConfig",
+    "vehicle.apps.VehicleConfig",
     "web",  # for web application
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
