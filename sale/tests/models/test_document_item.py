@@ -1,13 +1,14 @@
 """Test cases for the DocumentItem model."""
 
 from django.test import TestCase
+from contact.tests.models.test_contact import fake_contact
 
 from sale.models import DocumentItem
 
 
 def fake_document_item() -> DocumentItem:
     """Create a fake document item."""
-    return DocumentItem.objects.create(price=5.0, quantity=2, discount=0.1)
+    return DocumentItem.objects.create(price=5.0, quantity=2, discount=0.1, customer=fake_contact())
 
 
 class DocumentItemTest(TestCase):
