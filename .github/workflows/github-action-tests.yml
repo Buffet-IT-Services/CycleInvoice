@@ -33,6 +33,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Create .env file
+        run: |
+          echo "DJANGO_DB_HOST=localhost" >> .env
+          echo "DJANGO_SECRET_KEY=supersecretkey" >> .env
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "super-secret-key")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -92,7 +92,7 @@ DATABASES = {
         "NAME": "postgres",
         "USER": "cycleinvoice",
         "PASSWORD": "cycleinvoice",
-        "HOST": os.getenv("DJANGO_DB_HOST", "localhost"),
+        "HOST": os.getenv("DJANGO_DB_HOST"),
         "PORT": "5432",
         **({"OPTIONS": {"options": "-c search_path=cycle_invoice"}} if "test" not in sys.argv else {}),
     }
