@@ -99,6 +99,7 @@ class Address(ChangeLoggerAll):
     city = models.CharField(_("city"), max_length=255)
     zip_code = models.CharField(_("zip code"), max_length=12)
     country = models.CharField(_("country"), max_length=255)
+    disabled = models.BooleanField(default=False)
 
     class Meta:
         """Meta options for the Address model."""
@@ -110,6 +111,32 @@ class Address(ChangeLoggerAll):
         """Return a string representation of the address."""
         additional = f"{self.additional}, " if self.additional else ""
         return f"{additional}{self.street} {self.number}, {self.zip_code} {self.city}, {self.country}"
+
+    def save(self, *args, **kwargs) -> None:
+        """Override save method to handle address changes and references."""
+        from vehicle.models import DocumentItemKilometers
+        if self.pk:
+            # Check if this address is referenced by a DocumentItemKilometers object
+            is_referenced = (
+                    DocumentItemKilometers.objects.filter(start_address=self).exists() or
+                    DocumentItemKilometers.objects.filter(end_address=self).exists()
+            )
+            if is_referenced:
+                # Check if any fields except 'additional' have changed
+                old = type(self).objects.get(pk=self.pk)
+                main_fields = ["street", "number", "city", "zip_code", "country"]
+                changed_main = any(getattr(self, f) != getattr(old, f) for f in main_fields)
+                if changed_main:
+                    # Set old object to disabled = True and create a new object
+                    old_pk = self.pk
+                    type(self).objects.filter(pk=old_pk).update(disabled=True)
+                    self.pk = None
+                    super().save(*args, **kwargs)
+                    # Update all customers referencing the old address to the new address
+                    customers = self._meta.apps.get_model("contact", "Customer")
+                    customers.objects.filter(address_id=old_pk).update(address=self)
+                    return
+        super().save(*args, **kwargs)
 
 
 def address_block(address: Address) -> str:
