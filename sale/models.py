@@ -138,7 +138,9 @@ class DocumentItem(ChangeLoggerAll):
     price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
     quantity = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("quantity"))
     discount = models.DecimalField(verbose_name=_("discount percent"), max_digits=5, decimal_places=4, default=0)
-    invoice = models.ForeignKey(DocumentInvoice, on_delete=models.CASCADE, related_name="document_item", null=True)
+    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="document_item")
+    invoice = models.ForeignKey(DocumentInvoice, on_delete=models.CASCADE, related_name="document_item", null=True,
+                                blank=True)
 
     @property
     @abstractmethod

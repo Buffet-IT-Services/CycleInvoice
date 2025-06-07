@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "contact.apps.ContactConfig",
     "sale.apps.SaleConfig",
     "accounting.apps.AccountingConfig",
+    "vehicle.apps.VehicleConfig",
     "web",  # for web application
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
@@ -153,8 +154,5 @@ S3_STORAGE_OPTIONS = {
 }
 
 STORAGE = {
-    "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": S3_STORAGE_OPTIONS
-    },
+    "default": {"BACKEND": "storages.backends.s3.S3Storage", "OPTIONS": S3_STORAGE_OPTIONS},
 }
