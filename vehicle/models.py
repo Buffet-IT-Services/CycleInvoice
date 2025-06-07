@@ -49,7 +49,7 @@ class DocumentItemKilometers(DocumentItem):
     )
 
     class Meta:
-        """Meta options for the DocumentWork model."""
+        """Meta options for the DocumentItemKilometers model."""
 
         verbose_name = "Document Kilometer"
         verbose_name_plural = "Document Kilometers"
