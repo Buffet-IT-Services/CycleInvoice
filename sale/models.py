@@ -98,11 +98,7 @@ class WorkType(ChangeLoggerAll):
         default=get_default_sell_account,
         related_name="work_type_account",
     )
-    price_per_hour = models.DecimalField(
-        max_digits=14,
-        decimal_places=2,
-        verbose_name=_("price per hour")
-    )
+    price_per_hour = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price per hour"))
 
     class Meta:
         """Meta options for the WorkType model."""
