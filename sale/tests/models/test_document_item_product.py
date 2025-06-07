@@ -11,8 +11,7 @@ def fake_document_item_product() -> DocumentItemProduct:
     """Create a fake document item product."""
     product = fake_product()
     contact = fake_contact()
-    return DocumentItemProduct.objects.create(price=5.0, quantity=2, discount=0.1, product=product,
-                                              customer=contact)
+    return DocumentItemProduct.objects.create(price=5.0, quantity=2, discount=0.1, product=product, customer=contact)
 
 
 class DocumentItemProductTest(TestCase):

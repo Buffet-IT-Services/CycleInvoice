@@ -1,8 +1,8 @@
 """Test cases for the DocumentItem model."""
 
 from django.test import TestCase
-from contact.tests.models.test_contact import fake_contact
 
+from contact.tests.models.test_contact import fake_contact
 from sale.models import DocumentItem
 
 
