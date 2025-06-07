@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='documentitem',
             name='customer',
-            field=models.ForeignKey(default='1', on_delete=django.db.models.deletion.CASCADE, related_name='document_item', to='contact.customer'),
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='document_item', to='contact.customer'),
             preserve_default=False,
         ),
         migrations.AddField(
