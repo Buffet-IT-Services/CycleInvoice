@@ -117,10 +117,10 @@ class Address(ChangeLoggerAll):
         from vehicle.models import DocumentItemKilometers
         if self.pk:
             # Check if this address is referenced by a DocumentItemKilometers object
-            is_referenced = (
-                    DocumentItemKilometers.objects.filter(start_address=self).exists() or
-                    DocumentItemKilometers.objects.filter(end_address=self).exists()
-            )
+            from django.db.models import Q
+            is_referenced = DocumentItemKilometers.objects.filter(
+                Q(start_address=self) | Q(end_address=self)
+            ).exists()
             if is_referenced:
                 # Check if any fields except 'additional' have changed
                 old = type(self).objects.get(pk=self.pk)
