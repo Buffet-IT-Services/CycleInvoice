@@ -151,3 +151,10 @@ S3_STORAGE_OPTIONS = {
     "default_acl": None,
     "signature_version": "s3v4",
 }
+
+STORAGE = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": S3_STORAGE_OPTIONS
+    },
+}
