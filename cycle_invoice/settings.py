@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ["CYCLEINVOICE_DJANGO_SECRET_KEY"]
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY"),
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -88,7 +91,7 @@ DATABASES = {
         "NAME": "postgres",
         "USER": "cycleinvoice",
         "PASSWORD": "cycleinvoice",
-        "HOST": os.environ.get("CYCLEINVOICE_DJANGO_DB_HOST", "192.168.0.35"),
+        "HOST": os.getenv("DJANGO_DB_HOST"),
         "PORT": "5432",
         **({"OPTIONS": {"options": "-c search_path=cycle_invoice"}} if "test" not in sys.argv else {}),
     }
@@ -137,31 +140,13 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {
-            "access_key": "nmFI4p3D9tL1v4kPK3Hs",
-            "secret_key": "jX01XUg8nSrzDMm0dlLAsr1FvBT5S1m5xi7DdZ75",
-            "bucket_name": "cycleinvoice",
-            "endpoint_url": "https://minio.buffetitcloud.ch",
-            "addressing_style": "path",
-            "use_ssl": True,
-            "default_acl": None,
-            "signature_version": "s3v4",
-        },
-    },
-    "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {
-            "access_key": "nmFI4p3D9tL1v4kPK3Hs",
-            "secret_key": "jX01XUg8nSrzDMm0dlLAsr1FvBT5S1m5xi7DdZ75",
-            "bucket_name": "cycleinvoice",
-            "endpoint_url": "https://minio.buffetitcloud.ch",
-            "addressing_style": "path",
-            "use_ssl": True,
-            "default_acl": None,
-            "signature_version": "s3v4",
-        },
-    },
+S3_STORAGE_OPTIONS = {
+    "access_key": os.getenv("S3_ACCESS_KEY"),
+    "secret_key": os.getenv("S3_SECRET_KEY"),
+    "bucket_name": "cycleinvoice",
+    "endpoint_url": "https://minio.buffetitcloud.ch",
+    "addressing_style": "path",
+    "use_ssl": True,
+    "default_acl": None,
+    "signature_version": "s3v4",
 }
