@@ -153,8 +153,5 @@ S3_STORAGE_OPTIONS = {
 }
 
 STORAGE = {
-    "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": S3_STORAGE_OPTIONS
-    },
+    "default": {"BACKEND": "storages.backends.s3.S3Storage", "OPTIONS": S3_STORAGE_OPTIONS},
 }
