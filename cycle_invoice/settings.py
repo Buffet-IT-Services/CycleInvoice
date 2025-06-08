@@ -98,7 +98,6 @@ DATABASES = {
         **({"OPTIONS": {"options": "-c search_path=cycle_invoice"}} if "test" not in sys.argv else {}),
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -156,3 +155,8 @@ S3_STORAGE_OPTIONS = {
 STORAGE = {
     "default": {"BACKEND": "storages.backends.s3.S3Storage", "OPTIONS": S3_STORAGE_OPTIONS},
 }
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]

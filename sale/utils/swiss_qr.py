@@ -28,9 +28,10 @@ def generate_swiss_qr(context_data, invoice_amount):
     # Generate a reference number based on the invoice ID if not available
     invoice_id = context_data["invoice_details"]["invoice_id"]
     reference_number = context_data.get("invoice_details", {}).get("reference_number")
+    company_account_number = context_data.get("company_info", {}).get("company_bank_account")
 
     qr_bill = QRBill(
-        account="CH4431999123000889012",  # Use a valid IBAN format
+        account=company_account_number,  # Use a valid IBAN format
         creditor={
             "name": company_name,
             "line1": company_address,
@@ -44,8 +45,7 @@ def generate_swiss_qr(context_data, invoice_amount):
             "country": customer_country,
         },
         amount=formatted_amount,
-        currency="CHF",
-        reference_number=reference_number,
+        currency="CHF"
     )
 
     # Generate QR bill as SVG string
