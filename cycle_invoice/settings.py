@@ -158,7 +158,7 @@ STORAGE = {
 }
 
 LOG_DIR = BASE_DIR / "logs"
-os.makedirs(LOG_DIR, exist_ok=True)
+Path(LOG_DIR).mkdir(parents=True)
 
 LOGGING = {
     "version": 1,
