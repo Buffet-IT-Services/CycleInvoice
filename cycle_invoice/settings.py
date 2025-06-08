@@ -180,11 +180,13 @@ LOGGING = {
             "level": "ERROR",
         },
         "file": {
-            "class": "logging.FileHandler",
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": LOG_DIR / "debug.log",
             "formatter": "verbose",
             "level": "INFO",
             "mode": "w",
+            "maxBytes": 10485760,  # 10 MB
+            "backupCount": 5,  # Keep 5 backup files
         },
     },
     "root": {
