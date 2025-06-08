@@ -2,6 +2,7 @@
 
 from django.test import TestCase
 
+from contact.tests.models.test_contact import fake_contact
 from sale.models import DocumentItemWork
 from sale.tests.models.test_work_type import fake_work_type
 
@@ -9,8 +10,9 @@ from sale.tests.models.test_work_type import fake_work_type
 def fake_document_item_work() -> DocumentItemWork:
     """Create a fake document item work."""
     work_type = fake_work_type()
+    customer = fake_contact()
     return DocumentItemWork.objects.create(
-        price=5.0, quantity=2, discount=0.1, work=work_type, comment="Test Comment"
+        price=5.0, quantity=2, discount=0.1, work=work_type, comment="Test Comment", customer=customer
     )
 
 
