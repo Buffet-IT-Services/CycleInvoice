@@ -156,3 +156,39 @@ S3_STORAGE_OPTIONS = {
 STORAGE = {
     "default": {"BACKEND": "storages.backends.s3.S3Storage", "OPTIONS": S3_STORAGE_OPTIONS},
 }
+
+LOG_DIR = BASE_DIR / "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+            "level": "ERROR",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": LOG_DIR / "debug.log",
+            "formatter": "verbose",
+            "level": "INFO",
+            "mode": "w",
+        },
+    },
+    "root": {
+        "handlers": ["console", "file"],
+        "level": "INFO",
+    },
+}
