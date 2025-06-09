@@ -156,9 +156,9 @@ STORAGE = {
     "default": {"BACKEND": "storages.backends.s3.S3Storage", "OPTIONS": S3_STORAGE_OPTIONS},
 }
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / "static",
 ]
 LOG_DIR = BASE_DIR / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)

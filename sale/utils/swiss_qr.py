@@ -1,5 +1,6 @@
-from io import StringIO
 from decimal import Decimal
+from io import StringIO
+
 from qrbill import QRBill
 
 
