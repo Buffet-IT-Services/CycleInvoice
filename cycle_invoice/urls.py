@@ -24,6 +24,6 @@ from django.urls.conf import include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("sale.urls")),
+    path("sales/", include("sale.urls")),
     *debug_toolbar_urls(),
 ]

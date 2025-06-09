@@ -1,5 +1,5 @@
 from io import StringIO
-
+from decimal import Decimal
 from qrbill import QRBill
 
 
@@ -23,7 +23,7 @@ def generate_swiss_qr(context_data, invoice_amount):
     customer_country = context_data["customer_info"]["to_address"].get("country", "CH")
 
     # Format the invoice amount to 2 decimal places
-    formatted_amount = invoice_amount
+    formatted_amount =  Decimal(invoice_amount).quantize(Decimal("0.00")) if invoice_amount else 0
 
     # Generate a reference number based on the invoice ID if not available
     invoice_id = context_data["invoice_details"]["invoice_id"]
@@ -62,7 +62,7 @@ def generate_swiss_qr(context_data, invoice_amount):
 
     # Also add QR bill data to context for potential use in the template
     context_data["qr_bill_data"] = {
-        "account": "CH4431999123000889012",
+        "account":  company_account_number,
         "reference": reference_number,
         "amount": formatted_amount,
         "currency": "CHF",
