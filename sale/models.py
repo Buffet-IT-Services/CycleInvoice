@@ -5,7 +5,6 @@ from decimal import Decimal
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from recurring.models import CalendarEntry
 
 from accounting.models import Account, get_default_buy_account, get_default_sell_account
 from common.models import ChangeLoggerAll
@@ -50,7 +49,6 @@ class SubscriptionProduct(ChangeLoggerAll):
         ("monthly", "Monthly"),
         ("yearly", "Yearly"),
     ]
-
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="subscriptionproduct")
     price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
     recurrence = models.CharField(
@@ -58,6 +56,7 @@ class SubscriptionProduct(ChangeLoggerAll):
         choices=RECURRENCE_CHOICES,
         default="yearly",
     )
+    bill_days_before_end = models.PositiveIntegerField(verbose_name=_("bill x days before expiration"), default=20)
 
     class Meta:
         """Meta options for the Subscription model."""
@@ -75,7 +74,9 @@ class Subscription(ChangeLoggerAll):
 
     product = models.ForeignKey(SubscriptionProduct, on_delete=models.CASCADE, related_name="subscription")
     customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="subscription")
-    calendar_entry = models.ForeignKey(CalendarEntry, on_delete=models.CASCADE)
+    start_date = models.DateField(verbose_name=_("start date"))
+    end_billed_date = models.DateField(verbose_name=_("end billed date"), null=True, blank=True)
+    end_date = models.DateField(verbose_name=_("end date"), null=True, blank=True)
 
     class Meta:
         """Meta options for the Subscription model."""
@@ -193,6 +194,28 @@ class DocumentItemProduct(DocumentItem):
     def title_str(self) -> str:
         """Return the product name as the title."""
         return self.product.name
+
+    @property
+    def comment_str(self) -> str:
+        """Return the product description as the comment."""
+        return self.product.description if hasattr(self.product, "description") else ""
+
+class DocumentItemSubscription(DocumentItemProduct):
+    """Model representing a document product from a subscription."""
+
+    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name="document_item_subscription")
+    time_range = models.CharField(max_length=255, verbose_name=_("time range"))
+
+    class Meta:
+        """Meta options for the DocumentProduct model."""
+
+        verbose_name = "Document Product"
+        verbose_name_plural = "Document Products"
+
+    @property
+    def title_str(self) -> str:
+        """Return the product name as the title."""
+        return f"{self.product.name} ({self.time_range})"
 
     @property
     def comment_str(self) -> str:
