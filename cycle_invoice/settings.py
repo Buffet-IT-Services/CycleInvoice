@@ -14,6 +14,7 @@ import os
 import sys
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -172,6 +173,13 @@ LOGGING = {
             "style": "{",
         },
     },
+    "loggers": {
+        "django.utils.autoreload": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
@@ -191,5 +199,18 @@ LOGGING = {
     "root": {
         "handlers": ["console", "file"],
         "level": "INFO",
+    },
+}
+
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
+CELERY_TIMEZONE = 'Europe/Zurich'
+CELERY_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 300  # 5 minutes
+CELERY_BEAT_SCHEDULE = {
+    'process-subscriptions-daily': {
+        'task': 'sale.tasks.subscription_processing_to_document_items',
+        'schedule': crontab(minute='*/5'),
     },
 }

@@ -27,6 +27,14 @@ class Customer(ChangeLoggerAll):
         verbose_name = _("customer")
         verbose_name_plural = _("customers")
 
+    def __str__(self) -> str:
+        """Return a string representation of the customer."""
+        if hasattr(self, 'contact'):
+            return str(self.contact)
+        elif hasattr(self, 'organisation'):
+            return str(self.organisation)
+        return "Customer (unknown type)"
+
     @property
     def address_block(self) -> str:
         """Return the address block for the customer."""

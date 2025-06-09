@@ -76,7 +76,7 @@ class Subscription(ChangeLoggerAll):
     customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="subscription")
     start_date = models.DateField(verbose_name=_("start date"))
     end_billed_date = models.DateField(verbose_name=_("end billed date"), null=True, blank=True)
-    end_date = models.DateField(verbose_name=_("end date"), null=True, blank=True)
+    canceled_date = models.DateField(verbose_name=_("canceled date"), null=True, blank=True)
 
     class Meta:
         """Meta options for the Subscription model."""
@@ -87,6 +87,37 @@ class Subscription(ChangeLoggerAll):
     def __str__(self) -> str:
         """Return a string representation of the Subscription."""
         return f"{self.product.product.name} - {self.customer}"
+
+    @property
+    def is_canceled(self) -> bool:
+        """Check if the subscription is extending."""
+        return self.canceled_date is None
+
+    @property
+    def next_start_billed_date(self):
+        """Calculates the next billing date based on start_date and recurrence."""
+        from dateutil.relativedelta import relativedelta
+        if not self.end_billed_date:
+            return self.start_date
+        else:
+            return self.end_billed_date + relativedelta(days=+1)
+
+    @property
+    def next_end_billed_date(self):
+        """Calculates the next billing date based on end_billed_date and recurrence."""
+        from dateutil.relativedelta import relativedelta
+        if not self.end_billed_date:
+            self.end_billed_date = self.start_date - relativedelta(days=1)
+        recurrence = self.product.recurrence
+        if recurrence == "daily":
+            return self.end_billed_date + relativedelta(days=1)
+        elif recurrence == "weekly":
+            return self.end_billed_date + relativedelta(weeks=1)
+        elif recurrence == "monthly":
+            return self.end_billed_date + relativedelta(months=1)
+        elif recurrence == "yearly":
+            return self.end_billed_date + relativedelta(years=1)
+        return None
 
 
 class WorkType(ChangeLoggerAll):
