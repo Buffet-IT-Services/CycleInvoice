@@ -27,13 +27,12 @@ class Customer(ChangeLoggerAll):
         verbose_name = _("customer")
         verbose_name_plural = _("customers")
 
-    def __str__(self) -> str:
+    def __str__(self) -> str | None:
         """Return a string representation of the customer."""
         if hasattr(self, "contact"):
             return str(self.contact)
         if hasattr(self, "organisation"):
             return str(self.organisation)
-        return "Customer (unknown type)"
 
     @property
     def address_block(self) -> str:

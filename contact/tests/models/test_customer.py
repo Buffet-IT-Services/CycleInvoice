@@ -2,8 +2,10 @@
 
 from django.test import TestCase
 
+from contact.models import Customer
 from contact.tests.models.test_address import fake_address, fake_address_with_additional
 from contact.tests.models.test_contact import fake_contact
+from contact.tests.models.test_organisation import fake_organisation
 
 
 class ContactTest(TestCase):
@@ -19,3 +21,11 @@ class ContactTest(TestCase):
 
         contact.address = fake_address_with_additional()
         self.assertEqual("John Doe\nc/o Company\nMain St 1\n1234 Any town\nSwitzerland", contact.address_block)
+
+    def test__str__(self) -> None:
+        """Test the __str__ method of customer."""
+        contact = fake_contact()
+        self.assertEqual("John Doe", Customer.__str__(contact))
+
+        organization = fake_organisation()
+        self.assertEqual("Fake Org", Customer.__str__(organization))
