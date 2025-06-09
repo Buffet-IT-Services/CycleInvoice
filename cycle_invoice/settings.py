@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "storages",  # for S3 storage
     "contact.apps.ContactConfig",
-    "sale.apps.SaleConfig",
+    "sale",
     "accounting.apps.AccountingConfig",
     "vehicle.apps.VehicleConfig",
     "web",  # for web application
@@ -210,6 +210,6 @@ CELERY_TASK_TIME_LIMIT = 300  # 5 minutes
 CELERY_BEAT_SCHEDULE = {
     "process-subscriptions-daily": {
         "task": "sale.tasks.subscription_processing_to_document_items",
-        "schedule": crontab(minute="*/5"),
+        "schedule": crontab(minute="*/1"),
     },
 }
