@@ -7,3 +7,4 @@ dotenv~=0.9.9
 python-dotenv~=1.1.0
 celery>=5.5.3
 dateutils>=0.6.12
+redis>=6.2.0
