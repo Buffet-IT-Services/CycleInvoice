@@ -77,7 +77,7 @@ class Subscription(ChangeLoggerAll):
     customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="subscription")
     start_date = models.DateField(verbose_name=_("start date"))
     end_billed_date = models.DateField(verbose_name=_("end billed date"), null=True, blank=True)
-    canceled_date = models.DateField(verbose_name=_("canceled date"), null=True, blank=True)
+    cancelled_date = models.DateField(verbose_name=_("canceled date"), null=True, blank=True)
 
     class Meta:
         """Meta options for the Subscription model."""
@@ -90,9 +90,9 @@ class Subscription(ChangeLoggerAll):
         return f"{self.product.product.name} - {self.customer}"
 
     @property
-    def is_canceled(self) -> bool:
+    def is_cancelled(self) -> bool:
         """Check if the subscription is extending."""
-        return self.canceled_date is None
+        return self.cancelled_date is not None
 
     @property
     def next_start_billed_date(self) -> date:
@@ -275,3 +275,4 @@ class DocumentItemWork(DocumentItem):
     def comment_str(self) -> str:
         """Return the work type description as the comment."""
         return self.comment if self.comment else ""
+

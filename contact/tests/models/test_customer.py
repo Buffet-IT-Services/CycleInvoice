@@ -29,3 +29,5 @@ class ContactTest(TestCase):
 
         organization = fake_organisation()
         self.assertEqual("Fake Org", Customer.__str__(organization))
+
+        self.assertEqual("Customer", Customer.__str__(Customer()))
