@@ -158,7 +158,7 @@ STORAGE = {
 }
 
 LOG_DIR = BASE_DIR / "logs"
-Path(LOG_DIR).mkdir(parents=True)
+Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
 
 LOGGING = {
     "version": 1,
