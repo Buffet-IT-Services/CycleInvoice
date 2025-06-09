@@ -210,6 +210,6 @@ CELERY_TASK_TIME_LIMIT = 300  # 5 minutes
 CELERY_BEAT_SCHEDULE = {
     "process-subscriptions-daily": {
         "task": "sale.tasks.subscription_processing_to_document_items",
-        "schedule": crontab(minute="*/1"),
+        "schedule": crontab(hour=0, minute=0),
     },
 }
