@@ -1,9 +1,12 @@
 """Models for the contact app."""
+import logging
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from common.models import ChangeLoggerAll
+
+logger = logging.getLogger(__name__)
 
 
 class Customer(ChangeLoggerAll):
@@ -114,6 +117,7 @@ class Address(ChangeLoggerAll):
 
     def save(self, *args, **kwargs) -> None:
         """Override save method to handle address changes and references."""
+        logger.debug("Saving address: %s", self)
         from vehicle.models import DocumentItemKilometers
         if self.pk:
             # Check if this address is referenced by a DocumentItemKilometers object
@@ -127,6 +131,7 @@ class Address(ChangeLoggerAll):
                 main_fields = ["street", "number", "city", "zip_code", "country"]
                 changed_main = any(getattr(self, f) != getattr(old, f) for f in main_fields)
                 if changed_main:
+                    logger.info("Address '%s' is referenced by DocumentItemKilometers, creating new.", self)
                     # Set old object to disabled = True and create a new object
                     old_pk = self.pk
                     type(self).objects.filter(pk=old_pk).update(disabled=True)
