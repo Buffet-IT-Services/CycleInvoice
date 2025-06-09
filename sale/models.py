@@ -1,6 +1,7 @@
 """A module for sale models."""
 
 from abc import abstractmethod
+from datetime import date
 from decimal import Decimal
 
 from django.db import models
@@ -94,16 +95,15 @@ class Subscription(ChangeLoggerAll):
         return self.canceled_date is None
 
     @property
-    def next_start_billed_date(self):
+    def next_start_billed_date(self) -> date:
         """Calculates the next billing date based on start_date and recurrence."""
         from dateutil.relativedelta import relativedelta
         if not self.end_billed_date:
             return self.start_date
-        else:
-            return self.end_billed_date + relativedelta(days=+1)
+        return self.end_billed_date + relativedelta(days=+1)
 
     @property
-    def next_end_billed_date(self):
+    def next_end_billed_date(self) -> date:
         """Calculates the next billing date based on end_billed_date and recurrence."""
         from dateutil.relativedelta import relativedelta
         if not self.end_billed_date:
@@ -111,13 +111,13 @@ class Subscription(ChangeLoggerAll):
         recurrence = self.product.recurrence
         if recurrence == "daily":
             return self.end_billed_date + relativedelta(days=1)
-        elif recurrence == "weekly":
+        if recurrence == "weekly":
             return self.end_billed_date + relativedelta(weeks=1)
-        elif recurrence == "monthly":
+        if recurrence == "monthly":
             return self.end_billed_date + relativedelta(months=1)
-        elif recurrence == "yearly":
+        if recurrence == "yearly":
             return self.end_billed_date + relativedelta(years=1)
-        return None
+        return ValueError(f"Unknown recurrence type: {recurrence}")
 
 
 class WorkType(ChangeLoggerAll):

@@ -1,22 +1,25 @@
 """Services for handling subscriptions."""
 from django.db import transaction
 
-from sale.models import Subscription, DocumentItemSubscription
+from sale.models import DocumentItemSubscription, Subscription
 
 
 class SubscriptionExtensionError(Exception):
     """Custom exception for subscription extension errors."""
-    pass
+
 
 
 @transaction.atomic
 def subscription_extension(subscription_id: int) -> None:
-    """Extends a subscription by one billing period.
+    """
+    Extend a subscription by one billing period.
+
     :param subscription_id:
     """
     subscription = Subscription.objects.get(id=subscription_id)
     if subscription.is_canceled is False:
-        raise SubscriptionExtensionError(f"Subscription {subscription_id} is canceled and cannot be extended.")
+        error_message = f"Subscription {subscription_id} is not canceled and cannot be extended."
+        raise SubscriptionExtensionError(error_message)
 
     # calculate next start and end billed dates
     start = subscription.next_start_billed_date

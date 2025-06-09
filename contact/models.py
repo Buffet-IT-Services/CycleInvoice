@@ -29,9 +29,9 @@ class Customer(ChangeLoggerAll):
 
     def __str__(self) -> str:
         """Return a string representation of the customer."""
-        if hasattr(self, 'contact'):
+        if hasattr(self, "contact"):
             return str(self.contact)
-        elif hasattr(self, 'organisation'):
+        if hasattr(self, "organisation"):
             return str(self.organisation)
         return "Customer (unknown type)"
 

@@ -203,14 +203,14 @@ LOGGING = {
 }
 
 # Celery settings
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
-CELERY_TIMEZONE = 'Europe/Zurich'
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
+CELERY_TIMEZONE = "Europe/Zurich"
 CELERY_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 300  # 5 minutes
 CELERY_BEAT_SCHEDULE = {
-    'process-subscriptions-daily': {
-        'task': 'sale.tasks.subscription_processing_to_document_items',
-        'schedule': crontab(minute='*/5'),
+    "process-subscriptions-daily": {
+        "task": "sale.tasks.subscription_processing_to_document_items",
+        "schedule": crontab(minute="*/5"),
     },
 }
