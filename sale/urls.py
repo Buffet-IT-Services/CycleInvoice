@@ -10,5 +10,5 @@ from . import views
 
 app_name = "sale"
 urlpatterns = [
-    path("generate/invoice/pdf/", views.generate_invoice_pdf, name="index")
+    path("invoice/<int:invoice_id>/generatePDF/", views.generate_invoice_pdf, name="index")
 ]

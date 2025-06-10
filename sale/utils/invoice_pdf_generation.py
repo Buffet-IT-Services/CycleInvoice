@@ -4,15 +4,15 @@ PDF generation utilities for invoices.
 This module provides functions for generating PDF invoices with page numbers,
 QR codes, and other features required for Swiss invoicing standards.
 """
-
+import os
 from dataclasses import dataclass
 from io import BytesIO
 from typing import Any
 from urllib.parse import quote
 
+from PyPDF2 import PdfReader, PdfWriter
 from django.http import HttpRequest
 from django.template.loader import render_to_string
-from PyPDF2 import PdfReader, PdfWriter
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
@@ -20,22 +20,54 @@ from weasyprint import HTML
 from sale.utils.swiss_qr import generate_swiss_qr
 
 
-def prepare_invoice_context(context_data: dict[str, Any]) -> dict[str, Any]:
+
+
+
+def prepare_invoice_context(invoice_id: int) -> dict[str, Any]:
     """
     Prepare the context data for invoice rendering.
-
-    Args:
-        context_data (dict): The original context data
 
     Returns:
         dict: The prepared context data with QR code
 
     """
-    # Set page number flag to false for first pass
-    context_data["show_page_number"] = False
+    from sale.models import DocumentInvoice
+    invoice = DocumentInvoice.objects.get(pk=invoice_id)
+
+    context_data = {
+        "company_info": {
+            "company_name": os.getenv("COMPANY_NAME"),
+            "company_address": os.getenv("COMPANY_ADDRESS"),
+            "company_registration_id": os.getenv("COMPANY_REGISTRATION_ID"),
+            "company_email": os.getenv("COMPANY_EMAIL"),
+            "company_phone": os.getenv("COMPANY_PHONE"),
+            "company_website": os.getenv("COMPANY_WEBSITE"),
+            "zip": os.getenv("COMPANY_ZIP"),
+            "city": os.getenv("COMPANY_CITY"),
+            "country": os.getenv("COMPANY_COUNTRY"),
+            "company_bank_account": os.getenv("COMPANY_BANK_ACCOUNT"),
+        },
+        "invoice_details": {
+            "total_sum": invoice.total_sum,
+            "invoice_number": invoice.invoice_number,
+            "invoice_primary_key": invoice_id,
+            "created_date": invoice.date.strftime("%d.%m.%Y"),
+            "due_date": invoice.due_date.strftime("%d.%m.%Y"),
+            "header_text": invoice.header_text,
+            "footer_text": invoice.footer_text,
+        },
+        "customer": {
+            "name": invoice.customer.__str__(),
+            "street": f"{invoice.customer.address.street} {invoice.customer.address.number}",
+            "postal_code": invoice.customer.address.zip_code,
+            "city": invoice.customer.address.city,
+            "country": invoice.customer.address.country,
+            "address_block": invoice.customer.address_block,
+        },
+        "show_page_number": False}
 
     # Generate the QR bill and add it to the context
-    generate_swiss_qr(context_data, context_data["financial_details"]["total_sum"])
+    generate_swiss_qr(context_data, context_data["invoice_details"]["total_sum"])
 
     return context_data
 
@@ -210,24 +242,23 @@ def generate_qr_code_pdf(
 
 
 def generate_invoice_pdf_two_pass(
-        request: HttpRequest, context_data: dict[str, Any]
-) -> "PDFContent":
+        request: HttpRequest, invoice_id: int) -> "PDFContent":
     """
     Generate a PDF invoice using WeasyPrint with manual page numbering.
 
     Args:
         request: The HTTP request object
-        context_data (dict): The context data for the invoice
+        invoice_id (int): The ID of the invoice to generate
 
     Returns:
         PDFContent: Object containing PDF content and metadata
 
     """
     # Step 1: Prepare the context data
-    prepared_context = prepare_invoice_context(context_data)
+    context_data = prepare_invoice_context(invoice_id)
 
     # Step 2: Render the HTML
-    html_content = render_invoice_html(prepared_context)
+    html_content = render_invoice_html(context_data)
 
     # Step 3: Generate the base PDF and get page count
     pdf_data, total_pages = generate_base_pdf(
@@ -248,7 +279,7 @@ def generate_invoice_pdf_two_pass(
 
     # Generate and add the QR code page
     qr_pdf = generate_qr_code_pdf(
-        prepared_context["qr_bill_svg"], context_data, request
+        context_data["qr_bill_svg"], context_data, request
     )
     final_output.add_page(qr_pdf.pages[0])
 
@@ -259,5 +290,5 @@ def generate_invoice_pdf_two_pass(
 
     # Create and return the PDF content
     return create_pdf_content(
-        final_stream, context_data["invoice_details"]["invoice_id"]
+        final_stream, context_data["invoice_details"]["invoice_number"]
     )

@@ -158,6 +158,11 @@ class DocumentInvoice(ChangeLoggerAll):
         """Return a string representation of the DocumentInvoice."""
         return f"{self.invoice_number} - {self.customer}"
 
+    @property
+    def total_sum(self) -> Decimal:
+        """The sum of the totals of all DocumentItems belonging to this invoice."""
+        return sum((item.total for item in self.document_item.all()), start=Decimal(0))
+
 
 class DocumentItem(ChangeLoggerAll):
     """Model representing a document item."""
@@ -165,7 +170,7 @@ class DocumentItem(ChangeLoggerAll):
     price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
     quantity = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("quantity"))
     discount = models.DecimalField(verbose_name=_("discount percent"), max_digits=5, decimal_places=4, default=0)
-    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="document_item")
+    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="document_customer")
     invoice = models.ForeignKey(DocumentInvoice, on_delete=models.CASCADE, related_name="document_item", null=True,
                                 blank=True)
 
@@ -271,5 +276,3 @@ class DocumentItemWork(DocumentItem):
     def comment_str(self) -> str:
         """Return the work type description as the comment."""
         return self.comment if self.comment else ""
-
-

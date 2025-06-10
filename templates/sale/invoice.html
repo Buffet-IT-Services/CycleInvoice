@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
-<html>
+<html lang="de">
 
 <head>
     <meta charset="UTF-8">
@@ -218,46 +218,49 @@
             <img src="{% static 'sale/images/header.svg' %}" alt="Header">
         </div>
         <div class="flex-items-header" style="position: absolute; top: 25mm; right: 15mm;">
-            <table cellspacing="0" cellpadding="0"
-                   style="border-collapse: collapse; line-height: 0.8; border-spacing: 0;">
+            <table style="border-collapse: collapse; line-height: 0.8; border-spacing: 0;">
                 <tr style="height: 3mm; margin: 0; padding: 0;">
-                    <td
-                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
+                    <td style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0;
+                    padding-bottom: 0;">
                         {{ company_info.company_phone }}
                     </td>
-                    <td style="width: 3.5mm;background-color: #333333;"><img alt="call"
-                                                                             src="{% static 'sale/images/call.svg' %}"
-                                                                             style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
+                    <td style="width: 3.5mm;background-color: #333333;">
+                        <img alt="call"
+                             src="{% static 'sale/images/call.svg' %}"
+                             style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
                     </td>
                 </tr>
                 <tr style="height: 3mm; margin: 0; padding: 0;">
-                    <td
-                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
+                    <td style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0;
+                    padding-bottom: 0;">
                         {{ company_info.company_email }}
                     </td>
-                    <td style="width: 3.5mm;background-color: #333333;"><img alt="email"
-                                                                             src="{% static 'sale/images/email.svg' %}"
-                                                                             style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
+                    <td style="width: 3.5mm;background-color: #333333;">
+                        <img alt="email"
+                             src="{% static 'sale/images/email.svg' %}"
+                             style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
                     </td>
                 </tr>
                 <tr style="height: 3mm; margin: 0; padding: 0;">
-                    <td
-                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
+                    <td style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0;
+                    padding-bottom: 0;">
                         {{ company_info.company_website }}
                     </td>
-                    <td style="width: 3.5mm;background-color: #333333;"><img alt="web"
-                                                                             src="{% static 'sale/images/web.svg' %}"
-                                                                             style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
+                    <td style="width: 3.5mm;background-color: #333333;">
+                        <img alt="web"
+                             src="{% static 'sale/images/web.svg' %}"
+                             style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
                     </td>
                 </tr>
                 <tr style="height: 3mm; margin: 0; padding: 0;">
-                    <td
-                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
+                    <td style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0;
+                    padding-bottom: 0;">
                         {{ company_info.company_registration_id }}
                     </td>
-                    <td style="width: 3.5mm;background-color: #333333;"><img alt="user"
-                                                                             src="{% static 'sale/images/user.svg' %}"
-                                                                             style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
+                    <td style="width: 3.5mm;background-color: #333333;">
+                        <img alt="user"
+                             src="{% static 'sale/images/user.svg' %}"
+                             style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
                     </td>
                 </tr>
             </table>
@@ -268,7 +271,7 @@
 
 <div class="page-footer">
     <div style="position: absolute; right: 0; bottom: -4px;">
-        <img src="{% static 'sale/images/footer.svg' %}" style="width: 210mm;">
+        <img src="{% static 'sale/images/footer.svg' %}" style="width: 210mm;" alt="footer">
     </div>
     <div style="position: absolute; left: 5mm; top: 24px; color: #ffffff; font-size: 11px; font-weight: bold;">
         {{ company_info.company_name }}
@@ -287,10 +290,7 @@
     </div>
     <br>
     <div style="font-size: 12px; margin-left: 5mm;">
-        <div>{{ customer_info.to_address.name }}</div>
-        <div>{{ customer_info.to_address.street }}</div>
-        <div>{{ customer_info.to_address.zip }} {{ customer_info.to_address.city }}</div>
-        <div>{{ customer_info.to_address.country }}</div>
+        <div>{{ customer.address_block|linebreaksbr }}</div>
     </div>
 </div>
 
@@ -299,7 +299,7 @@
     <thead>
     <tr>
         <td>
-            <!--place holder for the fixed-position header-->
+            <!--placeholder for the fixed-position header-->
             <div class="page-header-space"></div>
         </td>
     </tr>
@@ -311,27 +311,27 @@
             <div class="page" id="master-table">
                 <!-- Add spacer div to ensure content doesn't overlap with footer -->
                 <table style="width: 100%; margin-top: 5mm;">
-                    <tr style=" border-top: 1px solid #636686;border-bottom: 1px solid #636686">
-                        <td style="padding: 1mm 2mm;font-size: 12px;font-weight: bold;">{{ invoice_details.invoice_id }}</td>
+                    <tr style=" border-top: 1px solid #636686;border-bottom: 1px solid #636686;">
+                        <td style="padding: 1mm 2mm;font-size: 12px;font-weight: bold;">
+                            {{ invoice_details.invoice_number }}
+                        </td>
                     </tr>
                 </table>
 
-                <table class="invoice-dates-table">
+                <table class="invoice-dates-table" style="width: 100%;">
                     <tr>
-                        <td style="width: 10%;padding-left:2mm;">Datum:</td>
-                        <td style="width: 20%;">{{ invoice_details.created_date }}</td>
-                        <td style="width: 20%; text-align: right;">Zahlbar bis:</td>
-                        <td style="width: 10%; text-align: right;">{{ invoice_details.delivery_date }}</td>
+                        <td style="width: 50%;padding-left:2mm;">Datum:&ensp;{{ invoice_details.created_date }}</td>
+                        <td style="width: 50%;">Zahlbar bis:&ensp;{{ invoice_details.due_date }}</td>
                     </tr>
                 </table>
 
-                <div style="border-top: 1px solid #636686">
-                </div>
+                <div style="border-top: 1px solid #636686;"></div>
 
-                <div class="customer-message" style="margin-top: 20px;">
-                    <p>Sehr geehrter {{ customer_info.name }},</p>
-                    <p>{{ invoice_details.message }}</p>
-                </div>
+                {% if invoice_details.header_text %}
+                    <div class="customer-message" style="margin-top: 20px;">
+                        <p>{{ invoice_details.header_text|linebreaksbr }}</p>
+                    </div>
+                {% endif %}
 
                 <table class="items">
                     <thead>
@@ -356,7 +356,8 @@
                             <td class="item-price">{{ item.total_net_price }}</td>
                             <td class="item-discount">
                                 {% if item.discount_in_percent %}{{ item.discount_in_percent }}{% else %}
-                                    -{% endif %}</td>
+                                    -{% endif %}
+                            </td>
                             <td class="item-total">{{ item.total_net_price }}</td>
                         </tr>
                     {% endfor %}
@@ -386,12 +387,11 @@
                 </div>
 
                 <!-- Add message after total -->
-                <div style="margin-top: 3mm">
-                    <p>Sollten Sie Fragen zu dieser Rechnung haben, zögern Sie nicht, sich bei uns zu melden.
-                    </p>
-                    <p>Freundliche Grüsse</p>
-                    <p>{{ company_info.company_name }}</p>
-                </div>
+                {% if invoice_details.header_text %}
+                    <div style="margin-top: 3mm;">
+                        <p>{{ invoice_details.footer_text|linebreaksbr }}</p>
+                    </div>
+                {% endif %}
             </div>
         </td>
     </tr>
@@ -399,7 +399,7 @@
     <tfoot>
     <tr>
         <td>
-            <!--place holder for the fixed-position footer-->
+            <!--placeholder for the fixed-position footer-->
             <div class="page-footer-space"></div>
         </td>
     </tr>
