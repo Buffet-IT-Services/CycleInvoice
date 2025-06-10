@@ -14,6 +14,7 @@ import os
 import sys
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -42,14 +43,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "storages",  # for S3 storage
-    "contact.apps.ContactConfig",
-    "sale.apps.SaleConfig",
-    "accounting.apps.AccountingConfig",
-    "vehicle.apps.VehicleConfig",
-    "web",  # for web application
+    "contact.apps.ContactConfig",  # for contact management
+    "sale.apps.SaleConfig",  # for sale management
+    "accounting.apps.AccountingConfig",  # for accounting management
+    "vehicle.apps.VehicleConfig",  # for vehicle management
+    "web.apps.WebConfig",  # for web application
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
-    "recurring",  # for recurring dates
 ]
 
 MIDDLEWARE = [
@@ -159,7 +159,6 @@ STORAGE = {
 
 LOG_DIR = BASE_DIR / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -171,6 +170,13 @@ LOGGING = {
         "simple": {
             "format": "{levelname} {message}",
             "style": "{",
+        },
+    },
+    "loggers": {
+        "django.utils.autoreload": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
         },
     },
     "handlers": {
@@ -192,5 +198,17 @@ LOGGING = {
     "root": {
         "handlers": ["console", "file"],
         "level": "INFO",
+    },
+}
+
+# Celery settings
+CELERY_BROKER_URL = "redis://:foobared@192.168.0.37:6379/0"
+CELERY_TIMEZONE = "Europe/Zurich"
+CELERY_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 300  # 5 minutes
+CELERY_BEAT_SCHEDULE = {
+    "process-subscriptions-daily": {
+        "task": "sale.tasks.subscription_processing_to_document_items",
+        "schedule": crontab(hour=0, minute=0),
     },
 }

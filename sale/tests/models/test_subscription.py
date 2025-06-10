@@ -1,23 +1,58 @@
 """Test cases for the Subscription model."""
+import datetime
 
 from django.test import TestCase
-from recurring.models import CalendarEntry
 
-from contact.models import Organisation
-from sale.models import Product, Subscription, SubscriptionProduct
+from sale.models import Subscription
+
+
+def fake_subscription() -> Subscription:
+    """Create a fake subscription."""
+    from contact.tests.models.test_contact import fake_contact
+    from sale.tests.models.test_subscription_product import fake_subscription_product
+    return Subscription.objects.create(
+        product=fake_subscription_product(),
+        customer=fake_contact(),
+        start_date=datetime.date(2000, 1, 1),
+    )
 
 
 class SubscriptionTest(TestCase):
     """Test cases for the Subscription model."""
 
-    def test_str(self) -> None:
-        """Test the __str__ of Subscription."""
-        product = Product.objects.create(name="Test Product", price=10.00)
-        subscription_product = SubscriptionProduct.objects.create(product=product, price=10.00, recurrence="monthly")
-        organisation = Organisation.objects.create(name="Test Organisation")
-        calendar_entry = CalendarEntry.objects.create(name="Test Calendar Entry")
+    def test__str__(self) -> None:
+        """Test the __str__ method."""
+        subscription = fake_subscription()
+        self.assertEqual("Test Product - John Doe", str(subscription))
 
-        subscription = Subscription.objects.create(
-            product=subscription_product, customer=organisation, calendar_entry=calendar_entry
-        )
-        self.assertEqual("Test Product - Test Organisation", str(subscription))
+    def test_property_is_cancelled(self) -> None:
+        """Test the is_cancelled property."""
+        subscription = fake_subscription()
+        self.assertFalse(subscription.is_cancelled)
+
+        subscription.cancelled_date = datetime.date(2001, 12, 31)
+        subscription.save()
+        subscription.refresh_from_db()
+        self.assertTrue(subscription.is_cancelled)
+
+    def test_property_next_start_billed_date(self) -> None:
+        """Test the next_start_billed_date property."""
+        subscription = fake_subscription()
+        self.assertEqual(datetime.date(2000, 1, 1), subscription.next_start_billed_date)
+
+        subscription.end_billed_date = datetime.date(2023, 9, 30)
+        self.assertEqual(datetime.date(2023, 10, 1), subscription.next_start_billed_date)
+
+    def test_property_next_end_billed_date(self) -> None:
+        """Test the next_end_billed_date property."""
+        subscription = fake_subscription()
+        self.assertEqual(datetime.date(2000, 1, 31), subscription.next_end_billed_date)
+
+        subscription.end_billed_date = datetime.date(2023, 9, 30)
+        self.assertEqual(datetime.date(2023, 10, 31), subscription.next_end_billed_date)
+
+        subscription.product.recurrence = "yearly"
+        self.assertEqual(datetime.date(2024, 9, 30), subscription.next_end_billed_date)
+
+        subscription.product.recurrence = "unknown"
+        self.assertRaises(ValueError, lambda: subscription.next_end_billed_date)
