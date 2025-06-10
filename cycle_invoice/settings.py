@@ -159,7 +159,7 @@ STORAGE = {
 
 LOG_DIR = BASE_DIR / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
-if not "test" in sys.argv:
+if "test" not in sys.argv:
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,
