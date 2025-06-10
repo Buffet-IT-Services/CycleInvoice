@@ -1,3 +1,9 @@
+"""
+URL configuration for the sale application.
+
+This module contains URL patterns for the sale application, including
+routes for invoice generation and other sale-related functionality.
+"""
 from django.urls import path
 
 from . import views

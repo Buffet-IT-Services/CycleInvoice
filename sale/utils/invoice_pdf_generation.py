@@ -1,9 +1,18 @@
+"""
+PDF generation utilities for invoices.
+
+This module provides functions for generating PDF invoices with page numbers,
+QR codes, and other features required for Swiss invoicing standards.
+"""
+
 from dataclasses import dataclass
 from io import BytesIO
+from typing import Any
 from urllib.parse import quote
 
-from django.template.loader import render_to_string
 from PyPDF2 import PdfReader, PdfWriter
+from django.http import HttpRequest
+from django.template.loader import render_to_string
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
@@ -11,7 +20,7 @@ from weasyprint import HTML
 from sale.utils.swiss_qr import generate_swiss_qr
 
 
-def prepare_invoice_context(context_data):
+def prepare_invoice_context(context_data: dict[str, Any]) -> dict[str, Any]:
     """
     Prepare the context data for invoice rendering.
 
@@ -31,7 +40,9 @@ def prepare_invoice_context(context_data):
     return context_data
 
 
-def render_invoice_html(context_data, template_name="sales/invoice.html"):
+def render_invoice_html(
+        context_data: dict[str, Any], template_name: str = "sales/invoice.html"
+) -> str:
     """
     Render the invoice HTML template with the given context.
 
@@ -46,7 +57,9 @@ def render_invoice_html(context_data, template_name="sales/invoice.html"):
     return render_to_string(template_name, context_data)
 
 
-def generate_base_pdf(html_content, base_url=None):
+def generate_base_pdf(
+        html_content: str, base_url: str | None = None
+) -> tuple[bytes, int]:
     """
     Generate a PDF from HTML content using WeasyPrint.
 
@@ -65,7 +78,7 @@ def generate_base_pdf(html_content, base_url=None):
     return pdf_file, total_pages
 
 
-def create_page_number_overlay(page_num, total_pages):
+def create_page_number_overlay(page_num: int, total_pages: int) -> BytesIO:
     """
     Create a PDF overlay with page numbers.
 
@@ -95,7 +108,7 @@ def create_page_number_overlay(page_num, total_pages):
     return packet
 
 
-def add_page_numbers_to_pdf(pdf_data, total_pages):
+def add_page_numbers_to_pdf(pdf_data: bytes, total_pages: int) -> BytesIO:
     """
     Add page numbers to each page of a PDF.
 
@@ -137,14 +150,14 @@ def add_page_numbers_to_pdf(pdf_data, total_pages):
 
 @dataclass
 class PDFContent:
-    """Class for storing PDF content and metadata"""
+    """Class for storing PDF content and metadata."""
 
     content: bytes
     filename: str
     mime_type: str = "application/pdf"
 
 
-def create_pdf_content(pdf_stream, invoice_id):
+def create_pdf_content(pdf_stream: BytesIO, invoice_id: str) -> PDFContent:
     """
     Create a PDFContent object with the PDF content.
 
@@ -165,7 +178,9 @@ def create_pdf_content(pdf_stream, invoice_id):
     return PDFContent(content=content, filename=filename)
 
 
-def generate_qr_code_pdf(svg_content, context_data, request):
+def generate_qr_code_pdf(
+        svg_content: str, context_data: dict[str, Any], request: HttpRequest
+) -> PdfReader:
     """
     Generate a PDF containing only the QR code.
 
@@ -180,17 +195,23 @@ def generate_qr_code_pdf(svg_content, context_data, request):
     """
     # Create HTML for the QR code page
     svg_content = quote(svg_content)
-    qr_html = render_to_string("sales/qr_code.html", {**context_data, "svg_content": svg_content})
+    qr_html = render_to_string(
+        "sales/qr_code.html", {**context_data, "svg_content": svg_content}
+    )
 
     # Generate PDF from the HTML string directly using WeasyPrint
-    qr_document = HTML(string=qr_html, base_url=request.build_absolute_uri("/"), encoding="utf-8").render()
+    qr_document = HTML(
+        string=qr_html, base_url=request.build_absolute_uri("/"), encoding="utf-8"
+    ).render()
     qr_pdf_bytes = qr_document.write_pdf()
 
     # Create a PDF reader for the QR page
     return PdfReader(BytesIO(qr_pdf_bytes))
 
 
-def generate_invoice_pdf_two_pass(request, context_data):
+def generate_invoice_pdf_two_pass(
+        request: HttpRequest, context_data: dict[str, Any]
+) -> "PDFContent":
     """
     Generate a PDF invoice using WeasyPrint with manual page numbering.
 
@@ -212,7 +233,7 @@ def generate_invoice_pdf_two_pass(request, context_data):
     pdf_data, total_pages = generate_base_pdf(
         html_content, request.build_absolute_uri("/")
     )
-    print(f"Total pages detected: {total_pages}")
+    # Total pages detected: {total_pages}
 
     # Step 4: Add page numbers to the PDF
     pdf_with_page_numbers = add_page_numbers_to_pdf(pdf_data, total_pages)
@@ -226,7 +247,9 @@ def generate_invoice_pdf_two_pass(request, context_data):
         final_output.add_page(page)
 
     # Generate and add the QR code page
-    qr_pdf = generate_qr_code_pdf(prepared_context["qr_bill_svg"], context_data, request)
+    qr_pdf = generate_qr_code_pdf(
+        prepared_context["qr_bill_svg"], context_data, request
+    )
     final_output.add_page(qr_pdf.pages[0])
 
     # Write the final PDF to a BytesIO stream

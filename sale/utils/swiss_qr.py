@@ -1,10 +1,27 @@
+"""
+Swiss QR bill generation utilities.
+
+This module provides functionality for generating Swiss QR bills
+compliant with the Swiss payment standards.
+"""
 from decimal import Decimal
 from io import StringIO
+from typing import Any
 
 from qrbill import QRBill
 
 
-def generate_swiss_qr(context_data, invoice_amount):
+def generate_swiss_qr(context_data: dict[str, Any], invoice_amount: Decimal | float | str) -> dict[str, Any]:
+    """
+    Generate a Swiss QR bill and add it to the context data.
+
+    Args:
+        context_data: Dictionary containing invoice and company information
+        invoice_amount: The total amount of the invoice
+    Returns:
+        Updated context data with QR bill information
+
+    """
     # Format the creditor address properly
     company_name = context_data["company_info"]["company_name"]
     company_address = context_data["company_info"]["company_address"]
@@ -24,7 +41,7 @@ def generate_swiss_qr(context_data, invoice_amount):
     customer_country = context_data["customer_info"]["to_address"].get("country", "CH")
 
     # Format the invoice amount to 2 decimal places
-    formatted_amount =  Decimal(invoice_amount).quantize(Decimal("0.00")) if invoice_amount else 0
+    formatted_amount = Decimal(invoice_amount).quantize(Decimal("0.00")) if invoice_amount else 0
 
     # Generate a reference number based on the invoice ID if not available
     invoice_id = context_data["invoice_details"]["invoice_id"]
@@ -63,7 +80,7 @@ def generate_swiss_qr(context_data, invoice_amount):
 
     # Also add QR bill data to context for potential use in the template
     context_data["qr_bill_data"] = {
-        "account":  company_account_number,
+        "account": company_account_number,
         "reference": reference_number,
         "amount": formatted_amount,
         "currency": "CHF",
