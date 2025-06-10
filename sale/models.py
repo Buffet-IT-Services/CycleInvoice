@@ -45,8 +45,6 @@ class SubscriptionProduct(ChangeLoggerAll):
     """Model representing a subscription."""
 
     RECURRENCE_CHOICES = [
-        ("daily", "Daily"),
-        ("weekly", "Weekly"),
         ("monthly", "Monthly"),
         ("yearly", "Yearly"),
     ]
@@ -96,7 +94,7 @@ class Subscription(ChangeLoggerAll):
 
     @property
     def next_start_billed_date(self) -> date:
-        """Calculates the next billing date based on start_date and recurrence."""
+        """Calculates the next billing date based on start_date and recurrence. Always returns a date object."""
         from dateutil.relativedelta import relativedelta
         if not self.end_billed_date:
             return self.start_date
@@ -109,15 +107,12 @@ class Subscription(ChangeLoggerAll):
         if not self.end_billed_date:
             self.end_billed_date = self.start_date - relativedelta(days=1)
         recurrence = self.product.recurrence
-        if recurrence == "daily":
-            return self.end_billed_date + relativedelta(days=1)
-        if recurrence == "weekly":
-            return self.end_billed_date + relativedelta(weeks=1)
         if recurrence == "monthly":
-            return self.end_billed_date + relativedelta(months=1)
+            return self.end_billed_date + relativedelta(days=1) + relativedelta(months=1) - relativedelta(days=1)
         if recurrence == "yearly":
             return self.end_billed_date + relativedelta(years=1)
-        return ValueError(f"Unknown recurrence type: {recurrence}")
+        error_message = f"Recurrence type '{recurrence}' is unknown."
+        raise ValueError(error_message)
 
 
 class WorkType(ChangeLoggerAll):
@@ -231,6 +226,7 @@ class DocumentItemProduct(DocumentItem):
         """Return the product description as the comment."""
         return self.product.description if hasattr(self.product, "description") else ""
 
+
 class DocumentItemSubscription(DocumentItemProduct):
     """Model representing a document product from a subscription."""
 
@@ -275,4 +271,5 @@ class DocumentItemWork(DocumentItem):
     def comment_str(self) -> str:
         """Return the work type description as the comment."""
         return self.comment if self.comment else ""
+
 

@@ -1,5 +1,5 @@
 """Test cases for the Subscription model."""
-from datetime import datetime
+import datetime
 
 from django.test import TestCase
 
@@ -13,7 +13,7 @@ def fake_subscription() -> Subscription:
     return Subscription.objects.create(
         product=fake_subscription_product(),
         customer=fake_contact(),
-        start_date="2000-01-01",
+        start_date=datetime.date(2000, 1, 1),
     )
 
 
@@ -30,7 +30,7 @@ class SubscriptionTest(TestCase):
         subscription = fake_subscription()
         self.assertFalse(subscription.is_cancelled)
 
-        subscription.cancelled_date = datetime.strptime("2023-09-30", "%Y-%m-%d").date()
+        subscription.cancelled_date = datetime.date(2001, 12, 31)
         subscription.save()
         subscription.refresh_from_db()
         self.assertTrue(subscription.is_cancelled)
@@ -38,7 +38,21 @@ class SubscriptionTest(TestCase):
     def test_property_next_start_billed_date(self) -> None:
         """Test the next_start_billed_date property."""
         subscription = fake_subscription()
-        self.assertEqual(datetime.strptime("2000-01-01", "%Y-%m-%d").date(), subscription.next_start_billed_date)
+        self.assertEqual(datetime.date(2000, 1, 1), subscription.next_start_billed_date)
 
-        subscription.end_billed_date = datetime.strptime("2023-09-30", "%Y-%m-%d").date()
-        self.assertEqual(datetime.strptime("2023-10-01", "%Y-%m-%d").date(), subscription.next_start_billed_date)
+        subscription.end_billed_date = datetime.date(2023, 9, 30)
+        self.assertEqual(datetime.date(2023, 10, 1), subscription.next_start_billed_date)
+
+    def test_property_next_end_billed_date(self) -> None:
+        """Test the next_end_billed_date property."""
+        subscription = fake_subscription()
+        self.assertEqual(datetime.date(2000, 1, 31), subscription.next_end_billed_date)
+
+        subscription.end_billed_date = datetime.date(2023, 9, 30)
+        self.assertEqual(datetime.date(2023, 10, 31), subscription.next_end_billed_date)
+
+        subscription.product.recurrence = "yearly"
+        self.assertEqual(datetime.date(2024, 9, 30), subscription.next_end_billed_date)
+
+        subscription.product.recurrence = "unknown"
+        self.assertRaises(ValueError, lambda: subscription.next_end_billed_date)
