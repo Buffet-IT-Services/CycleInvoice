@@ -43,11 +43,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "storages",  # for S3 storage
-    "contact.apps.ContactConfig",
-    "sale",
-    "accounting.apps.AccountingConfig",
-    "vehicle.apps.VehicleConfig",
-    "web",  # for web application
+    "contact.apps.ContactConfig",  # for contact management
+    "sale.apps.ContactConfig",  # for sale management
+    "accounting.apps.AccountingConfig",  # for accounting management
+    "vehicle.apps.VehicleConfig",  # for vehicle management
+    "web.apps.ContactConfig",  # for web application
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
 ]
