@@ -9,3 +9,6 @@ PyPDF2==3.0.1
 django-storages[s3]>=1.14.0
 dotenv~=0.9.9
 python-dotenv~=1.1.0
+celery>=5.5.3
+dateutils>=0.6.12
+redis>=6.2.0

@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Django + Celery" type="CompoundRunConfigurationType">
+    <toRun name="CycleInvoice" type="Python.DjangoServer" />
+    <toRun name="Celery Beat" type="PythonConfigurationType" />
+    <toRun name="Celery Worker" type="PythonConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>
