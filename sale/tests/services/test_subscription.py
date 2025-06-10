@@ -11,7 +11,7 @@ from sale.tests.models.test_subscription_product import fake_subscription_produc
 class SubscriptionTest(TestCase):
     """Test cases for the Subscription services."""
 
-    def test_subscription_extension(self) -> None:
+    def test_subscription_extension_valid(self) -> None:
         """Test the subscription extension functionality."""
         from sale.models import Subscription
         from sale.services.subscription import SubscriptionExtensionError, subscription_extension
@@ -23,20 +23,34 @@ class SubscriptionTest(TestCase):
             start_date=datetime.date(2000, 1, 1),
         )
 
-        subscription.cancelled_date = None
         try:
             subscription_extension(subscription.id)
             subscription.refresh_from_db()
             self.assertEqual(datetime.date(2000, 1, 31), subscription.end_billed_date)
             from sale.models import DocumentItemSubscription
             subscription_item = DocumentItemSubscription.objects.get(subscription=subscription)
+            self.assertEqual(subscription, subscription_item.subscription)
             self.assertEqual("01.01.2000 - 31.01.2000", subscription_item.time_range)
+            self.assertEqual(subscription.product.product, subscription_item.product)
+            self.assertEqual(subscription.product.price, subscription_item.price)
+            self.assertEqual(1, subscription_item.quantity)
+            self.assertEqual(0, subscription_item.discount)
+            self.assertEqual(subscription.customer, subscription_item.customer)
         except SubscriptionExtensionError:
             self.fail("SubscriptionExtensionError raised unexpectedly when subscription is not cancelled")
 
-        # Cancel the subscription
-        subscription.cancelled_date = datetime.date(2000, 1, 1)
-        subscription.save()
+    def test_subscription_extension_cancelled(self) -> None:
+        """Test the subscription extension functionality with a cancelled subscription."""
+        from sale.models import Subscription
+        from sale.services.subscription import SubscriptionExtensionError, subscription_extension
+
+        subscription = Subscription.objects.create(
+            product=fake_subscription_product(),
+            customer=fake_contact(),
+            start_date=datetime.date(2000, 1, 1),
+            cancelled_date=datetime.date(2000, 1, 15),
+        )
+
         try:
             subscription_extension(subscription.id)
             self.fail("SubscriptionExtensionError doesn't raise when subscription is cancelled")
