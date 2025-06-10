@@ -20,12 +20,12 @@ def subscription_processing_to_document_items() -> None:
     from sale.services.subscription import subscription_extension
 
     today = datetime.datetime.now(tz=datetime.UTC).date()
-    subs = Subscription.objects.filter(canceled_date__isnull=True)
+    subs = Subscription.objects.filter(cancelled_date__isnull=True)
     for sub in subs:
-        next_end = sub.next_end_billed_date
+        next_end = sub.end_billed_date
         bill_days = sub.product.bill_days_before_end
         if next_end and (next_end - today).days <= bill_days:
-            log_message = f"Processing subscription {sub.id} with next_end_billed_date {next_end}"
+            log_message = f"Processing subscription {sub.id} with end_billed_date {next_end}"
             logger.info(log_message)
             subscription_extension(sub.id)
     logger.info("Finished subscription processing task.")
