@@ -22,7 +22,6 @@ def generate_swiss_qr(context_data: dict[str, Any], invoice_amount: Decimal | fl
         Updated context data with QR bill information
 
     """
-
     # Format the invoice amount to 2 decimal places
     formatted_amount = Decimal(invoice_amount).quantize(Decimal("0.00")) if invoice_amount else 0
 
@@ -49,10 +48,6 @@ def generate_swiss_qr(context_data: dict[str, Any], invoice_amount: Decimal | fl
     qr_bill.as_svg(svg_buffer)
     svg_content = svg_buffer.getvalue()
 
-    # Modify the SVG to set width from 210mm to 180mm
-    # svg_content = svg_content.replace('width="210mm"', 'width="180mm"')
-    # svg_content = svg_content.replace('height="106mm"', 'height="90mm"')
-
     # Add the SVG content to the context data
     context_data["qr_bill_svg"] = svg_content
 
@@ -62,7 +57,11 @@ def generate_swiss_qr(context_data: dict[str, Any], invoice_amount: Decimal | fl
 def modulo10_recursive(number: str) -> str:
     """
     Calculate the check digit using the recursive Modulo 10 algorithm (Swiss QR standard, Annex B).
+
+    Args:
+        number: A string of digits (up to 26 characters) for which the check digit is calculated.
     Returns the check digit as a string.
+
     """
     table = [0, 9, 4, 6, 8, 2, 7, 1, 3, 5]
     carry = 0
@@ -74,10 +73,10 @@ def modulo10_recursive(number: str) -> str:
 
 def generate_qr_reference(base_number: str) -> str:
     """
-    Generate a QR reference number according to the Swiss QR standard:
+    Generate a QR reference number according to the Swiss QR standard.
+
     - 26 numeric characters (padded with leading zeros)
     - Check digit using recursive Modulo 10 (Annex B)
-    - Must not consist of only zeros
     """
     base = str(base_number).zfill(26)
     check_digit = modulo10_recursive(base)

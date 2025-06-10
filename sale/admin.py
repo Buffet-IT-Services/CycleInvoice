@@ -3,8 +3,15 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
-from sale.models import DocumentItemSubscription, Product, Subscription, SubscriptionProduct, DocumentInvoice, \
-    DocumentItemWork, WorkType
+from sale.models import (
+    DocumentInvoice,
+    DocumentItemSubscription,
+    DocumentItemWork,
+    Product,
+    Subscription,
+    SubscriptionProduct,
+    WorkType,
+)
 
 # Register your models here.
 admin.site.register(Product, SimpleHistoryAdmin)
