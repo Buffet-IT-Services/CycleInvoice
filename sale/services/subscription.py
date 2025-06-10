@@ -17,7 +17,7 @@ def subscription_extension(subscription_id: int) -> None:
     :param subscription_id:
     """
     subscription = Subscription.objects.get(id=subscription_id)
-    if subscription.is_canceled is False:
+    if subscription.is_cancelled is False:
         error_message = f"Subscription {subscription_id} is not canceled and cannot be extended."
         raise SubscriptionExtensionError(error_message)
 
