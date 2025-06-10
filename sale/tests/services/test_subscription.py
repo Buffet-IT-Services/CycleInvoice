@@ -28,6 +28,9 @@ class SubscriptionTest(TestCase):
             subscription_extension(subscription.id)
             subscription.refresh_from_db()
             self.assertEqual(datetime.date(2000, 1, 31), subscription.end_billed_date)
+            from sale.models import DocumentItemSubscription
+            subscription_item = DocumentItemSubscription.objects.get(subscription=subscription)
+            self.assertEqual("01.01.2000 - 31.01.2000", subscription_item.time_range)
         except SubscriptionExtensionError:
             self.fail("SubscriptionExtensionError raised unexpectedly when subscription is not cancelled")
 
