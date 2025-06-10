@@ -26,3 +26,20 @@ class DocumentInvoiceTest(TestCase):
     def test_str(self) -> None:
         """Test the string representation of the DocumentInvoice model."""
         self.assertEqual("INV-12345 - John Doe", str(fake_document_invoice()))
+
+    def test_property_total_sum(self) -> None:
+        """Test the total_sum property of the DocumentInvoice model."""
+        invoice = fake_document_invoice()
+
+        from sale.tests.models.test_document_item_work import fake_document_item_work
+        product = fake_document_item_work()
+        product.invoice = invoice
+        product.save()
+
+        from sale.tests.models.test_document_item_product import fake_document_item_product
+        product = fake_document_item_product()
+        product.invoice = invoice
+        product.save()
+
+        self.assertEqual(18.0, invoice.total_sum)
+
