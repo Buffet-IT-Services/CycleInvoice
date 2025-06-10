@@ -41,7 +41,7 @@ def prepare_invoice_context(context_data: dict[str, Any]) -> dict[str, Any]:
 
 
 def render_invoice_html(
-        context_data: dict[str, Any], template_name: str = "sales/invoice.html"
+        context_data: dict[str, Any], template_name: str = "sale/invoice.html"
 ) -> str:
     """
     Render the invoice HTML template with the given context.
@@ -196,7 +196,7 @@ def generate_qr_code_pdf(
     # Create HTML for the QR code page
     svg_content = quote(svg_content)
     qr_html = render_to_string(
-        "sales/qr_code.html", {**context_data, "svg_content": svg_content}
+        "sale/qr_code.html", {**context_data, "svg_content": svg_content}
     )
 
     # Generate PDF from the HTML string directly using WeasyPrint
