@@ -27,11 +27,6 @@ def generate_invoice_pdf(request: HttpRequest, invoice_id: int) -> HttpResponse:
     file_path = f"invoice_{invoice_id}.pdf"
     default_storage.save(file_path, ContentFile(pdf_content))
 
-
-
-    print(default_storage.url(file_path))
-    print(default_storage.generate_filename(file_path))
-
     response = HttpResponse(content_type="application/pdf")
 
     # To display PDF in the browser instead of downloading it, use 'inline' instead of 'attachment'

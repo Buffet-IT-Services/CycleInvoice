@@ -3,13 +3,13 @@ import hashlib
 
 from django.test import TestCase
 
-from sale.utils.swiss_qr import modulo10_recursive, generate_qr_reference
+from sale.utils.swiss_qr import generate_qr_reference, modulo10_recursive
 
 
 class SwissQRTest(TestCase):
     """Test cases for the Swiss QR utils."""
 
-    def test_modulo10_recursive_basic(self):
+    def test_modulo10_recursive_basic(self) -> None:
         """Test the modulo10_recursive function with standard examples from the Swiss QR Standard Annex B and others."""
         self.assertEqual(modulo10_recursive("21000000000313947143000901"), "7")
         self.assertEqual(modulo10_recursive("00000000000000000000000000"), "0")
@@ -17,7 +17,7 @@ class SwissQRTest(TestCase):
         self.assertEqual(modulo10_recursive("21000000000313947143000901"), "7")
         self.assertEqual(modulo10_recursive("00000000000000000000012345"), "7")
 
-    def test_generate_qr_reference_length_and_check(self):
+    def test_generate_qr_reference_length_and_check(self) -> None:
         """Test that generate_qr_reference returns a reference of length 27 and that the check digit is correct."""
         for base in ["1", "123", "99999999999999999999999999", "12345"]:
             ref = generate_qr_reference(base)
@@ -25,10 +25,8 @@ class SwissQRTest(TestCase):
         self.assertTrue(ref.__contains__(base))
         self.assertEqual(ref[-1], modulo10_recursive(ref[:-1]))
 
-    def test_generate_swiss_qr(self):
-        """
-        Test the generate_swiss_qr function to ensure it adds a valid SVG QR bill to the context data.
-        """
+    def test_generate_swiss_qr(self) -> None:
+        """Test the generate_swiss_qr function to ensure it adds a valid SVG QR bill to the context data."""
         from sale.utils.swiss_qr import generate_swiss_qr
         context_data = {
             "company_info": {
