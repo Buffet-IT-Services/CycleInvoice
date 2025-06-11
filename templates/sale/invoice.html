@@ -44,6 +44,7 @@
         }
 
         table.items {
+            width: 100%;
             margin-top: 5mm;
             border-collapse: collapse;
         }
@@ -51,7 +52,6 @@
         table.items th {
             padding: 3px;
             font-weight: 800;
-            text-align: center;
             border-bottom: 1px solid #636686;
             color: #636686;
         }
@@ -339,9 +339,9 @@
                         <th class="item-pos">Pos.</th>
                         <th class="item-description">Beschreibung</th>
                         <th class="item-quantity">Menge</th>
-                        <th class="item-price">Einzelpreis</th>
+                        <th class="item-price">EP (CHF)</th>
                         <th class="item-discount">Rabatt</th>
-                        <th class="item-total">Preis in CHF</th>
+                        <th class="item-total">Preis (CHF)</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -371,17 +371,19 @@
                         <tr>
                             <td style="text-align: left; padding: 1mm 2mm;">Betrag (von Steuer befreit)</td>
                             <td style="text-align: right; padding: 1mm 2mm;">
-                                {{ financial_details.subtotal_sum }}
+                                {{ invoice_details.total_sum }}
                             </td>
                         </tr>
+                        <!--
                         <tr>
                             <td style="text-align: left; padding: 1mm 2mm;">Zahlungseingang</td>
                             <td style="text-align: right; padding: 1mm 2mm;">0,00</td>
                         </tr>
+                        -->
                         <tr style="border-top: 1px solid #000;">
                             <td style="text-align: left; padding: 1mm 2mm; font-weight: bold;">Restbetrag</td>
                             <td style="text-align: right; padding: 1mm 2mm; font-weight: bold;">
-                                {{ financial_details.subtotal_sum }}
+                                {{ invoice_details.total_sum }}
                             </td>
                         </tr>
                     </table>
