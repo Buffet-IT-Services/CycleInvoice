@@ -153,7 +153,7 @@
       <option name="ignoredPackages">
         <value>
           <list size="1">
-            <item index="0" class="java.lang.String" itemvalue="recurring" />
+            <item index="0" class="java.lang.String" itemvalue="dateutil" />
           </list>
         </value>
       </option>

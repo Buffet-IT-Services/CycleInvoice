@@ -30,13 +30,13 @@ class DocumentInvoiceTest(TestCase):
     def test_total_sum(self) -> None:
         """Test the total sum of the DocumentInvoice model."""
         invoice = fake_document_invoice()
-        from sale.tests.models.test_document_item import fake_document_item
-        item = fake_document_item()
+        from sale.tests.models.test_document_item import fake_document_item_subscription
+        item = fake_document_item_subscription()
         item.invoice = invoice
         item.save()
 
-        from sale.tests.models.test_document_item import fake_document_item_vehicle
-        item = fake_document_item_vehicle()
+        from sale.tests.models.test_document_item import fake_document_item_product
+        item = fake_document_item_product()
         item.invoice = invoice
         item.save()
-        self.assertEqual(29, invoice.total_sum)
+        self.assertEqual(19, invoice.total_sum)
