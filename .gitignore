@@ -4,3 +4,5 @@
 /logs/
 /.env
 /celerybeat-schedule
+/celerybeat-schedule-shm
+/celerybeat-schedule-wal
