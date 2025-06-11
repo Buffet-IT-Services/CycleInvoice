@@ -79,7 +79,7 @@ def prepare_invoice_context(invoice_id: int) -> dict[str, Any]:
     }
 
     # Generate the QR bill and add it to the context
-    generate_swiss_qr(context_data, context_data["invoice_details"]["total_sum"])
+    generate_swiss_qr(context_data)
 
     return context_data
 

@@ -11,19 +11,18 @@ from typing import Any
 from qrbill import QRBill
 
 
-def generate_swiss_qr(context_data: dict[str, Any], invoice_amount: Decimal | float | str) -> dict[str, Any]:
+def generate_swiss_qr(context_data: dict[str, Any]) -> dict[str, Any]:
     """
     Generate a Swiss QR bill and add it to the context data.
 
     Args:
         context_data: Dictionary containing invoice and company information
-        invoice_amount: The total amount of the invoice
     Returns:
         Updated context data with QR bill information
 
     """
     # Format the invoice amount to 2 decimal places
-    formatted_amount = Decimal(invoice_amount).quantize(Decimal("0.00")) if invoice_amount else 0
+    formatted_amount = Decimal(context_data["invoice_details"]["total_sum"]).quantize(Decimal("0.00"))
 
     qr_bill = QRBill(
         account=context_data["company_info"]["company_bank_account"],
