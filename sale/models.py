@@ -218,8 +218,6 @@ class DocumentItem(ChangeLoggerAll):
                 raise ValidationError({"work_type": "Work type must be selected."})
             if not self.comment_title:
                 raise ValidationError({"comment_title": "Comment title must be set for work type."})
-            if not self.comment_description:
-                raise ValidationError({"comment_description": "Comment description must be set for work type."})
             if self.product or self.subscription or self.vehicle:
                 raise ValidationError("Only the work type field may be filled.")
         elif self.item_type == "expense_vehicle":

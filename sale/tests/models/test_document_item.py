@@ -148,9 +148,10 @@ class DocumentItemTest(TestCase):
         document_item.comment_title = "Test"
 
         document_item.comment_description = None
-        with self.assertRaises(ValidationError):
+        try:
             document_item.clean()
-        document_item.comment_description = "Test"
+        except ValidationError:
+            self.fail("clean() raised ValidationError unexpectedly when comment_description is None")
 
         from vehicle.tests.models.test_vehicle import fake_vehicle
         document_item.vehicle = fake_vehicle()
@@ -298,3 +299,4 @@ class DocumentItemTest(TestCase):
         with self.assertRaises(ValueError) as context:
             _ = document_item.description
         self.assertIn("Invalid item type: invalid_type", str(context.exception))
+
