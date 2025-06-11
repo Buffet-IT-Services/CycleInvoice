@@ -10,9 +10,9 @@ from io import BytesIO
 from typing import Any
 from urllib.parse import quote
 
+from PyPDF2 import PdfReader, PdfWriter
 from django.http import HttpRequest
 from django.template.loader import render_to_string
-from PyPDF2 import PdfReader, PdfWriter
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
@@ -58,7 +58,7 @@ def prepare_invoice_context(invoice_id: int) -> dict[str, Any]:
             "company_bank_account": os.getenv("COMPANY_BANK_ACCOUNT"),
         },
         "invoice_details": {
-            "total_sum": invoice.total_sum,
+            "total_sum": invoice.total_sum.__str__(),
             "invoice_number": invoice.invoice_number,
             "invoice_primary_key": invoice_id,
             "created_date": invoice.date.strftime("%d.%m.%Y"),
@@ -84,9 +84,7 @@ def prepare_invoice_context(invoice_id: int) -> dict[str, Any]:
     return context_data
 
 
-def render_invoice_html(
-        context_data: dict[str, Any], template_name: str = "sale/invoice.html"
-) -> str:
+def render_invoice_html(context_data: dict[str, Any], template_name: str = "sale/invoice.html") -> str:
     """
     Render the invoice HTML template with the given context.
 
@@ -101,9 +99,7 @@ def render_invoice_html(
     return render_to_string(template_name, context_data)
 
 
-def generate_base_pdf(
-        html_content: str, base_url: str | None = None
-) -> tuple[bytes, int]:
+def generate_base_pdf(html_content: str, base_url: str | None = None) -> tuple[bytes, int]:
     """
     Generate a PDF from HTML content using WeasyPrint.
 
@@ -222,9 +218,7 @@ def create_pdf_content(pdf_stream: BytesIO, invoice_id: str) -> PDFContent:
     return PDFContent(content=content, filename=filename)
 
 
-def generate_qr_code_pdf(
-        svg_content: str, context_data: dict[str, Any], request: HttpRequest
-) -> PdfReader:
+def generate_qr_code_pdf(svg_content: str, context_data: dict[str, Any], request: HttpRequest) -> PdfReader:
     """
     Generate a PDF containing only the QR code.
 
@@ -244,17 +238,14 @@ def generate_qr_code_pdf(
     )
 
     # Generate PDF from the HTML string directly using WeasyPrint
-    qr_document = HTML(
-        string=qr_html, base_url=request.build_absolute_uri("/"), encoding="utf-8"
-    ).render()
+    qr_document = HTML(string=qr_html, base_url=request.build_absolute_uri("/"), encoding="utf-8").render()
     qr_pdf_bytes = qr_document.write_pdf()
 
     # Create a PDF reader for the QR page
     return PdfReader(BytesIO(qr_pdf_bytes))
 
 
-def generate_invoice_pdf_two_pass(
-        request: HttpRequest, invoice_id: int) -> "PDFContent":
+def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> "PDFContent":
     """
     Generate a PDF invoice using WeasyPrint with manual page numbering.
 
