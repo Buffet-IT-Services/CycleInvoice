@@ -141,19 +141,24 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-S3_STORAGE_OPTIONS = {
-    "access_key": os.getenv("S3_ACCESS_KEY"),
-    "secret_key": os.getenv("S3_SECRET_KEY"),
-    "bucket_name": "cycleinvoice",
-    "endpoint_url": "https://minio.buffetitcloud.ch",
-    "addressing_style": "path",
-    "use_ssl": True,
-    "default_acl": None,
-    "signature_version": "s3v4",
-}
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": os.getenv("S3_ACCESS_KEY"),
+            "secret_key": os.getenv("S3_SECRET_KEY"),
+            "bucket_name": "cycleinvoice",
+            "endpoint_url": "https://minio.buffetitcloud.ch",
+            "addressing_style": "path",
+            "use_ssl": True,
+            "default_acl": None,
+            "signature_version": "s3v4",
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
 
-STORAGE = {
-    "default": {"BACKEND": "storages.backends.s3.S3Storage", "OPTIONS": S3_STORAGE_OPTIONS},
 }
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
