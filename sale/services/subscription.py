@@ -1,7 +1,7 @@
 """Services for handling subscriptions."""
 from django.db import transaction
 
-from sale.models import Subscription, DocumentItem
+from sale.models import DocumentItem, Subscription
 
 
 class SubscriptionExtensionError(Exception):

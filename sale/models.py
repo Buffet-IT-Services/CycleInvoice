@@ -190,47 +190,95 @@ class DocumentItem(ChangeLoggerAll):
     comment_title = models.CharField(max_length=255, verbose_name=_("comment title"), blank=True)
     comment_description = models.TextField(verbose_name=_("comment"), blank=True)
     vehicle = models.ForeignKey("vehicle.Vehicle", on_delete=models.PROTECT, related_name="document_item_vehicle",
-                                null=True, blank=True, )
+                                null=True, blank=True)
     work_type = models.ForeignKey(WorkType, on_delete=models.PROTECT, related_name="document_item_work_type", null=True,
                                   blank=True)
 
-    def clean(self):
-        """Custom validation for DocumentItem based on item_type."""
+    def clean_product(self) -> None:
+        """Validate the product item."""
+        from django.core.exceptions import ValidationError
+        errors = {}
+        if not self.product:
+            errors["product"] = "Product must be selected."
+        if self.subscription or self.work_type or self.vehicle or self.comment_title or self.comment_description:
+            errors["fields"] = "Only the product field may be filled."
+        if errors:
+            raise ValidationError(errors)
+
+    # noinspection DuplicatedCode
+    def clean_subscription(self) -> None:
+        """Validate the subscription item."""
+        from django.core.exceptions import ValidationError
+        errors = {}
+        if not self.subscription:
+            errors["subscription"] = "Subscription must be selected."
+        if not self.product:
+            errors["product"] = "Product must be selected for subscription."
+        if not self.comment_title:
+            errors["comment_title"] = "Comment title must be set for subscription."
+        if self.work_type or self.vehicle or self.comment_description:
+            errors["fields"] = "Only the subscription field may be filled."
+        if errors:
+            raise ValidationError(errors)
+
+    def clean_work(self) -> None:
+        """Validate the work item."""
+        from django.core.exceptions import ValidationError
+        errors = {}
+        if not self.work_type:
+            errors["work_type"] = "Work type must be selected."
+        if not self.comment_title:
+            errors["comment_title"] = "Comment title must be set for work type."
+        if self.product or self.subscription or self.vehicle:
+            errors["fields"] = "Only the work type field may be filled."
+        if errors:
+            raise ValidationError(errors)
+
+    # noinspection DuplicatedCode
+    def clean_expense_vehicle(self) -> None:
+        """Validate the vehicle expense item."""
+        from django.core.exceptions import ValidationError
+        errors = {}
+        if not self.vehicle:
+            errors["vehicle"] = "Vehicle must be selected."
+        if not self.comment_title:
+            errors["comment_title"] = "Comment title must be set for vehicle expense."
+        if not self.comment_description:
+            errors["comment_description"] = "Comment description must be set for vehicle expense."
+        if self.product or self.subscription or self.work_type:
+            errors["fields"] = "Only the vehicle field may be filled."
+        if errors:
+            raise ValidationError(errors)
+
+    def clean(self) -> None:
+        """Clean and validate the DocumentItem."""
         from django.core.exceptions import ValidationError
         super().clean()
-        # Validation depending on item_type
+        error = None
         if self.item_type == "product":
-            if not self.product:
-                raise ValidationError({"product": "Product must be selected."})
-            if self.subscription or self.work_type or self.vehicle or self.comment_title or self.comment_description:
-                raise ValidationError("Only the product field may be filled.")
+            try:
+                self.clean_product()
+            except ValidationError as e:
+                error = e
         elif self.item_type == "subscription":
-            if not self.subscription:
-                raise ValidationError({"subscription": "Subscription must be selected."})
-            if not self.product:
-                raise ValidationError({"product": "Product must be selected for subscription."})
-            if not self.comment_title:
-                raise ValidationError({"comment_title": "Comment title must be set for subscription."})
-            if self.work_type or self.vehicle or self.comment_description:
-                raise ValidationError("Only the subscription field may be filled.")
+            try:
+                self.clean_subscription()
+            except ValidationError as e:
+                error = e
         elif self.item_type == "work":
-            if not self.work_type:
-                raise ValidationError({"work_type": "Work type must be selected."})
-            if not self.comment_title:
-                raise ValidationError({"comment_title": "Comment title must be set for work type."})
-            if self.product or self.subscription or self.vehicle:
-                raise ValidationError("Only the work type field may be filled.")
+            try:
+                self.clean_work()
+            except ValidationError as e:
+                error = e
         elif self.item_type == "expense_vehicle":
-            if not self.vehicle:
-                raise ValidationError({"vehicle": "Vehicle must be selected."})
-            if not self.comment_title:
-                raise ValidationError({"comment_title": "Comment title must be set for vehicle expense."})
-            if not self.comment_description:
-                raise ValidationError({"comment_description": "Comment description must be set for vehicle expense."})
-            if self.product or self.subscription or self.work_type:
-                raise ValidationError("Only the vehicle field may be filled.")
+            try:
+                self.clean_expense_vehicle()
+            except ValidationError as e:
+                error = e
         else:
-            raise ValidationError({"item_type": "Invalid item type."})
+            error = ValidationError({"item_type": "Invalid item type."})
+        if error:
+            raise error
 
     @property
     def title(self) -> str:
@@ -243,7 +291,8 @@ class DocumentItem(ChangeLoggerAll):
             return f"{self.work_type.name} ({self.comment_title})"
         if self.item_type == "expense_vehicle":
             return f"Kilometerspesen ({self.comment_title})"
-        raise ValueError(f"Invalid item type: {self.item_type}")
+        invalid_error_message = f"Invalid item type: {self.item_type}"
+        raise ValueError(invalid_error_message)
 
     @property
     def description(self) -> str:
@@ -256,7 +305,8 @@ class DocumentItem(ChangeLoggerAll):
             return self.comment_description
         if self.item_type == "expense_vehicle":
             return self.comment_description
-        raise ValueError(f"Invalid item type: {self.item_type}")
+        invalid_error_message = f"Invalid item type: {self.item_type}"
+        raise ValueError(invalid_error_message)
 
     @property
     def price_str(self) -> str:

@@ -204,7 +204,7 @@ class DocumentItemTest(TestCase):
             document_item.clean()
         document_item.work_type = None
 
-    def test_clean_invalid_item_type(self):
+    def test_clean_invalid_item_type(self) -> None:
         """Test that ValueError is raised for an invalid item_type in clean property."""
         document_item = fake_document_item_product()
         document_item.item_type = "invalid_type"
@@ -264,7 +264,7 @@ class DocumentItemTest(TestCase):
         document_item = fake_document_item_vehicle()
         self.assertEqual("Kilometerspesen (10 km)", document_item.title)
 
-    def test_title_invalid_item_type(self):
+    def test_title_invalid_item_type(self) -> None:
         """Test that ValueError is raised for an invalid item_type in title property."""
         document_item = fake_document_item_product()
         document_item.item_type = "invalid_type"
@@ -292,7 +292,7 @@ class DocumentItemTest(TestCase):
         document_item = fake_document_item_vehicle()
         self.assertEqual("Oberrieden - Zürich", document_item.description)
 
-    def test_description_invalid_item_type(self):
+    def test_description_invalid_item_type(self) -> None:
         """Test that ValueError is raised for an invalid item_type in description property."""
         document_item = fake_document_item_product()
         document_item.item_type = "invalid_type"

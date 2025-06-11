@@ -4,7 +4,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from common.models import ChangeLoggerAll
-from sale.models import DocumentItem
 
 
 class Vehicle(ChangeLoggerAll):

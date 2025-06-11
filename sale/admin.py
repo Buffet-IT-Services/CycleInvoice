@@ -5,10 +5,11 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from sale.models import (
     DocumentInvoice,
+    DocumentItem,
     Product,
     Subscription,
     SubscriptionProduct,
-    WorkType, DocumentItem,
+    WorkType,
 )
 
 # Register your models here.

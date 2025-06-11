@@ -10,9 +10,9 @@ from io import BytesIO
 from typing import Any
 from urllib.parse import quote
 
-from PyPDF2 import PdfReader, PdfWriter
 from django.http import HttpRequest
 from django.template.loader import render_to_string
+from PyPDF2 import PdfReader, PdfWriter
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
@@ -32,16 +32,17 @@ def prepare_invoice_context(invoice_id: int) -> dict[str, Any]:
     invoice = DocumentInvoice.objects.get(pk=invoice_id)
 
     document_items = DocumentItem.objects.filter(invoice=invoice)
-    invoice_items = []
-    for item in document_items:
-        invoice_items.append({
+    invoice_items = [
+        {
             "product_name": item.title,
             "product_description": item.description,
             "quantity": item.quantity_str,
             "price_single": item.price_str,
             "discount": item.discount_str,
             "price_total": item.total_str,
-        })
+        }
+        for item in document_items
+    ]
 
     context_data = {
         "company_info": {
