@@ -10,9 +10,9 @@ from io import BytesIO
 from typing import Any
 from urllib.parse import quote
 
+from PyPDF2 import PdfReader, PdfWriter
 from django.http import HttpRequest
 from django.template.loader import render_to_string
-from PyPDF2 import PdfReader, PdfWriter
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
@@ -28,8 +28,20 @@ def prepare_invoice_context(invoice_id: int) -> dict[str, Any]:
         dict: The prepared context data with QR code
 
     """
-    from sale.models import DocumentInvoice
+    from sale.models import DocumentInvoice, DocumentItem
     invoice = DocumentInvoice.objects.get(pk=invoice_id)
+
+    document_items = DocumentItem.objects.filter(invoice=invoice)
+    invoice_items = []
+    for item in document_items:
+        invoice_items.append({
+            "product_name": item.title_str,
+            "product_description": item.comment_str,
+            "quantity": float(item.quantity),
+            "price_single": item.price,
+            "discount": f"{item.discount * 100}%",
+            "price_total": item.quantity * item.price * (1 - item.discount),
+        })
 
     context_data = {
         "company_info": {
@@ -61,7 +73,9 @@ def prepare_invoice_context(invoice_id: int) -> dict[str, Any]:
             "country": invoice.customer.address.country,
             "address_block": invoice.customer.address_block,
         },
-        "show_page_number": False}
+        "show_page_number": False,
+        "invoice_items": invoice_items
+    }
 
     # Generate the QR bill and add it to the context
     generate_swiss_qr(context_data, context_data["invoice_details"]["total_sum"])

@@ -1,6 +1,5 @@
 """A module for sale models."""
 
-from abc import abstractmethod
 from datetime import date
 from decimal import Decimal
 
@@ -173,16 +172,31 @@ class DocumentItem(ChangeLoggerAll):
     customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="document_customer")
     invoice = models.ForeignKey(DocumentInvoice, on_delete=models.CASCADE, related_name="document_item", null=True,
                                 blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="document_item_product", null=True)
+    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name="document_item_subscription",
+                                     null=True)
+    comment_title = models.CharField(max_length=255, verbose_name=_("comment title"), blank=True)
+    comment_description = models.TextField(verbose_name=_("comment"), blank=True)
+    vehicle = models.ForeignKey("vehicle.Vehicle", on_delete=models.PROTECT, related_name="document_item_vehicle",
+                                null=True, blank=True, )
 
     @property
-    @abstractmethod
-    def title_str(self) -> str:
-        """Each child must implement a `title` property."""
+    def title(self) -> str:
+        """Return the title of the document item."""
+        if self.product:
+            return self.product.name
+        if self.subscription:
+            return f"{self.subscription.product.product.name} - {self.subscription.customer}"
+        return self.comment_title or _("No title")
 
     @property
-    @abstractmethod
-    def comment_str(self) -> str:
-        """Each child must implement a `comment` property."""
+    def description(self) -> str:
+        """Return the description of the document item."""
+        if self.product:
+            return self.product.description
+        if self.subscription:
+            return f"{self.subscription.product.product.description} - {self.subscription.customer}"
+        return self.comment_description or _("No description")
 
     @property
     def price_str(self) -> str:
@@ -208,71 +222,3 @@ class DocumentItem(ChangeLoggerAll):
     def discount_str(self) -> str:
         """Return the discount percentage as a string."""
         return f"{(100 * self.discount):.2f}%" if self.discount != 0 else ""
-
-
-class DocumentItemProduct(DocumentItem):
-    """Model representing a document product."""
-
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="document_product")
-
-    class Meta:
-        """Meta options for the DocumentProduct model."""
-
-        verbose_name = "Document Product"
-        verbose_name_plural = "Document Products"
-
-    @property
-    def title_str(self) -> str:
-        """Return the product name as the title."""
-        return self.product.name
-
-    @property
-    def comment_str(self) -> str:
-        """Return the product description as the comment."""
-        return self.product.description if hasattr(self.product, "description") else ""
-
-
-class DocumentItemSubscription(DocumentItemProduct):
-    """Model representing a document product from a subscription."""
-
-    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name="document_item_subscription")
-    time_range = models.CharField(max_length=255, verbose_name=_("time range"))
-
-    class Meta:
-        """Meta options for the DocumentProduct model."""
-
-        verbose_name = "Document Product"
-        verbose_name_plural = "Document Products"
-
-    @property
-    def title_str(self) -> str:
-        """Return the product name as the title."""
-        return f"{self.product.name} ({self.time_range})"
-
-    @property
-    def comment_str(self) -> str:
-        """Return the product description as the comment."""
-        return self.product.description if hasattr(self.product, "description") else ""
-
-
-class DocumentItemWork(DocumentItem):
-    """Model representing a document work."""
-
-    comment = models.TextField(verbose_name=_("description"), blank=True)
-    work = models.ForeignKey(WorkType, on_delete=models.CASCADE, related_name="document_work")
-
-    class Meta:
-        """Meta options for the DocumentWork model."""
-
-        verbose_name = "Document Work"
-        verbose_name_plural = "Document Works"
-
-    @property
-    def title_str(self) -> str:
-        """Return the work type name as the title."""
-        return self.work.name
-
-    @property
-    def comment_str(self) -> str:
-        """Return the work type description as the comment."""
-        return self.comment if self.comment else ""

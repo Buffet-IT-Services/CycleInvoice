@@ -3,7 +3,6 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
-from vehicle.models import DocumentItemKilometers, Vehicle
+from vehicle.models import Vehicle
 
 admin.site.register(Vehicle, SimpleHistoryAdmin)
-admin.site.register(DocumentItemKilometers, SimpleHistoryAdmin)

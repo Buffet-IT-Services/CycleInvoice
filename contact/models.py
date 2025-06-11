@@ -123,35 +123,6 @@ class Address(ChangeLoggerAll):
         additional = f"{self.additional}, " if self.additional else ""
         return f"{additional}{self.street} {self.number}, {self.zip_code} {self.city}, {self.country}"
 
-    def save(self, *args, **kwargs) -> None:
-        """Override save method to handle address changes and references."""
-        logger.debug("Saving address: %s", self)
-        from vehicle.models import DocumentItemKilometers
-        if self.pk:
-            # Check if this address is referenced by a DocumentItemKilometers object
-            from django.db.models import Q
-            is_referenced = DocumentItemKilometers.objects.filter(
-                Q(start_address=self) | Q(end_address=self)
-            ).exists()
-            if is_referenced:
-                # Check if any fields except 'additional' have changed
-                old = type(self).objects.get(pk=self.pk)
-                main_fields = ["street", "number", "city", "zip_code", "country"]
-                changed_main = any(getattr(self, f) != getattr(old, f) for f in main_fields)
-                if changed_main:
-                    logger.info("Address '%s' is referenced by DocumentItemKilometers, creating new.", self)
-                    # Set old object to disabled = True and create a new object
-                    old_pk = self.pk
-                    type(self).objects.filter(pk=old_pk).update(disabled=True)
-                    self.pk = None
-                    super().save(*args, **kwargs)
-                    # Update all customers referencing the old address to the new address
-                    customers = self._meta.apps.get_model("contact", "Customer")
-                    customers.objects.filter(address_id=old_pk).update(address=self)
-                    return
-        super().save(*args, **kwargs)
-
-
 def address_block(address: Address) -> str:
     """Return the address block for the given address."""
     additional = f"{address.additional}\n" if address.additional else ""

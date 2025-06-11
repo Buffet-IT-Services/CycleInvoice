@@ -1,7 +1,7 @@
 """Services for handling subscriptions."""
 from django.db import transaction
 
-from sale.models import DocumentItemSubscription, Subscription
+from sale.models import Subscription, DocumentItem
 
 
 class SubscriptionExtensionError(Exception):
@@ -27,10 +27,10 @@ def subscription_extension(subscription_id: int) -> None:
     time_range = f"{start.strftime('%d.%m.%Y')} - {end.strftime('%d.%m.%Y')}"
 
     # create DocumentItemSubscription
-    DocumentItemSubscription.objects.create(
+    DocumentItem.objects.create(
         product=subscription.product.product,
         subscription=subscription,
-        time_range=time_range,
+        comment_title=time_range,
         customer=subscription.customer,
         price=subscription.product.price,
         quantity=1,

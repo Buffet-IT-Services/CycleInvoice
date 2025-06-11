@@ -11,6 +11,15 @@ def fake_document_item() -> DocumentItem:
     return DocumentItem.objects.create(price=5.0, quantity=2, discount=0.1, customer=fake_contact())
 
 
+def fake_document_item_vehicle() -> DocumentItem:
+    """Create a fake document item for a vehicle."""
+    from vehicle.tests.models.test_vehicle import fake_vehicle
+    vehicle = fake_vehicle()
+    return DocumentItem.objects.create(
+        price=vehicle.km_sell, quantity=10, customer=fake_contact(), vehicle=vehicle
+    )
+
+
 class DocumentItemTest(TestCase):
     """Test cases for the DocumentItem model."""
 
