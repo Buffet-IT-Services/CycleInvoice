@@ -35,12 +35,12 @@ def prepare_invoice_context(invoice_id: int) -> dict[str, Any]:
     invoice_items = []
     for item in document_items:
         invoice_items.append({
-            "product_name": item.title_str,
-            "product_description": item.comment_str,
-            "quantity": float(item.quantity),
-            "price_single": item.price,
-            "discount": f"{item.discount * 100}%",
-            "price_total": item.quantity * item.price * (1 - item.discount),
+            "product_name": item.title,
+            "product_description": item.description,
+            "quantity": item.quantity_str,
+            "price_single": item.price_str,
+            "discount": item.discount_str,
+            "price_total": item.total_str,
         })
 
     context_data = {

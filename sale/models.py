@@ -166,37 +166,84 @@ class DocumentInvoice(ChangeLoggerAll):
 class DocumentItem(ChangeLoggerAll):
     """Model representing a document item."""
 
+    ITEM_TYPE_CHOICES = [
+        ("product", "Product"),
+        ("subscription", "Subscription"),
+        ("work", "Work"),
+        ("expense_vehicle", "Vehicle expense"),
+    ]
     price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
     quantity = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("quantity"))
     discount = models.DecimalField(verbose_name=_("discount percent"), max_digits=5, decimal_places=4, default=0)
     customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="document_customer")
     invoice = models.ForeignKey(DocumentInvoice, on_delete=models.CASCADE, related_name="document_item", null=True,
                                 blank=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="document_item_product", null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="document_item_product", null=True,
+                                blank=True)
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name="document_item_subscription",
-                                     null=True)
+                                     null=True, blank=True)
     comment_title = models.CharField(max_length=255, verbose_name=_("comment title"), blank=True)
     comment_description = models.TextField(verbose_name=_("comment"), blank=True)
     vehicle = models.ForeignKey("vehicle.Vehicle", on_delete=models.PROTECT, related_name="document_item_vehicle",
                                 null=True, blank=True, )
+    work_type = models.ForeignKey(WorkType, on_delete=models.PROTECT, related_name="document_item_work_type", null=True,
+                                  blank=True)
+    item_type = models.CharField(
+        max_length=20,
+        choices=ITEM_TYPE_CHOICES,
+        verbose_name=_("Type"),
+        default="product",
+    )
+
+    def clean(self):
+        """Custom validation for DocumentItem based on item_type."""
+        from django.core.exceptions import ValidationError
+        super().clean()
+        # Validation depending on item_type
+        if self.item_type == "product":
+            if not self.product:
+                raise ValidationError({"product": "Product must be selected."})
+            if self.subscription or self.work_type or self.vehicle:
+                raise ValidationError("Only the product field may be filled.")
+        elif self.item_type == "subscription":
+            if not self.subscription:
+                raise ValidationError({"subscription": "Subscription must be selected."})
+            if not self.product:
+                raise ValidationError({"product": "Product must be selected for subscription."})
+            if self.work_type or self.vehicle:
+                raise ValidationError("Only the subscription field may be filled.")
+        elif self.item_type == "work":
+            if not self.work_type:
+                raise ValidationError({"work_type": "Work type must be selected."})
+            if self.product or self.subscription or self.vehicle:
+                raise ValidationError("Only the work type field may be filled.")
+        elif self.item_type == "expense_vehicle":
+            if not self.vehicle:
+                raise ValidationError({"vehicle": "Vehicle must be selected."})
+            if self.product or self.subscription or self.work_type:
+                raise ValidationError("Only the vehicle field may be filled.")
+        else:
+            raise ValidationError({"item_type": "Invalid type."})
 
     @property
     def title(self) -> str:
         """Return the title of the document item."""
-        if self.product:
-            return self.product.name
-        if self.subscription:
-            return f"{self.subscription.product.product.name} - {self.subscription.customer}"
-        return self.comment_title or _("No title")
+        if self.item_type == "work":
+            if self.comment_title:
+                return f"{self.work_type.name} ({self.comment_title})"
+            else:
+                return self.work_type.name
+        raise ValueError(f"Invalid item type: {self.item_type}")
 
     @property
     def description(self) -> str:
         """Return the description of the document item."""
-        if self.product:
-            return self.product.description
-        if self.subscription:
-            return f"{self.subscription.product.product.description} - {self.subscription.customer}"
-        return self.comment_description or _("No description")
+        if self.item_type == "work":
+            if self.comment_description:
+                return self.comment_description
+            else:
+                return ""
+        raise ValueError(f"Invalid item type: {self.item_type}")
 
     @property
     def price_str(self) -> str:

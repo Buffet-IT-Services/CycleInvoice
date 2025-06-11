@@ -8,7 +8,7 @@ from sale.models import (
     Product,
     Subscription,
     SubscriptionProduct,
-    WorkType,
+    WorkType, DocumentItem,
 )
 
 # Register your models here.
@@ -17,3 +17,4 @@ admin.site.register(SubscriptionProduct, SimpleHistoryAdmin)
 admin.site.register(Subscription, SimpleHistoryAdmin)
 admin.site.register(DocumentInvoice, SimpleHistoryAdmin)
 admin.site.register(WorkType, SimpleHistoryAdmin)
+admin.site.register(DocumentItem, SimpleHistoryAdmin)
