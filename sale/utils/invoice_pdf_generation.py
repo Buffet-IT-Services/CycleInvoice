@@ -12,7 +12,7 @@ from urllib.parse import quote
 
 from django.http import HttpRequest
 from django.template.loader import render_to_string
-from PyPDF2 import PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
