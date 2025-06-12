@@ -208,3 +208,64 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertIn("Seite 2", text_page2)
         self.assertIn("Seite 1 von 2", text_page1)
         self.assertIn("Seite 2 von 2", text_page2)
+
+    @patch("sale.utils.invoice_pdf_generation.generate_content")
+    @patch("sale.utils.invoice_pdf_generation.generate_html_invoice")
+    @patch("sale.utils.invoice_pdf_generation.generate_html_qr_page")
+    @patch("sale.utils.invoice_pdf_generation.generate_pdf_from_html")
+    @patch("sale.utils.invoice_pdf_generation.add_page_numbers_to_pdf")
+    def test_generate_invoice_pdf_two_pass(self, mock_add_page_numbers, mock_generate_pdf_from_html,
+                                           mock_generate_html_qr_page, mock_generate_html_invoice,
+                                           mock_generate_content):
+        """Test that generate_invoice_pdf_two_pass returns a PDFContent object with correct filename and PDF bytes."""
+        from sale.utils.invoice_pdf_generation import generate_invoice_pdf_two_pass, PDFContent
+        from django.http import HttpRequest
+        from io import BytesIO
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import A4
+
+        # Create a valid PDF for mocking
+        def create_valid_pdf_bytes(text="Test PDF"):
+            """Create a simple PDF with the given text.
+
+            :param text:  Text to include in the PDF
+            :return:  Bytes of the generated PDF
+            """
+            buffer = BytesIO()
+            c = canvas.Canvas(buffer, pagesize=A4)
+            c.drawString(100, 750, text)
+            c.showPage()
+            c.save()
+            buffer.seek(0)
+            return buffer.getvalue()
+
+        valid_pdf_invoice = create_valid_pdf_bytes("Invoice")
+        valid_pdf_qr = create_valid_pdf_bytes("QR")
+
+        # Mock content and HTML
+        mock_generate_content.return_value = {"qr_bill_svg": "<svg>QR</svg>"}
+        mock_generate_html_invoice.return_value = "<html>Invoice</html>"
+        mock_generate_html_qr_page.return_value = "<html>QR</html>"
+        mock_generate_pdf_from_html.side_effect = [valid_pdf_invoice, valid_pdf_qr]
+        mock_add_page_numbers.return_value = BytesIO(valid_pdf_invoice)
+
+        # Prepare request
+        request = HttpRequest()
+        request.build_absolute_uri = lambda path='/': f'https://testserver{path}'
+
+        # Call the function
+        result = generate_invoice_pdf_two_pass(request, 42)
+
+        # Assertions
+        self.assertIsInstance(result, PDFContent)
+        self.assertTrue(result.filename.startswith('invoice_42'))
+        self.assertEqual(result.mime_type, 'application/pdf')
+        self.assertIsInstance(result.content, bytes)
+        self.assertGreater(len(result.content), 0)
+
+        # Check mocks called as expected
+        mock_generate_content.assert_called_once_with(42)
+        mock_generate_html_invoice.assert_called_once()
+        mock_generate_html_qr_page.assert_called_once()
+        self.assertEqual(mock_generate_pdf_from_html.call_count, 2)
+        mock_add_page_numbers.assert_called_once()
