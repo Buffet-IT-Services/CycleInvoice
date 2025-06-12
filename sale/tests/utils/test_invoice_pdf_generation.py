@@ -136,7 +136,7 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertEqual(len(context["invoice_items"]), 2)
         self.assertEqual(context["invoice_items"][1]["product_name"], self.item.title)
         self.assertEqual(context["invoice_items"][1]["product_description"], self.item.description)
-        self.assertEqual(context["invoice_items"][1]["quantity"], "2.00")
+        self.assertEqual(context["invoice_items"][1]["quantity"], "2.00")  # TODO: Adjust to dynamic quantity
         self.assertEqual(context["invoice_items"][1]["price_single"], self.item.price_str)
         self.assertEqual(context["invoice_items"][1]["discount"], self.item.discount_str)
         self.assertEqual(context["invoice_items"][1]["price_total"], self.item.total_str)
