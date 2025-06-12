@@ -67,9 +67,8 @@ class InvoicePDFGenerationTest(TestCase):
         "qr_bill_svg": "<svg>QR</svg>"
     }
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the test environment with a fake invoice and customer."""
-
         # Set environment variables for company info
         os.environ["COMPANY_NAME"] = "Test Company Ltd."
         os.environ["COMPANY_ADDRESS"] = "Test Street 1"
@@ -98,7 +97,7 @@ class InvoicePDFGenerationTest(TestCase):
 
     # noinspection DuplicatedCode
     @patch("sale.utils.invoice_pdf_generation.generate_swiss_qr")
-    def test_generate_content(self, mock_qr) -> None:
+    def test_generate_content(self, mock_qr: object) -> None:
         """Test that prepare_invoice_context returns the expected dictionary."""
         mock_qr.side_effect = lambda ctx: ctx.update({"qr_bill_svg": "<svg>QR</svg>"})
         context = generate_content(self.invoice.pk)
@@ -146,7 +145,7 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertFalse(context["show_page_number"])
         self.assertEqual("<svg>QR</svg>", context["qr_bill_svg"])
 
-    def test_generate_html_invoice(self):
+    def test_generate_html_invoice(self) -> None:
         """Test that generate_html_invoice renders the invoice HTML template with context."""
         from sale.utils.invoice_pdf_generation import generate_html_invoice
         html = generate_html_invoice(self.context)
@@ -155,7 +154,7 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertTrue(html.startswith("<!DOCTYPE html>"))
         self.assertEqual("f359a8bdb72a7e54cc7c3ff7eddbb875a89e5ab49d288f47b76bf393dd872985", html_hash)
 
-    def test_generate_html_qr_page(self):
+    def test_generate_html_qr_page(self) -> None:
         """Test that generate_html_qr_page returns the expected HTML for the QR bill."""
         from sale.utils.invoice_pdf_generation import generate_html_qr_page
         html = generate_html_qr_page(self.context)
@@ -164,7 +163,7 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertTrue(html.startswith("<!DOCTYPE html>"))
         self.assertEqual("e6aa4a5590a7734fd58148e214bee49285d4d3199482dab18241c85855bcf160", html_hash)
 
-    def test_generate_pdf_from_html(self):
+    def test_generate_pdf_from_html(self) -> None:
         """Test that generate_pdf_from_html returns PDF bytes for valid HTML input."""
         from sale.utils.invoice_pdf_generation import generate_pdf_from_html
         html = "<html><body><h1>Test PDF</h1><p>Page 1</p></body></html>"
@@ -173,18 +172,20 @@ class InvoicePDFGenerationTest(TestCase):
         pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
         self.assertIsInstance(pdf_bytes, bytes)
         self.assertGreater(len(pdf_bytes), 100)  # Should be a non-trivial PDF
-        self.assertTrue(pdf_bytes.startswith(b'%PDF'))
+        self.assertTrue(pdf_bytes.startswith(b"%PDF"))
         self.assertEqual("3efe0f81099eab094be6c24db9d7090499ad7a2402126f1554a3fd0293587987", pdf_hash)
 
-    def test_add_page_numbers_to_pdf(self):
+    def test_add_page_numbers_to_pdf(self) -> None:
         """Test that add_page_numbers_to_pdf adds page numbers to a PDF."""
-        from sale.utils.invoice_pdf_generation import add_page_numbers_to_pdf
+        from io import BytesIO
+
         from PyPDF2 import PdfReader
+        from reportlab.lib.pagesizes import A4
 
         # Create a simple PDF with 2 pages
         from reportlab.pdfgen import canvas
-        from reportlab.lib.pagesizes import A4
-        from io import BytesIO
+
+        from sale.utils.invoice_pdf_generation import add_page_numbers_to_pdf
 
         buffer = BytesIO()
         c = canvas.Canvas(buffer, pagesize=A4)
@@ -214,19 +215,22 @@ class InvoicePDFGenerationTest(TestCase):
     @patch("sale.utils.invoice_pdf_generation.generate_html_qr_page")
     @patch("sale.utils.invoice_pdf_generation.generate_pdf_from_html")
     @patch("sale.utils.invoice_pdf_generation.add_page_numbers_to_pdf")
-    def test_generate_invoice_pdf_two_pass(self, mock_add_page_numbers, mock_generate_pdf_from_html,
-                                           mock_generate_html_qr_page, mock_generate_html_invoice,
-                                           mock_generate_content):
+    def test_generate_invoice_pdf_two_pass(self, mock_add_page_numbers: object, mock_generate_pdf_from_html: object,
+                                           mock_generate_html_qr_page: object, mock_generate_html_invoice: object,
+                                           mock_generate_content: object) -> None:
         """Test that generate_invoice_pdf_two_pass returns a PDFContent object with correct filename and PDF bytes."""
-        from sale.utils.invoice_pdf_generation import generate_invoice_pdf_two_pass, PDFContent
-        from django.http import HttpRequest
         from io import BytesIO
-        from reportlab.pdfgen import canvas
+
+        from django.http import HttpRequest
         from reportlab.lib.pagesizes import A4
+        from reportlab.pdfgen import canvas
+
+        from sale.utils.invoice_pdf_generation import PDFContent, generate_invoice_pdf_two_pass
 
         # Create a valid PDF for mocking
-        def create_valid_pdf_bytes(text="Test PDF"):
-            """Create a simple PDF with the given text.
+        def create_valid_pdf_bytes(text: str = "Test PDF") -> bytes:
+            """
+            Create a simple PDF with the given text.
 
             :param text:  Text to include in the PDF
             :return:  Bytes of the generated PDF
@@ -251,15 +255,15 @@ class InvoicePDFGenerationTest(TestCase):
 
         # Prepare request
         request = HttpRequest()
-        request.build_absolute_uri = lambda path='/': f'https://testserver{path}'
+        request.build_absolute_uri = lambda path="/": f"https://testserver{path}"
 
         # Call the function
         result = generate_invoice_pdf_two_pass(request, 42)
 
         # Assertions
         self.assertIsInstance(result, PDFContent)
-        self.assertTrue(result.filename.startswith('invoice_42'))
-        self.assertEqual(result.mime_type, 'application/pdf')
+        self.assertTrue(result.filename.startswith("invoice_42"))
+        self.assertEqual(result.mime_type, "application/pdf")
         self.assertIsInstance(result.content, bytes)
         self.assertGreater(len(result.content), 0)
 

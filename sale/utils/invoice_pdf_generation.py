@@ -10,9 +10,9 @@ from io import BytesIO
 from typing import Any
 from urllib.parse import quote
 
-from PyPDF2 import PdfReader, PdfWriter
 from django.http import HttpRequest
 from django.template.loader import render_to_string
+from PyPDF2 import PdfReader, PdfWriter
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
@@ -126,9 +126,7 @@ def generate_pdf_from_html(html_content: str, base_url: str) -> bytes:
 
     """
     document = HTML(string=html_content, base_url=base_url, encoding="utf-8").render()
-    pdf_file = document.write_pdf()
-
-    return pdf_file
+    return document.write_pdf()
 
 
 def add_page_numbers_to_pdf(pdf_data: bytes) -> BytesIO:
@@ -140,6 +138,7 @@ def add_page_numbers_to_pdf(pdf_data: bytes) -> BytesIO:
 
     Returns:
         BytesIO: A BytesIO object containing the PDF with page numbers
+
     """
     input_pdf = PdfReader(BytesIO(pdf_data))
     output_pdf = PdfWriter()
