@@ -1,3 +1,8 @@
 .coverage
+/venv/
+.env
 /logs/
 /.env
+/celerybeat-schedule
+/celerybeat-schedule-shm
+/celerybeat-schedule-wal

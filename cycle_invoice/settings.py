@@ -69,7 +69,7 @@ ROOT_URLCONF = "cycle_invoice.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": ["templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -98,7 +98,6 @@ DATABASES = {
         **({"OPTIONS": {"options": "-c search_path=cycle_invoice"}} if "test" not in sys.argv else {}),
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -142,21 +141,38 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-S3_STORAGE_OPTIONS = {
-    "access_key": os.getenv("S3_ACCESS_KEY"),
-    "secret_key": os.getenv("S3_SECRET_KEY"),
-    "bucket_name": "cycleinvoice",
-    "endpoint_url": "https://minio.buffetitcloud.ch",
-    "addressing_style": "path",
-    "use_ssl": True,
-    "default_acl": None,
-    "signature_version": "s3v4",
+STORAGES = {
+    "default": {
+        # Use S3Storage only if not running in GitHub Actions (CI) or pytest
+        "BACKEND": (
+            "storages.backends.s3.S3Storage"
+            if not (os.getenv("GITHUB_ACTIONS") == "true" or "pytest" in sys.modules)
+            else "django.core.files.storage.FileSystemStorage"
+        ),
+        "OPTIONS": (
+            {
+                "access_key": os.getenv("S3_ACCESS_KEY"),
+                "secret_key": os.getenv("S3_SECRET_KEY"),
+                "bucket_name": "cycleinvoice",
+                "endpoint_url": "https://minio.buffetitcloud.ch",
+                "addressing_style": "path",
+                "use_ssl": True,
+                "default_acl": None,
+                "signature_version": "s3v4",
+            }
+            if not (os.getenv("GITHUB_ACTIONS") == "true" or "pytest" in sys.modules)
+            else {}
+        ),
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
 }
 
-STORAGE = {
-    "default": {"BACKEND": "storages.backends.s3.S3Storage", "OPTIONS": S3_STORAGE_OPTIONS},
-}
-
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 LOG_DIR = BASE_DIR / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 LOGGING = {

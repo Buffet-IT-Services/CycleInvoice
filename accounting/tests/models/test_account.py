@@ -8,7 +8,8 @@ from accounting.models import Account, get_default_buy_account, get_default_sell
 
 def fake_account() -> Account:
     """Create a fake account."""
-    return Account.objects.create(name="Test Account", number="1234567890", default_buy=True, default_sell=False)
+    return \
+        Account.objects.get_or_create(name="Test Account", number="1234567890", default_buy=True, default_sell=False)[0]
 
 
 class AccountTest(TestCase):

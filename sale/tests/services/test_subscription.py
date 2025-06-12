@@ -27,10 +27,10 @@ class SubscriptionTest(TestCase):
             subscription_extension(subscription.id)
             subscription.refresh_from_db()
             self.assertEqual(datetime.date(2000, 1, 31), subscription.end_billed_date)
-            from sale.models import DocumentItemSubscription
-            subscription_item = DocumentItemSubscription.objects.get(subscription=subscription)
+            from sale.models import DocumentItem
+            subscription_item = DocumentItem.objects.get(subscription=subscription)
             self.assertEqual(subscription, subscription_item.subscription)
-            self.assertEqual("01.01.2000 - 31.01.2000", subscription_item.time_range)
+            self.assertEqual("01.01.2000 - 31.01.2000", subscription_item.comment_title)
             self.assertEqual(subscription.product.product, subscription_item.product)
             self.assertEqual(subscription.product.price, subscription_item.price)
             self.assertEqual(1, subscription_item.quantity)

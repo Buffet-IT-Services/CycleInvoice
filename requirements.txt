@@ -2,6 +2,10 @@ Django>=5.2.0
 django-simple-history~=3.8.0
 django-debug-toolbar>=5.2.0
 psycopg2>=2.9.10
+qrbill==1.1.0
+weasyprint==65.1
+reportlab==4.4.1
+PyPDF2==3.0.1
 django-storages[s3]>=1.14.0
 dotenv~=0.9.9
 python-dotenv~=1.1.0

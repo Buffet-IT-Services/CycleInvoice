@@ -1,6 +1,5 @@
 """A module for sale models."""
 
-from abc import abstractmethod
 from datetime import date
 from decimal import Decimal
 
@@ -158,26 +157,156 @@ class DocumentInvoice(ChangeLoggerAll):
         """Return a string representation of the DocumentInvoice."""
         return f"{self.invoice_number} - {self.customer}"
 
+    @property
+    def total_sum(self) -> Decimal:
+        """The sum of the totals of all DocumentItems belonging to this invoice."""
+        return sum((item.total for item in self.document_item.all()), start=Decimal(0))
+
 
 class DocumentItem(ChangeLoggerAll):
     """Model representing a document item."""
 
+    ITEM_TYPE_CHOICES = [
+        ("product", "Product"),
+        ("subscription", "Subscription"),
+        ("work", "Work"),
+        ("expense_vehicle", "Vehicle expense"),
+    ]
+    item_type = models.CharField(
+        max_length=20,
+        choices=ITEM_TYPE_CHOICES,
+        verbose_name=_("Type")
+    )
     price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
     quantity = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("quantity"))
     discount = models.DecimalField(verbose_name=_("discount percent"), max_digits=5, decimal_places=4, default=0)
-    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="document_item")
+    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="document_customer")
     invoice = models.ForeignKey(DocumentInvoice, on_delete=models.CASCADE, related_name="document_item", null=True,
                                 blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="document_item_product", null=True,
+                                blank=True)
+    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name="document_item_subscription",
+                                     null=True, blank=True)
+    comment_title = models.CharField(max_length=255, verbose_name=_("comment title"), blank=True)
+    comment_description = models.TextField(verbose_name=_("comment"), blank=True)
+    vehicle = models.ForeignKey("vehicle.Vehicle", on_delete=models.PROTECT, related_name="document_item_vehicle",
+                                null=True, blank=True)
+    work_type = models.ForeignKey(WorkType, on_delete=models.PROTECT, related_name="document_item_work_type", null=True,
+                                  blank=True)
+
+    def clean_product(self) -> None:
+        """Validate the product item."""
+        from django.core.exceptions import ValidationError
+        errors = {}
+        if not self.product:
+            errors["product"] = "Product must be selected."
+        if self.subscription or self.work_type or self.vehicle or self.comment_title or self.comment_description:
+            errors["fields"] = "Only the product field may be filled."
+        if errors:
+            raise ValidationError(errors)
+
+    # noinspection DuplicatedCode
+    def clean_subscription(self) -> None:
+        """Validate the subscription item."""
+        from django.core.exceptions import ValidationError
+        errors = {}
+        if not self.subscription:
+            errors["subscription"] = "Subscription must be selected."
+        if not self.product:
+            errors["product"] = "Product must be selected for subscription."
+        if not self.comment_title:
+            errors["comment_title"] = "Comment title must be set for subscription."
+        if self.work_type or self.vehicle or self.comment_description:
+            errors["fields"] = "Only the subscription field may be filled."
+        if errors:
+            raise ValidationError(errors)
+
+    def clean_work(self) -> None:
+        """Validate the work item."""
+        from django.core.exceptions import ValidationError
+        errors = {}
+        if not self.work_type:
+            errors["work_type"] = "Work type must be selected."
+        if not self.comment_title:
+            errors["comment_title"] = "Comment title must be set for work type."
+        if self.product or self.subscription or self.vehicle:
+            errors["fields"] = "Only the work type field may be filled."
+        if errors:
+            raise ValidationError(errors)
+
+    # noinspection DuplicatedCode
+    def clean_expense_vehicle(self) -> None:
+        """Validate the vehicle expense item."""
+        from django.core.exceptions import ValidationError
+        errors = {}
+        if not self.vehicle:
+            errors["vehicle"] = "Vehicle must be selected."
+        if not self.comment_title:
+            errors["comment_title"] = "Comment title must be set for vehicle expense."
+        if not self.comment_description:
+            errors["comment_description"] = "Comment description must be set for vehicle expense."
+        if self.product or self.subscription or self.work_type:
+            errors["fields"] = "Only the vehicle field may be filled."
+        if errors:
+            raise ValidationError(errors)
+
+    def clean(self) -> None:
+        """Clean and validate the DocumentItem."""
+        from django.core.exceptions import ValidationError
+        super().clean()
+        error = None
+        if self.item_type == "product":
+            try:
+                self.clean_product()
+            except ValidationError as e:
+                error = e
+        elif self.item_type == "subscription":
+            try:
+                self.clean_subscription()
+            except ValidationError as e:
+                error = e
+        elif self.item_type == "work":
+            try:
+                self.clean_work()
+            except ValidationError as e:
+                error = e
+        elif self.item_type == "expense_vehicle":
+            try:
+                self.clean_expense_vehicle()
+            except ValidationError as e:
+                error = e
+        else:
+            error = ValidationError({"item_type": "Invalid item type."})
+        if error:
+            raise error
 
     @property
-    @abstractmethod
-    def title_str(self) -> str:
-        """Each child must implement a `title` property."""
+    def title(self) -> str:
+        """Return the title of the document item."""
+        if self.item_type == "product":
+            return self.product.name
+        if self.item_type == "subscription":
+            return f"{self.subscription.product.product.name} ({self.comment_title})"
+        if self.item_type == "work":
+            return f"{self.work_type.name} ({self.comment_title})"
+        if self.item_type == "expense_vehicle":
+            return f"Kilometerspesen ({self.comment_title})"
+        invalid_error_message = f"Invalid item type: {self.item_type}"
+        raise ValueError(invalid_error_message)
 
     @property
-    @abstractmethod
-    def comment_str(self) -> str:
-        """Each child must implement a `comment` property."""
+    def description(self) -> str:
+        """Return the description of the document item."""
+        if self.item_type == "product":
+            return self.product.description
+        if self.item_type == "subscription":
+            return self.subscription.product.product.description
+        if self.item_type == "work":
+            return self.comment_description
+        if self.item_type == "expense_vehicle":
+            return self.comment_description
+        invalid_error_message = f"Invalid item type: {self.item_type}"
+        raise ValueError(invalid_error_message)
 
     @property
     def price_str(self) -> str:
@@ -203,73 +332,3 @@ class DocumentItem(ChangeLoggerAll):
     def discount_str(self) -> str:
         """Return the discount percentage as a string."""
         return f"{(100 * self.discount):.2f}%" if self.discount != 0 else ""
-
-
-class DocumentItemProduct(DocumentItem):
-    """Model representing a document product."""
-
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="document_product")
-
-    class Meta:
-        """Meta options for the DocumentProduct model."""
-
-        verbose_name = "Document Product"
-        verbose_name_plural = "Document Products"
-
-    @property
-    def title_str(self) -> str:
-        """Return the product name as the title."""
-        return self.product.name
-
-    @property
-    def comment_str(self) -> str:
-        """Return the product description as the comment."""
-        return self.product.description if hasattr(self.product, "description") else ""
-
-
-class DocumentItemSubscription(DocumentItemProduct):
-    """Model representing a document product from a subscription."""
-
-    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name="document_item_subscription")
-    time_range = models.CharField(max_length=255, verbose_name=_("time range"))
-
-    class Meta:
-        """Meta options for the DocumentProduct model."""
-
-        verbose_name = "Document Product"
-        verbose_name_plural = "Document Products"
-
-    @property
-    def title_str(self) -> str:
-        """Return the product name as the title."""
-        return f"{self.product.name} ({self.time_range})"
-
-    @property
-    def comment_str(self) -> str:
-        """Return the product description as the comment."""
-        return self.product.description if hasattr(self.product, "description") else ""
-
-
-class DocumentItemWork(DocumentItem):
-    """Model representing a document work."""
-
-    comment = models.TextField(verbose_name=_("description"), blank=True)
-    work = models.ForeignKey(WorkType, on_delete=models.CASCADE, related_name="document_work")
-
-    class Meta:
-        """Meta options for the DocumentWork model."""
-
-        verbose_name = "Document Work"
-        verbose_name_plural = "Document Works"
-
-    @property
-    def title_str(self) -> str:
-        """Return the work type name as the title."""
-        return self.work.name
-
-    @property
-    def comment_str(self) -> str:
-        """Return the work type description as the comment."""
-        return self.comment if self.comment else ""
-
-

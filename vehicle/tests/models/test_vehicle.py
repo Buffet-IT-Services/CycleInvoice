@@ -7,9 +7,9 @@ from vehicle.models import Vehicle
 
 def fake_vehicle() -> Vehicle:
     """Create a fake work type."""
-    return Vehicle.objects.create(
+    return Vehicle.objects.get_or_create(
         name_internal="Test Vehicle", name_external="Test Vehicle External", km_buy=1.0, km_sell=2.0
-    )
+    )[0]
 
 
 class VehicleTest(TestCase):
