@@ -218,10 +218,8 @@ def create_pdf_content(pdf_stream: BytesIO, invoice_id: str) -> PDFContent:
     return PDFContent(content=content, filename=filename)
 
 
-def generate_qr_code_html(svg_content: str, context_data: dict[str, Any]) -> str:
-    """
-    Erzeugt das HTML für die QR-Code-Seite.
-    """
+def generate_html_qr_page(svg_content: str, context_data: dict[str, Any]) -> str:
+    """Generates the HTML for the QR code page."""
     svg_content = quote(svg_content)
     return render_to_string(
         "sale/qr_code.html", {**context_data, "svg_content": svg_content}
@@ -264,7 +262,7 @@ def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> "PDF
         final_output.add_page(page)
 
     # QR-Code-HTML generieren und PDF daraus erzeugen
-    qr_html = generate_qr_code_html(context_data["qr_bill_svg"], context_data)
+    qr_html = generate_html_qr_page(context_data["qr_bill_svg"], context_data)
     qr_pdf_bytes, _ = generate_base_pdf(qr_html, request.build_absolute_uri("/"))
     qr_pdf = PdfReader(BytesIO(qr_pdf_bytes))
     final_output.add_page(qr_pdf.pages[0])

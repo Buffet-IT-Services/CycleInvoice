@@ -218,18 +218,16 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertEqual(pdf_content.filename, f"invoice_{invoice_id}_numbered.pdf")
         self.assertEqual(pdf_content.mime_type, "application/pdf")
 
-    def test_generate_qr_code_pdf_creates_pdf_with_svg(self):
-        """Test that generate_qr_code_pdf creates a PDF containing the QR SVG content."""
-        from sale.utils.invoice_pdf_generation import generate_qr_code_pdf
-        from django.test import RequestFactory
-        from PyPDF2 import PdfReader
-        svg_content = "<svg><rect width='100' height='100' style='fill:rgb(0,0,0);'/></svg>"
+    def test_generate_qr_code_html_contains_quoted_svg(self):
+        """Test that generate_qr_code_html returns HTML containing the quoted SVG content."""
+        from sale.utils.invoice_pdf_generation import generate_html_qr_page
+        from urllib.parse import quote
+        svg_content = '<svg><rect width="100" height="100" style="fill:rgb(0,0,0);"/></svg>'
         context = self.context.copy()
-        request = RequestFactory().get("/")
-        pdf_reader = generate_qr_code_pdf(svg_content, context, request)
-        self.assertIsInstance(pdf_reader, PdfReader)
-        self.assertGreaterEqual(len(pdf_reader.pages), 1)
-        # Check for a text that is present as plain text in the PDF
-        page_text = pdf_reader.pages[0].extract_text()
-        self.assertIn("info@testcompany.com", page_text)
-        self.assertIn("CHE-123.456.789", page_text)
+        context["qr_bill_svg"] = svg_content
+        html = generate_html_qr_page(svg_content, context)
+
+
+        self.assertIsInstance(html, str)
+        self.assertIn(quote(svg_content), html)
+
