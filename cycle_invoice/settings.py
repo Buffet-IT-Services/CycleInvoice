@@ -143,7 +143,12 @@ INTERNAL_IPS = [
 
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
+        # Use S3Storage only if not running in GitHub Actions (CI)
+        "BACKEND": (
+            "storages.backends.s3.S3Storage"
+            if not (os.getenv("GITHUB_ACTIONS") == "true" or "pytest" in sys.modules)
+            else "django.core.files.storage.FileSystemStorage"
+        ),
         "OPTIONS": {
             "access_key": os.getenv("S3_ACCESS_KEY"),
             "secret_key": os.getenv("S3_SECRET_KEY"),
@@ -158,7 +163,6 @@ STORAGES = {
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
-
 }
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
