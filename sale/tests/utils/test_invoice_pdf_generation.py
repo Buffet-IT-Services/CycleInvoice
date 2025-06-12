@@ -9,7 +9,7 @@ from contact.tests.models.test_address import fake_address
 from contact.tests.models.test_contact import fake_contact
 from sale.tests.models.test_document_invoice import fake_document_invoice
 from sale.tests.models.test_document_item import fake_document_item_product, fake_document_item_work
-from sale.utils.invoice_pdf_generation import prepare_invoice_context
+from sale.utils.invoice_pdf_generation import generate_content
 
 
 class InvoicePDFGenerationTest(TestCase):
@@ -101,7 +101,7 @@ class InvoicePDFGenerationTest(TestCase):
     def test_prepare_invoice_context_returns_expected_dict(self, mock_qr) -> None:
         """Test that prepare_invoice_context returns the expected dictionary."""
         mock_qr.side_effect = lambda ctx: ctx.update({"qr_bill_svg": "<svg>QR</svg>"})
-        context = prepare_invoice_context(self.invoice.pk)
+        context = generate_content(self.invoice.pk)
 
         # check company info
         self.assertEqual("Test Company Ltd.", context["company_info"]["company_name"])
@@ -148,17 +148,17 @@ class InvoicePDFGenerationTest(TestCase):
 
     def test_render_invoice_html_renders_template(self):
         """Test that render_invoice_html renders the invoice HTML template with context."""
-        from sale.utils.invoice_pdf_generation import render_invoice_html
-        html = render_invoice_html(self.context)
+        from sale.utils.invoice_pdf_generation import generate_html_invoice
+        html = generate_html_invoice(self.context)
         hashed_result = hashlib.sha256(html.encode()).hexdigest()
         self.assertEqual("f359a8bdb72a7e54cc7c3ff7eddbb875a89e5ab49d288f47b76bf393dd872985", hashed_result)
 
     def test_generate_base_pdf_creates_pdf_and_page_count(self):
         """Test that generate_base_pdf returns PDF bytes and correct page count."""
-        from sale.utils.invoice_pdf_generation import generate_base_pdf
+        from sale.utils.invoice_pdf_generation import generate_pdf_from_html
         # Render a simple HTML for testing
         html = "<html><body><h1>Test PDF</h1><p>Page 1</p></body></html>"
-        pdf_bytes, page_count = generate_base_pdf(html)
+        pdf_bytes, page_count = generate_pdf_from_html(html, "/")
         self.assertIsInstance(pdf_bytes, bytes)
         self.assertGreater(len(pdf_bytes), 100)  # Should be a non-trivial PDF
         self.assertEqual(page_count, 1)
@@ -180,9 +180,9 @@ class InvoicePDFGenerationTest(TestCase):
 
     def test_add_page_numbers_to_pdf_adds_numbers(self):
         """Test that add_page_numbers_to_pdf adds page numbers to each page of a PDF."""
-        from sale.utils.invoice_pdf_generation import generate_base_pdf, add_page_numbers_to_pdf
+        from sale.utils.invoice_pdf_generation import generate_pdf_from_html, add_page_numbers_to_pdf
         from PyPDF2 import PdfReader
-        # Create a multi-page PDF
+        # Create a multipage PDF
         html = """
         <html><body>
         <h1>Test PDF</h1>
@@ -190,7 +190,7 @@ class InvoicePDFGenerationTest(TestCase):
         <h1>Page 2</h1>
         </body></html>
         """
-        pdf_bytes, page_count = generate_base_pdf(html)
+        pdf_bytes, page_count = generate_pdf_from_html(html, "/")
         self.assertEqual(page_count, 2)
         # Add page numbers
         numbered_pdf_stream = add_page_numbers_to_pdf(pdf_bytes, page_count)
