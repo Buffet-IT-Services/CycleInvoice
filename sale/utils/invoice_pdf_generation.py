@@ -84,20 +84,32 @@ def generate_content(invoice_id: int) -> dict[str, Any]:
     return context_data
 
 
-def generate_html_invoice(context_data: dict[str, Any], template_name: str = "sale/invoice.html") -> str:
+def generate_html_invoice(context_data: dict[str, Any]) -> str:
     """
     Generate the HTML content for the invoice using the provided context data.
 
     Args:
         context_data (dict): The context data for rendering
-        template_name (str): The name of the template to render
 
     Returns:
         str: The rendered HTML
 
     """
-    return render_to_string(template_name, context_data)
+    return render_to_string("sale/invoice.html", context_data)
 
+def generate_html_qr_page(context_data: dict[str, Any]) -> str:
+    """
+    Generate the HTML content for the qr page using the provided context data.
+
+    Args:
+        context_data (dict): The context data for rendering
+
+    Returns:
+        str: The rendered HTML
+
+    """
+    svg_content = quote(context_data["qr_bill_svg"])
+    return render_to_string("sale/qr_code.html", {**context_data, "svg_content": svg_content})
 
 def generate_pdf_from_html(html_content: str, base_url: str) -> bytes:
     """
@@ -115,7 +127,6 @@ def generate_pdf_from_html(html_content: str, base_url: str) -> bytes:
     pdf_file = document.write_pdf()
 
     return pdf_file
-
 
 def add_page_numbers_to_pdf(pdf_data: bytes) -> BytesIO:
     """
@@ -182,14 +193,6 @@ def create_pdf_content(pdf_stream: BytesIO, invoice_id: str) -> PDFContent:
     return PDFContent(content=content, filename=filename)
 
 
-def generate_html_qr_page(svg_content: str, context_data: dict[str, Any]) -> str:
-    """Generates the HTML for the QR code page."""
-    svg_content = quote(svg_content)
-    return render_to_string(
-        "sale/qr_code.html", {**context_data, "svg_content": svg_content}
-    )
-
-
 def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> "PDFContent":
     """
     Generate a PDF invoice using WeasyPrint with manual page numbering.
@@ -205,32 +208,28 @@ def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> "PDF
     # Prepare the content including qr code for the invoice
     content = generate_content(invoice_id)
 
-    # Render the HTML content for the invoice
-    html_content = generate_html_invoice(content)
+    # Render the HTML content
+    html_invoice = generate_html_invoice(content)
+    html_qr_page = generate_html_qr_page(content)
 
     # Generate the PDF from the HTML content
-    pdf_data = generate_pdf_from_html(html_content, request.build_absolute_uri("/"))
+    pdf_data = generate_pdf_from_html(html_invoice, request.build_absolute_uri("/"))
 
     # Add Page numbers to the PDF
-    pdf_with_page_numbers = add_page_numbers_to_pdf(pdf_data)
+    pdf_data = add_page_numbers_to_pdf(pdf_data)
 
-    # Step 5: Generate QR code HTML, then PDF, und combine with invoice PDF
-    final_output = PdfWriter()
+    # Add finished pages to the final PDF
+    output_pdf = PdfWriter()
+    for page in PdfReader(pdf_data).pages:
+        output_pdf.add_page(page)
 
-    # Add all pages from the invoice PDF with page numbers
-    numbered_pdf = PdfReader(pdf_with_page_numbers)
-    for page in numbered_pdf.pages:
-        final_output.add_page(page)
-
-    # QR-Code-HTML generieren und PDF daraus erzeugen
-    qr_html = generate_html_qr_page(content["qr_bill_svg"], content)
-    qr_pdf_bytes = generate_pdf_from_html(qr_html, request.build_absolute_uri("/"))
+    qr_pdf_bytes = generate_pdf_from_html(html_qr_page, request.build_absolute_uri("/"))
     qr_pdf = PdfReader(BytesIO(qr_pdf_bytes))
-    final_output.add_page(qr_pdf.pages[0])
+    output_pdf.add_page(qr_pdf.pages[0])
 
     # Write the final PDF to a BytesIO stream
     final_stream = BytesIO()
-    final_output.write(final_stream)
+    output_pdf.write(final_stream)
     final_stream.seek(0)
 
     # Create and return the PDF content

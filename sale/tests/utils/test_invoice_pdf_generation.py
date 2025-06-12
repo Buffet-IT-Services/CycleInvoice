@@ -207,9 +207,10 @@ class InvoicePDFGenerationTest(TestCase):
         from sale.utils.invoice_pdf_generation import generate_html_qr_page
         from urllib.parse import quote
         svg_content = '<svg><rect width="100" height="100" style="fill:rgb(0,0,0);"/></svg>'
+
         context = self.context.copy()
         context["qr_bill_svg"] = svg_content
-        html = generate_html_qr_page(svg_content, context)
+        html = generate_html_qr_page(context)
 
         self.assertIsInstance(html, str)
         self.assertIn(quote(svg_content), html)
