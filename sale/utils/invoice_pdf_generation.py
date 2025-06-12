@@ -83,6 +83,7 @@ def generate_content(invoice_id: int) -> dict[str, Any]:
 
     return context_data
 
+
 def generate_html_invoice(context_data: dict[str, Any]) -> str:
     """
     Generate the HTML content for the invoice using the provided context data.
@@ -95,6 +96,7 @@ def generate_html_invoice(context_data: dict[str, Any]) -> str:
 
     """
     return render_to_string("sale/invoice.html", context_data)
+
 
 def generate_html_qr_page(context_data: dict[str, Any]) -> str:
     """
@@ -109,6 +111,7 @@ def generate_html_qr_page(context_data: dict[str, Any]) -> str:
     """
     svg_content = quote(context_data["qr_bill_svg"])
     return render_to_string("sale/qr_code.html", {**context_data, "svg_content": svg_content})
+
 
 def generate_pdf_from_html(html_content: str, base_url: str) -> bytes:
     """
@@ -126,6 +129,7 @@ def generate_pdf_from_html(html_content: str, base_url: str) -> bytes:
     pdf_file = document.write_pdf()
 
     return pdf_file
+
 
 def add_page_numbers_to_pdf(pdf_data: bytes) -> BytesIO:
     """
@@ -171,28 +175,7 @@ class PDFContent:
     mime_type: str = "application/pdf"
 
 
-def create_pdf_content(pdf_stream: BytesIO, invoice_id: str) -> PDFContent:
-    """
-    Create a PDFContent object with the PDF content.
-
-    Args:
-        pdf_stream (BytesIO): The PDF content as a BytesIO stream
-        invoice_id (str): The invoice ID for the filename
-
-    Returns:
-        PDFContent: Object containing PDF content and metadata
-
-    """
-    filename = f"invoice_{invoice_id}_numbered.pdf"
-
-    # Get the bytes from the BytesIO stream
-    pdf_stream.seek(0)
-    content = pdf_stream.getvalue()
-
-    return PDFContent(content=content, filename=filename)
-
-
-def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> "PDFContent":
+def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> PDFContent:
     """
     Generate a PDF invoice using WeasyPrint with manual page numbering.
 
@@ -230,4 +213,4 @@ def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> "PDF
     final_stream.seek(0)
 
     # Create and return the PDF content
-    return create_pdf_content(final_stream, content["invoice_details"]["invoice_number"])
+    return PDFContent(final_stream.getvalue(), f"invoice_{invoice_id}.pdf")
