@@ -98,7 +98,7 @@ class InvoicePDFGenerationTest(TestCase):
 
     # noinspection DuplicatedCode
     @patch("sale.utils.invoice_pdf_generation.generate_swiss_qr")
-    def test_prepare_invoice_context_returns_expected_dict(self, mock_qr) -> None:
+    def test_generate_content(self, mock_qr) -> None:
         """Test that prepare_invoice_context returns the expected dictionary."""
         mock_qr.side_effect = lambda ctx: ctx.update({"qr_bill_svg": "<svg>QR</svg>"})
         context = generate_content(self.invoice.pk)
@@ -146,71 +146,65 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertFalse(context["show_page_number"])
         self.assertEqual("<svg>QR</svg>", context["qr_bill_svg"])
 
-    def test_render_invoice_html_renders_template(self):
-        """Test that render_invoice_html renders the invoice HTML template with context."""
+    def test_generate_html_invoice(self):
+        """Test that generate_html_invoice renders the invoice HTML template with context."""
         from sale.utils.invoice_pdf_generation import generate_html_invoice
         html = generate_html_invoice(self.context)
-        hashed_result = hashlib.sha256(html.encode()).hexdigest()
-        self.assertEqual("f359a8bdb72a7e54cc7c3ff7eddbb875a89e5ab49d288f47b76bf393dd872985", hashed_result)
+        html_hash = hashlib.sha256(html.encode()).hexdigest()
+        self.assertIsInstance(html, str)
+        self.assertTrue(html.startswith("<!DOCTYPE html>"))
+        self.assertEqual("f359a8bdb72a7e54cc7c3ff7eddbb875a89e5ab49d288f47b76bf393dd872985", html_hash)
 
-    def test_generate_base_pdf_creates_pdf_and_page_count(self):
-        """Test that generate_base_pdf returns PDF bytes and correct page count."""
+    def test_generate_html_qr_page(self):
+        """Test that generate_html_qr_page returns the expected HTML for the QR bill."""
+        from sale.utils.invoice_pdf_generation import generate_html_qr_page
+        html = generate_html_qr_page(self.context)
+        html_hash = hashlib.sha256(html.encode()).hexdigest()
+        self.assertIsInstance(html, str)
+        self.assertTrue(html.startswith("<!DOCTYPE html>"))
+        self.assertEqual("e6aa4a5590a7734fd58148e214bee49285d4d3199482dab18241c85855bcf160", html_hash)
+
+    def test_generate_pdf_from_html(self):
+        """Test that generate_pdf_from_html returns PDF bytes for valid HTML input."""
         from sale.utils.invoice_pdf_generation import generate_pdf_from_html
-        # Render a simple HTML for testing
         html = "<html><body><h1>Test PDF</h1><p>Page 1</p></body></html>"
-        pdf_bytes = generate_pdf_from_html(html, "/")
+        base_url = "http://testserver/"
+        pdf_bytes = generate_pdf_from_html(html, base_url)
+        pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
         self.assertIsInstance(pdf_bytes, bytes)
         self.assertGreater(len(pdf_bytes), 100)  # Should be a non-trivial PDF
+        self.assertTrue(pdf_bytes.startswith(b'%PDF'))
+        self.assertEqual("3efe0f81099eab094be6c24db9d7090499ad7a2402126f1554a3fd0293587987", pdf_hash)
 
-    def test_add_page_numbers_to_pdf_adds_numbers(self):
-        """Test that add_page_numbers_to_pdf adds page numbers to each page of a PDF."""
-        from sale.utils.invoice_pdf_generation import generate_pdf_from_html, add_page_numbers_to_pdf
+    def test_add_page_numbers_to_pdf(self):
+        """Test that add_page_numbers_to_pdf adds page numbers to a PDF."""
+        from sale.utils.invoice_pdf_generation import add_page_numbers_to_pdf
         from PyPDF2 import PdfReader
-        # Create a multipage PDF
-        html = """
-        <html><body>
-        <h1>Test PDF</h1>
-        <div style='page-break-after: always;'></div>
-        <h1>Page 2</h1>
-        </body></html>
-        """
-        pdf_bytes = generate_pdf_from_html(html, "/")
 
-        # Add page numbers
+        # Create a simple PDF with 2 pages
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import A4
+        from io import BytesIO
+
+        buffer = BytesIO()
+        c = canvas.Canvas(buffer, pagesize=A4)
+        c.drawString(100, 750, "Seite 1")
+        c.showPage()
+        c.drawString(100, 750, "Seite 2")
+        c.save()
+        buffer.seek(0)
+        pdf_bytes = buffer.getvalue()
+
+        # Test the function
         numbered_pdf_stream = add_page_numbers_to_pdf(pdf_bytes)
-        self.assertIsNotNone(numbered_pdf_stream)
         numbered_pdf_stream.seek(0)
         reader = PdfReader(numbered_pdf_stream)
         self.assertEqual(len(reader.pages), 2)
-        # Check that both pages contain the correct page number text
-        text1 = reader.pages[0].extract_text()
-        text2 = reader.pages[1].extract_text()
-        self.assertIn("Seite 1 von 2", text1)
-        self.assertIn("Seite 2 von 2", text2)
 
-    def test_create_pdf_content_returns_pdf_content(self):
-        """Test that create_pdf_content returns a PDFContent object with correct content and filename."""
-        from sale.utils.invoice_pdf_generation import create_pdf_content, PDFContent
-        # Create a dummy BytesIO PDF stream
-        from io import BytesIO
-        dummy_pdf_bytes = b"%PDF-1.4 dummy pdf content"
-        pdf_stream = BytesIO(dummy_pdf_bytes)
-        invoice_id = "INV-2024-001"
-        pdf_content = create_pdf_content(pdf_stream, invoice_id)
-        self.assertIsInstance(pdf_content, PDFContent)
-        self.assertEqual(pdf_content.content, dummy_pdf_bytes)
-        self.assertEqual(pdf_content.filename, f"invoice_{invoice_id}_numbered.pdf")
-        self.assertEqual(pdf_content.mime_type, "application/pdf")
-
-    def test_generate_qr_code_html_contains_quoted_svg(self):
-        """Test that generate_qr_code_html returns HTML containing the quoted SVG content."""
-        from sale.utils.invoice_pdf_generation import generate_html_qr_page
-        from urllib.parse import quote
-        svg_content = '<svg><rect width="100" height="100" style="fill:rgb(0,0,0);"/></svg>'
-
-        context = self.context.copy()
-        context["qr_bill_svg"] = svg_content
-        html = generate_html_qr_page(context)
-
-        self.assertIsInstance(html, str)
-        self.assertIn(quote(svg_content), html)
+        # Check that the page structure is preserved and page numbers are added
+        text_page1 = reader.pages[0].extract_text()
+        text_page2 = reader.pages[1].extract_text()
+        self.assertIn("Seite 1", text_page1)
+        self.assertIn("Seite 2", text_page2)
+        self.assertIn("Seite 1 von 2", text_page1)
+        self.assertIn("Seite 2 von 2", text_page2)

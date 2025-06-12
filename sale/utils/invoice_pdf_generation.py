@@ -17,6 +17,9 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
 
+from sale.utils.swiss_qr import generate_swiss_qr
+
+
 def generate_content(invoice_id: int) -> dict[str, Any]:
     """
     Prepare the context data for invoice rendering.
@@ -76,11 +79,9 @@ def generate_content(invoice_id: int) -> dict[str, Any]:
     }
 
     # Generate the QR bill and add it to the context
-    from sale.utils.swiss_qr import generate_swiss_qr
     generate_swiss_qr(context_data)
 
     return context_data
-
 
 def generate_html_invoice(context_data: dict[str, Any]) -> str:
     """
@@ -95,7 +96,6 @@ def generate_html_invoice(context_data: dict[str, Any]) -> str:
     """
     return render_to_string("sale/invoice.html", context_data)
 
-
 def generate_html_qr_page(context_data: dict[str, Any]) -> str:
     """
     Generate the HTML content for the qr page using the provided context data.
@@ -109,7 +109,6 @@ def generate_html_qr_page(context_data: dict[str, Any]) -> str:
     """
     svg_content = quote(context_data["qr_bill_svg"])
     return render_to_string("sale/qr_code.html", {**context_data, "svg_content": svg_content})
-
 
 def generate_pdf_from_html(html_content: str, base_url: str) -> bytes:
     """
@@ -127,7 +126,6 @@ def generate_pdf_from_html(html_content: str, base_url: str) -> bytes:
     pdf_file = document.write_pdf()
 
     return pdf_file
-
 
 def add_page_numbers_to_pdf(pdf_data: bytes) -> BytesIO:
     """
