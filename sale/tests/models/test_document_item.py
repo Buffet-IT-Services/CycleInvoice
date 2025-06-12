@@ -29,8 +29,8 @@ def fake_document_item_work() -> DocumentItem:
     from sale.tests.models.test_work_type import fake_work_type
     work = fake_work_type()
     from contact.tests.models.test_contact import fake_contact
-    return DocumentItem.objects.create(price=work.price_per_hour, quantity=2, customer=fake_contact(), item_type="work",
-                                       discount=0.1, comment_title="Test Date", work_type=work,
+    return DocumentItem.objects.create(price=work.price_per_hour, quantity=2.00, customer=fake_contact(),
+                                       item_type="work", discount=0.1, comment_title="Test Date", work_type=work,
                                        comment_description="Test Description")
 
 
@@ -299,4 +299,3 @@ class DocumentItemTest(TestCase):
         with self.assertRaises(ValueError) as context:
             _ = document_item.description
         self.assertIn("Invalid item type: invalid_type", str(context.exception))
-
