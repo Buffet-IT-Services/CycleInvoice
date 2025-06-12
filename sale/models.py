@@ -318,7 +318,7 @@ class DocumentItem(ChangeLoggerAll):
         """Return the quantity as a string."""
         if self.quantity == int(self.quantity):
             return str(int(self.quantity))
-        return f"{self.quantity:.2f}".rstrip("0").rstrip(",").rstrip(".")
+        return f"{self.quantity:.2f}".rstrip("0").rstrip(".")
 
     @property
     def total(self) -> Decimal:
