@@ -23,7 +23,8 @@ jobs:
           git add -A
           if [[ `git status --porcelain` ]]; then
             git commit -m "Automatically added GitHub issue links to TODOs"
-            git push origin main
+            BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
+            git push origin "$BRANCH_NAME"
           else
             echo "No changes to commit"
           fi
