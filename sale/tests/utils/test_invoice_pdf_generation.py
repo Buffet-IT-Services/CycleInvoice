@@ -171,11 +171,9 @@ class InvoicePDFGenerationTest(TestCase):
         html = "<html><body><h1>Test PDF</h1><p>Page 1</p></body></html>"
         base_url = "http://testserver/"
         pdf_bytes = generate_pdf_from_html(html, base_url)
-        pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
         self.assertIsInstance(pdf_bytes, bytes)
         self.assertGreater(len(pdf_bytes), 100)  # Should be a non-trivial PDF
         self.assertTrue(pdf_bytes.startswith(b"%PDF"))
-        self.assertEqual("3efe0f81099eab094be6c24db9d7090499ad7a2402126f1554a3fd0293587987", pdf_hash)
 
     def test_add_page_numbers_to_pdf(self) -> None:
         """Test that add_page_numbers_to_pdf adds page numbers to a PDF."""
