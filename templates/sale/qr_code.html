@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
-<html>
+<html lang="de">
 
 <head>
     <meta charset="UTF-8">
@@ -25,11 +25,6 @@
         }
 
 
-        table.items {
-            margin-top: 5mm;
-            border-collapse: collapse;
-        }
-
         table.items th {
             padding: 3px;
             font-weight: 800;
@@ -53,6 +48,7 @@
         .item-description li {
             margin-bottom: 3px;
         }
+
         #master-table table {
             page-break-inside: auto;
             border-collapse: collapse;
@@ -74,7 +70,7 @@
 
 
         /* Add spacing after table to ensure proper spacing before footer */
-        #master-table+* {
+        #master-table + * {
             margin-top: 10mm;
         }
 
@@ -125,86 +121,93 @@
 </head>
 
 <body>
-    <!-- Page header and footer structure for repeating on every page -->
-    <div class="page-header">
-        <div class="flex-container-header">
-            <div class="flex-items-header">
-                <img src="{% static 'sale/images/logo.svg' %}" alt="Logo" style="width: 200px;">
-            </div>
-            <div class="flex-items-header" style="position: absolute; top: -1px; right: 0;">
-                <img src="{% static 'sale/images/header.svg' %}" alt="Header">
-            </div>
-            <div class="flex-items-header" style="position: absolute; top: 25mm; right: 15mm;">
-                <table cellspacing="0" cellpadding="0"
-                    style="border-collapse: collapse; line-height: 0.8; border-spacing: 0;">
-                    <tr style="height: 3mm; margin: 0; padding: 0;">
-                        <td
-                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
-                            {{ company_info.company_phone }}
-                        </td>
-                        <td style="width: 3.5mm;background-color: #333333;"><img alt="call"
-                                src="{% static 'sale/images/call.svg' %}"
-                                style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
-                        </td>
-                    </tr>
-                    <tr style="height: 3mm; margin: 0; padding: 0;">
-                        <td
-                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
-                            {{ company_info.company_email }}
-                        </td>
-                        <td style="width: 3.5mm;background-color: #333333;"><img alt="email"
-                                src="{% static 'sale/images/email.svg' %}"
-                                style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
-                        </td>
-                    </tr>
-                    <tr style="height: 3mm; margin: 0; padding: 0;">
-                        <td
-                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
-                            {{ company_info.company_website }}
-                        </td>
-                        <td style="width: 3.5mm;background-color: #333333;"><img alt="web"
-                                src="{% static 'sale/images/web.svg' %}"
-                                style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
-                        </td>
-                    </tr>
-                    <tr style="height: 3mm; margin: 0; padding: 0;">
-                        <td
-                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0; padding-bottom: 0;">
-                            {{ company_info.company_registration_id }}
-                        </td>
-                        <td style="width: 3.5mm;background-color: #333333;"><img alt="user"
-                                src="{% static 'sale/images/user.svg' %}"
-                                style="width: 2.5mm; height: 2.5mm; padding: 1mm; border-radius: 5px;">
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <!-- Customer address moved to main content with first-page-only class -->
+<!-- Page header and footer structure for repeating on every page -->
+<div class="page-header">
+    <div class="flex-container-header">
+        <div class="flex-items-header">
+            <img src="{% static 'sale/images/logo.svg' %}" alt="Logo" style="width: 200px;">
         </div>
+        <div class="flex-items-header" style="position: absolute; top: -1px; right: 0;">
+            <img src="{% static 'sale/images/header.svg' %}" alt="Header">
+        </div>
+        <div class="flex-items-header" style="position: absolute; top: 25mm; right: 15mm;">
+            <table
+                    style="border-collapse: collapse; line-height: 0.8; border-spacing: 0;">
+                <tr style="height: 3mm; margin: 0; padding: 0;">
+                    <td style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0;
+                    padding-bottom: 0;">
+                        {{ company_info.company_phone }}
+                    </td>
+                    <td style="width: 3.5mm;background-color: #333333;"><img alt="call"
+                                                                             src="{% static 'sale/images/call.svg' %}"
+                                                                             style="width: 2.5mm; height: 2.5mm;
+                                                                             padding: 1mm; border-radius: 5px;">
+                    </td>
+                </tr>
+                <tr style="height: 3mm; margin: 0; padding: 0;">
+                    <td
+                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0;
+                            padding-bottom: 0;">
+                        {{ company_info.company_email }}
+                    </td>
+                    <td style="width: 3.5mm;background-color: #333333;"><img alt="email"
+                                                                             src="{% static 'sale/images/email.svg' %}"
+                                                                             style="width: 2.5mm; height: 2.5mm;
+                                                                             padding: 1mm; border-radius: 5px;">
+                    </td>
+                </tr>
+                <tr style="height: 3mm; margin: 0; padding: 0;">
+                    <td
+                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0;
+                            padding-bottom: 0;">
+                        {{ company_info.company_website }}
+                    </td>
+                    <td style="width: 3.5mm;background-color: #333333;"><img alt="web"
+                                                                             src="{% static 'sale/images/web.svg' %}"
+                                                                             style="width: 2.5mm; height: 2.5mm;
+                                                                             padding: 1mm; border-radius: 5px;">
+                    </td>
+                </tr>
+                <tr style="height: 3mm; margin: 0; padding: 0;">
+                    <td
+                            style="text-align: right; font-size: 11px; padding-right: 10px; padding-top: 0;
+                            padding-bottom: 0;">
+                        {{ company_info.company_registration_id }}
+                    </td>
+                    <td style="width: 3.5mm;background-color: #333333;"><img alt="user"
+                                                                             src="{% static 'sale/images/user.svg' %}"
+                                                                             style="width: 2.5mm; height: 2.5mm;
+                                                                             padding: 1mm; border-radius: 5px;">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Customer address moved to main content with first-page-only class -->
     </div>
+</div>
 
 
-
-    <!-- Main content table with proper structure for header and footer -->
-    <table style="width: 100%;padding-left: 15mm;padding-right: 15mm;">
-        <thead>
-            <tr>
-                <td>
-                    <!--place holder for the fixed-position header-->
-                    <div class="page-header-space"></div>
-                </td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                    <div style="position: absolute;bottom: 0;left: 50%;transform: translateX(-50%);width: 100%;text-align: center;">
-                        <img src="data:image/svg+xml;utf8,{{ svg_content }}" alt="QR Code" style="width: 210mm;">
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+<!-- Main content table with proper structure for header and footer -->
+<table style="width: 100%;padding-left: 15mm;padding-right: 15mm;">
+    <thead>
+    <tr>
+        <td>
+            <!--placeholder for the fixed-position header-->
+            <div class="page-header-space"></div>
+        </td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <div style="position: absolute;bottom: 0;left: 50%;transform: translateX(-50%);width: 100%;
+            text-align: center;">
+                <img src="data:image/svg+xml;utf8,{{ svg_content }}" alt="QR Code" style="width: 210mm;">
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 
 </html>
