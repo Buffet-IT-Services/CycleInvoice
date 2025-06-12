@@ -27,6 +27,8 @@ ignore = [
     "ANN002", # in django projects, *args comes from the parent class
     "ANN003", # in django projects, **kwargs comes from the parent class
     "PT027", "PT009", # for django tests, we need to use the test client
+    "TD002", # Florin Buffet anyway is responsible for this
+    "FIX002", # todos are meant to be fixed later
 ]
 
 select = [
