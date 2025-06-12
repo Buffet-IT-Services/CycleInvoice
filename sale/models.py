@@ -316,7 +316,9 @@ class DocumentItem(ChangeLoggerAll):
     @property
     def quantity_str(self) -> str:
         """Return the quantity as a string."""
-        return f"{self.quantity}"
+        if self.quantity == int(self.quantity):
+            return str(int(self.quantity))
+        return f"{self.quantity:.2f}".rstrip("0").rstrip(".")
 
     @property
     def total(self) -> Decimal:
