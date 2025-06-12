@@ -1,8 +1,8 @@
 # Import and expose functions from invoice_pdf_generation module
 from sale.utils.invoice_pdf_generation import (
-    generate_invoice_pdf_two_pass,
+    generate_invoice_pdf,
 )
 
 __all__ = [
-    "generate_invoice_pdf_two_pass",
+    "generate_invoice_pdf",
 ]

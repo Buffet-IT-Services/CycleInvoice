@@ -1,7 +1,7 @@
 """Test cases for the Invoice PDF generation utils."""
 import hashlib
 import os
-from unittest.mock import patch
+from unittest.mock import patch, NonCallableMock
 
 from django.test import TestCase
 
@@ -137,7 +137,7 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertEqual(context["invoice_items"][1]["product_name"], self.item.title)
         self.assertEqual(context["invoice_items"][1]["product_description"], self.item.description)
         self.assertEqual(context["invoice_items"][1]["quantity"], "2.00")  # TODO: Adjust to dynamic quantity
-                                                                           # https://github.com/Buffet-IT-Services/CycleInvoice/issues/35
+        # https://github.com/Buffet-IT-Services/CycleInvoice/issues/35
         self.assertEqual(context["invoice_items"][1]["price_single"], self.item.price_str)
         self.assertEqual(context["invoice_items"][1]["discount"], self.item.discount_str)
         self.assertEqual(context["invoice_items"][1]["price_total"], self.item.total_str)
@@ -216,9 +216,11 @@ class InvoicePDFGenerationTest(TestCase):
     @patch("sale.utils.invoice_pdf_generation.generate_html_qr_page")
     @patch("sale.utils.invoice_pdf_generation.generate_pdf_from_html")
     @patch("sale.utils.invoice_pdf_generation.add_page_numbers_to_pdf")
-    def test_generate_invoice_pdf_two_pass(self, mock_add_page_numbers: object, mock_generate_pdf_from_html: object,
-                                           mock_generate_html_qr_page: object, mock_generate_html_invoice: object,
-                                           mock_generate_content: object) -> None:
+    def test_generate_invoice_pdf_two_pass(self, mock_add_page_numbers: NonCallableMock,
+                                           mock_generate_pdf_from_html: NonCallableMock,
+                                           mock_generate_html_qr_page: NonCallableMock,
+                                           mock_generate_html_invoice: NonCallableMock,
+                                           mock_generate_content: NonCallableMock) -> None:
         """Test that generate_invoice_pdf_two_pass returns a PDFContent object with correct filename and PDF bytes."""
         from io import BytesIO
 
@@ -226,7 +228,7 @@ class InvoicePDFGenerationTest(TestCase):
         from reportlab.lib.pagesizes import A4
         from reportlab.pdfgen import canvas
 
-        from sale.utils.invoice_pdf_generation import PDFContent, generate_invoice_pdf_two_pass
+        from sale.utils.invoice_pdf_generation import generate_invoice_pdf
 
         # Create a valid PDF for mocking
         def create_valid_pdf_bytes(text: str = "Test PDF") -> bytes:
@@ -259,14 +261,7 @@ class InvoicePDFGenerationTest(TestCase):
         request.build_absolute_uri = lambda path="/": f"https://testserver{path}"
 
         # Call the function
-        result = generate_invoice_pdf_two_pass(request, 42)
-
-        # Assertions
-        self.assertIsInstance(result, PDFContent)
-        self.assertTrue(result.filename.startswith("invoice_42"))
-        self.assertEqual(result.mime_type, "application/pdf")
-        self.assertIsInstance(result.content, bytes)
-        self.assertGreater(len(result.content), 0)
+        generate_invoice_pdf(request, 42)
 
         # Check mocks called as expected
         mock_generate_content.assert_called_once_with(42)
@@ -274,3 +269,21 @@ class InvoicePDFGenerationTest(TestCase):
         mock_generate_html_qr_page.assert_called_once()
         self.assertEqual(mock_generate_pdf_from_html.call_count, 2)
         mock_add_page_numbers.assert_called_once()
+
+    @patch("django.core.files.storage.default_storage")
+    @patch("django.core.files.base.ContentFile")
+    def test_add_pdf_to_storage(self, mock_content_file: NonCallableMock,
+                                mock_default_storage: NonCallableMock) -> None:
+        """Test that add_pdf_to_storage saves the PDF to default storage with correct filename and content."""
+        from sale.utils.invoice_pdf_generation import add_pdf_to_storage, PDFContent
+        # Prepare PDFContent
+        pdf_content = PDFContent(content=b"PDFDATA", filename="test_invoice.pdf")
+        # Call the function
+        add_pdf_to_storage(pdf_content)
+        # Check ContentFile called with correct content
+        mock_content_file.assert_called_once_with(b"PDFDATA")
+        # Check default_storage.save called with correct filename and ContentFile
+        mock_default_storage.save.assert_called_once()
+        args, kwargs = mock_default_storage.save.call_args
+        self.assertEqual(args[0], "test_invoice.pdf")
+        self.assertIs(args[1], mock_content_file.return_value)

@@ -19,6 +19,13 @@ from weasyprint import HTML
 
 from sale.utils.swiss_qr import generate_swiss_qr
 
+@dataclass
+class PDFContent:
+    """Class for storing PDF content and metadata."""
+
+    content: bytes
+    filename: str
+    mime_type: str = "application/pdf"
 
 def generate_content(invoice_id: int) -> dict[str, Any]:
     """
@@ -164,17 +171,19 @@ def add_page_numbers_to_pdf(pdf_data: bytes) -> BytesIO:
     output_stream.seek(0)
     return output_stream
 
+def add_pdf_to_storage(invoice_pdf: PDFContent) -> None:
+    """Save the generated PDF invoice to the default storage.
 
-@dataclass
-class PDFContent:
-    """Class for storing PDF content and metadata."""
+    :param invoice_pdf: PDFContent object containing the PDF data and filename
+    """
+    pdf_content = invoice_pdf.content
 
-    content: bytes
-    filename: str
-    mime_type: str = "application/pdf"
+    from django.core.files.base import ContentFile
+    from django.core.files.storage import default_storage
+    default_storage.save(invoice_pdf.filename, ContentFile(pdf_content))
 
 
-def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> PDFContent:
+def generate_invoice_pdf(request: HttpRequest, invoice_id: int) -> None:
     """
     Generate a PDF invoice using WeasyPrint with manual page numbering.
 
@@ -212,4 +221,4 @@ def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> PDFC
     final_stream.seek(0)
 
     # Create and return the PDF content
-    return PDFContent(final_stream.getvalue(), f"invoice_{invoice_id}.pdf")
+    add_pdf_to_storage(PDFContent(final_stream.getvalue(), f"invoice_{invoice_id}.pdf"))
