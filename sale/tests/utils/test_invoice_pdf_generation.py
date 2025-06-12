@@ -177,7 +177,7 @@ class InvoicePDFGenerationTest(TestCase):
         """Test that add_page_numbers_to_pdf adds page numbers to a PDF."""
         from io import BytesIO
 
-        from PyPDF2 import PdfReader
+        from pypdf import PdfReader
         from reportlab.lib.pagesizes import A4
 
         # Create a simple PDF with 2 pages
