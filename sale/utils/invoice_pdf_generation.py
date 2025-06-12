@@ -19,6 +19,7 @@ from weasyprint import HTML
 
 from sale.utils.swiss_qr import generate_swiss_qr
 
+
 @dataclass
 class PDFContent:
     """Class for storing PDF content and metadata."""
@@ -172,7 +173,8 @@ def add_page_numbers_to_pdf(pdf_data: bytes) -> BytesIO:
     return output_stream
 
 def add_pdf_to_storage(invoice_pdf: PDFContent) -> None:
-    """Save the generated PDF invoice to the default storage.
+    """
+    Save the generated PDF invoice to the default storage.
 
     :param invoice_pdf: PDFContent object containing the PDF data and filename
     """

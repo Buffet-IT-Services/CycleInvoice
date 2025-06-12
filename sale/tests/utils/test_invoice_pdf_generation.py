@@ -1,7 +1,7 @@
 """Test cases for the Invoice PDF generation utils."""
 import hashlib
 import os
-from unittest.mock import patch, NonCallableMock
+from unittest.mock import NonCallableMock, patch
 
 from django.test import TestCase
 
@@ -275,7 +275,7 @@ class InvoicePDFGenerationTest(TestCase):
     def test_add_pdf_to_storage(self, mock_content_file: NonCallableMock,
                                 mock_default_storage: NonCallableMock) -> None:
         """Test that add_pdf_to_storage saves the PDF to default storage with correct filename and content."""
-        from sale.utils.invoice_pdf_generation import add_pdf_to_storage, PDFContent
+        from sale.utils.invoice_pdf_generation import PDFContent, add_pdf_to_storage
         # Prepare PDFContent
         pdf_content = PDFContent(content=b"PDFDATA", filename="test_invoice.pdf")
         # Call the function
