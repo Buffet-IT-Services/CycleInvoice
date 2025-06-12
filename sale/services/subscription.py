@@ -34,6 +34,7 @@ def subscription_extension(subscription_id: int) -> None:
         customer=subscription.customer,
         price=subscription.product.price,
         quantity=1,
+        item_type="subscription",
     )
 
     # update Subscription
