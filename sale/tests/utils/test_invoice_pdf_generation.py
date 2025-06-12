@@ -158,10 +158,9 @@ class InvoicePDFGenerationTest(TestCase):
         from sale.utils.invoice_pdf_generation import generate_pdf_from_html
         # Render a simple HTML for testing
         html = "<html><body><h1>Test PDF</h1><p>Page 1</p></body></html>"
-        pdf_bytes, page_count = generate_pdf_from_html(html, "/")
+        pdf_bytes = generate_pdf_from_html(html, "/")
         self.assertIsInstance(pdf_bytes, bytes)
         self.assertGreater(len(pdf_bytes), 100)  # Should be a non-trivial PDF
-        self.assertEqual(page_count, 1)
 
     def test_add_page_numbers_to_pdf_adds_numbers(self):
         """Test that add_page_numbers_to_pdf adds page numbers to each page of a PDF."""
@@ -175,10 +174,10 @@ class InvoicePDFGenerationTest(TestCase):
         <h1>Page 2</h1>
         </body></html>
         """
-        pdf_bytes, page_count = generate_pdf_from_html(html, "/")
-        self.assertEqual(page_count, 2)
+        pdf_bytes = generate_pdf_from_html(html, "/")
+
         # Add page numbers
-        numbered_pdf_stream = add_page_numbers_to_pdf(pdf_bytes, page_count)
+        numbered_pdf_stream = add_page_numbers_to_pdf(pdf_bytes)
         self.assertIsNotNone(numbered_pdf_stream)
         numbered_pdf_stream.seek(0)
         reader = PdfReader(numbered_pdf_stream)

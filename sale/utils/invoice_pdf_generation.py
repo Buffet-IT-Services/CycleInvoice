@@ -99,7 +99,7 @@ def generate_html_invoice(context_data: dict[str, Any], template_name: str = "sa
     return render_to_string(template_name, context_data)
 
 
-def generate_pdf_from_html(html_content: str, base_url: str) -> tuple[bytes, int]:
+def generate_pdf_from_html(html_content: str, base_url: str) -> bytes:
     """
     Generate a PDF from HTML content using WeasyPrint.
 
@@ -108,48 +108,44 @@ def generate_pdf_from_html(html_content: str, base_url: str) -> tuple[bytes, int
         base_url (str, optional): The base URL for resolving relative URLs
 
     Returns:
-        tuple: (PDF bytes, total page count)
+        bytes: The generated PDF as bytes
 
     """
     document = HTML(string=html_content, base_url=base_url, encoding="utf-8").render()
-    total_pages = len(document.pages)
     pdf_file = document.write_pdf()
 
-    return pdf_file, total_pages
+    return pdf_file
 
 
-def add_page_numbers_to_pdf(pdf_data: bytes, total_pages: int) -> BytesIO:
+def add_page_numbers_to_pdf(pdf_data: bytes) -> BytesIO:
     """
     Add page numbers to each page of a PDF.
 
     Args:
         pdf_data (bytes): The original PDF data
-        total_pages (int): The total number of pages
 
     Returns:
         BytesIO: A BytesIO object containing the PDF with page numbers
-
     """
     input_pdf = PdfReader(BytesIO(pdf_data))
     output_pdf = PdfWriter()
 
-    for page_num in range(total_pages):
-        page = input_pdf.pages[page_num]
-
+    for page_num, page in enumerate(input_pdf.pages, start=1):
+        # Create overlay with page number
         packet = BytesIO()
         can = canvas.Canvas(packet, pagesize=A4)
         can.setFont("Helvetica", 22)
         can.setFillColorRGB(1, 1, 1)
-        text = f"Seite {page_num + 1} von {total_pages}"
-        can.drawRightString(530, 20, text)
+        can.drawRightString(530, 20, f"Seite {page_num} von {len(input_pdf.pages)}")
         can.save()
         packet.seek(0)
-        overlay_stream = packet
 
-        overlay_pdf = PdfReader(overlay_stream)
+        # Merge overlay with the current page
+        overlay_pdf = PdfReader(packet)
         page.merge_page(overlay_pdf.pages[0])
         output_pdf.add_page(page)
 
+    # Write the final PDF to a BytesIO stream
     output_stream = BytesIO()
     output_pdf.write(output_stream)
     output_stream.seek(0)
@@ -213,10 +209,10 @@ def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> "PDF
     html_content = generate_html_invoice(content)
 
     # Generate the PDF from the HTML content
-    pdf_data, total_pages = generate_pdf_from_html(html_content, request.build_absolute_uri("/"))
+    pdf_data = generate_pdf_from_html(html_content, request.build_absolute_uri("/"))
 
-    # Step 4: Add page numbers to the PDF
-    pdf_with_page_numbers = add_page_numbers_to_pdf(pdf_data, total_pages)
+    # Add Page numbers to the PDF
+    pdf_with_page_numbers = add_page_numbers_to_pdf(pdf_data)
 
     # Step 5: Generate QR code HTML, then PDF, und combine with invoice PDF
     final_output = PdfWriter()
@@ -228,7 +224,7 @@ def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> "PDF
 
     # QR-Code-HTML generieren und PDF daraus erzeugen
     qr_html = generate_html_qr_page(content["qr_bill_svg"], content)
-    qr_pdf_bytes, _ = generate_pdf_from_html(qr_html, request.build_absolute_uri("/"))
+    qr_pdf_bytes = generate_pdf_from_html(qr_html, request.build_absolute_uri("/"))
     qr_pdf = PdfReader(BytesIO(qr_pdf_bytes))
     final_output.add_page(qr_pdf.pages[0])
 
