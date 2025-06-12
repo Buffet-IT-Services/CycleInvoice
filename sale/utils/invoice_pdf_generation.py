@@ -17,9 +17,6 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
 
-from sale.utils.swiss_qr import generate_swiss_qr
-
-
 def generate_content(invoice_id: int) -> dict[str, Any]:
     """
     Prepare the context data for invoice rendering.
@@ -79,6 +76,7 @@ def generate_content(invoice_id: int) -> dict[str, Any]:
     }
 
     # Generate the QR bill and add it to the context
+    from sale.utils.swiss_qr import generate_swiss_qr
     generate_swiss_qr(context_data)
 
     return context_data
@@ -97,6 +95,7 @@ def generate_html_invoice(context_data: dict[str, Any]) -> str:
     """
     return render_to_string("sale/invoice.html", context_data)
 
+
 def generate_html_qr_page(context_data: dict[str, Any]) -> str:
     """
     Generate the HTML content for the qr page using the provided context data.
@@ -110,6 +109,7 @@ def generate_html_qr_page(context_data: dict[str, Any]) -> str:
     """
     svg_content = quote(context_data["qr_bill_svg"])
     return render_to_string("sale/qr_code.html", {**context_data, "svg_content": svg_content})
+
 
 def generate_pdf_from_html(html_content: str, base_url: str) -> bytes:
     """
@@ -127,6 +127,7 @@ def generate_pdf_from_html(html_content: str, base_url: str) -> bytes:
     pdf_file = document.write_pdf()
 
     return pdf_file
+
 
 def add_page_numbers_to_pdf(pdf_data: bytes) -> BytesIO:
     """
@@ -213,19 +214,17 @@ def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> "PDF
     html_qr_page = generate_html_qr_page(content)
 
     # Generate the PDF from the HTML content
-    pdf_data = generate_pdf_from_html(html_invoice, request.build_absolute_uri("/"))
+    pdf_data_invoice = generate_pdf_from_html(html_invoice, request.build_absolute_uri("/"))
+    pdf_data_qr_page = generate_pdf_from_html(html_qr_page, request.build_absolute_uri("/"))
 
     # Add Page numbers to the PDF
-    pdf_data = add_page_numbers_to_pdf(pdf_data)
+    pdf_data_invoice = add_page_numbers_to_pdf(pdf_data_invoice)
 
-    # Add finished pages to the final PDF
+    # Build the final PDF by merging the invoice and QR code pages
     output_pdf = PdfWriter()
-    for page in PdfReader(pdf_data).pages:
+    for page in PdfReader(pdf_data_invoice).pages:
         output_pdf.add_page(page)
-
-    qr_pdf_bytes = generate_pdf_from_html(html_qr_page, request.build_absolute_uri("/"))
-    qr_pdf = PdfReader(BytesIO(qr_pdf_bytes))
-    output_pdf.add_page(qr_pdf.pages[0])
+    output_pdf.add_page(PdfReader(BytesIO(pdf_data_qr_page)).pages[0])
 
     # Write the final PDF to a BytesIO stream
     final_stream = BytesIO()
@@ -233,6 +232,4 @@ def generate_invoice_pdf_two_pass(request: HttpRequest, invoice_id: int) -> "PDF
     final_stream.seek(0)
 
     # Create and return the PDF content
-    return create_pdf_content(
-        final_stream, content["invoice_details"]["invoice_number"]
-    )
+    return create_pdf_content(final_stream, content["invoice_details"]["invoice_number"])
