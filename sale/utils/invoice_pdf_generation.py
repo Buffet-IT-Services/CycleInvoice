@@ -118,29 +118,6 @@ def generate_pdf_from_html(html_content: str, base_url: str) -> tuple[bytes, int
     return pdf_file, total_pages
 
 
-def create_page_number_overlay(page_num: int, total_pages: int) -> BytesIO:
-    """
-    Create a PDF overlay with page numbers.
-
-    Args:
-        page_num (int): The current page number (0-based)
-        total_pages (int): The total number of pages
-
-    Returns:
-        BytesIO: A BytesIO object containing the page number overlay PDF
-
-    """
-    packet = BytesIO()
-    can = canvas.Canvas(packet, pagesize=A4)
-    can.setFont("Helvetica", 22)
-    can.setFillColorRGB(1, 1, 1)
-    text = f"Seite {page_num + 1} von {total_pages}"
-    can.drawRightString(530, 20, text)
-    can.save()
-    packet.seek(0)
-    return packet
-
-
 def add_page_numbers_to_pdf(pdf_data: bytes, total_pages: int) -> BytesIO:
     """
     Add page numbers to each page of a PDF.
@@ -158,7 +135,17 @@ def add_page_numbers_to_pdf(pdf_data: bytes, total_pages: int) -> BytesIO:
 
     for page_num in range(total_pages):
         page = input_pdf.pages[page_num]
-        overlay_stream = create_page_number_overlay(page_num, total_pages)
+
+        packet = BytesIO()
+        can = canvas.Canvas(packet, pagesize=A4)
+        can.setFont("Helvetica", 22)
+        can.setFillColorRGB(1, 1, 1)
+        text = f"Seite {page_num + 1} von {total_pages}"
+        can.drawRightString(530, 20, text)
+        can.save()
+        packet.seek(0)
+        overlay_stream = packet
+
         overlay_pdf = PdfReader(overlay_stream)
         page.merge_page(overlay_pdf.pages[0])
         output_pdf.add_page(page)

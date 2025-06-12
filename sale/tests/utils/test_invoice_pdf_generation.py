@@ -163,21 +163,6 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertGreater(len(pdf_bytes), 100)  # Should be a non-trivial PDF
         self.assertEqual(page_count, 1)
 
-    def test_create_page_number_overlay_creates_overlay(self):
-        """Test that create_page_number_overlay returns a BytesIO PDF with the correct page number text."""
-        from sale.utils.invoice_pdf_generation import create_page_number_overlay
-        from PyPDF2 import PdfReader
-        overlay_stream = create_page_number_overlay(0, 3)
-        self.assertIsNotNone(overlay_stream)
-        self.assertTrue(hasattr(overlay_stream, 'read'))
-        overlay_stream.seek(0)
-        reader = PdfReader(overlay_stream)
-        self.assertEqual(len(reader.pages), 1)
-        # Optionally, check that the PDF contains the expected text (requires text extraction)
-        page = reader.pages[0]
-        text = page.extract_text()
-        self.assertIn("Seite 1 von 3", text)
-
     def test_add_page_numbers_to_pdf_adds_numbers(self):
         """Test that add_page_numbers_to_pdf adds page numbers to each page of a PDF."""
         from sale.utils.invoice_pdf_generation import generate_pdf_from_html, add_page_numbers_to_pdf
@@ -227,7 +212,5 @@ class InvoicePDFGenerationTest(TestCase):
         context["qr_bill_svg"] = svg_content
         html = generate_html_qr_page(svg_content, context)
 
-
         self.assertIsInstance(html, str)
         self.assertIn(quote(svg_content), html)
-
