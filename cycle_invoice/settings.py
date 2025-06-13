@@ -232,7 +232,7 @@ CELERY_BEAT_SCHEDULE = {
 
 # REST Framework Einstellungen: Nur JSON Renderer aktivieren
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
     ),
 }

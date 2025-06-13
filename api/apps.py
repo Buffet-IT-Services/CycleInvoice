@@ -4,4 +4,5 @@ from django.apps import AppConfig
 
 class ApiConfig(AppConfig):
     """Configuration class for the Cycle Invoice API application."""
-    name = 'api'
+
+    name = "api"

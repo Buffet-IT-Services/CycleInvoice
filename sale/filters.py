@@ -9,5 +9,6 @@ class DocumentInvoiceFilter(django_filters.FilterSet):
 
     class Meta:
         """Metaclass for DocumentInvoiceFilter."""
+
         model = DocumentInvoice
         fields = ("id", "customer", "invoice_number", "date", "due_date")
