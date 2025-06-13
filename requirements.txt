@@ -1,14 +1,21 @@
-Django>=5.2.0
-django-simple-history~=3.8.0
-django-debug-toolbar>=5.2.0
-psycopg2>=2.9.10
+Django>=5.2.0 # Django framework
+python-dotenv~=1.1.0 # For environment variable management
+django-simple-history~=3.8.0 # For tracking model changes
+dateutils>=0.6.12 # Date and time utilities
+
+django-storages[s3]>=1.14.0 # For S3 storage support
+
+psycopg2>=2.9.10 # PostgreSQL database adapter
+
+redis>=6.2.0 # For caching and message brokering
+
+celery>=5.5.3 # Asynchronous task queue
+
+# for PDF generation and manipulation
 qrbill==1.1.0
-weasyprint==65.1
-reportlab==4.4.1
 pypdf>=3.9.0
-django-storages[s3]>=1.14.0
-dotenv~=0.9.9
-python-dotenv~=1.1.0
-celery>=5.5.3
-dateutils>=0.6.12
-redis>=6.2.0
+reportlab==4.4.1
+weasyprint==65.1
+
+# for development
+django-debug-toolbar>=5.2.0 # Debugging tool for Django applications
