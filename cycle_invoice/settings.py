@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "accounting.apps.AccountingConfig",  # for accounting management
     "vehicle.apps.VehicleConfig",  # for vehicle management
     "web.apps.WebConfig",  # for web application
+    "api.apps.ApiConfig",  # for API endpoints
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
 ]
@@ -227,4 +228,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "sale.tasks.subscription_processing_to_document_items",
         "schedule": crontab(hour=0, minute=0),
     },
+}
+
+# REST Framework Einstellungen: Nur JSON Renderer aktivieren
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
 }
