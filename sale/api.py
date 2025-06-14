@@ -1,6 +1,5 @@
 """API views for handling sale operations."""
 from rest_framework import serializers
-from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,15 +13,7 @@ from sale.selectors import invoice_list
 class InvoiceListApi(ApiAuthMixin, APIView):
     """API view to handle listing invoices."""
 
-    class Permission(BasePermission):
-        """Permission class for invoice listing API."""
-
-        def has_permission(self, request: Request, view: APIView) -> bool:
-            """Check if the user has permission to access this view."""
-            return request.user.is_authenticated and request.user.has_perm("sale.view_documentinvoice")
-
     queryset = DocumentInvoice.objects.all()
-    permission_classes = (Permission,)
 
     class FiltersSerializer(serializers.Serializer):
         """Serializer for filtering invoices."""

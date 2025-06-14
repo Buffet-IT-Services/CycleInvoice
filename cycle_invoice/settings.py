@@ -240,7 +240,7 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     "JWT_SECRET_KEY": os.getenv("JWT_SECRET_KEY"),
     "JWT_EXPIRATION_DELTA": datetime.timedelta(seconds=900),
-    "JWT_ALLOW_REFRESH": os.getenv("JWT_ALLOW_REFRESH", True),
+    "JWT_ALLOW_REFRESH": os.getenv("JWT_ALLOW_REFRESH", "True"),
     "JWT_REFRESH_EXPIRATION_DELTA": os.getenv("JWT_REFRESH_EXPIRATION_DELTA", datetime.timedelta(hours=1)),
     "JWT_AUTH_COOKIE": os.getenv("JWT_AUTH_COOKIE", default="jwt"),
     "JWT_AUTH_COOKIE_SAMESITE": os.getenv("JWT_AUTH_COOKIE_SAMESITE", default="Lax"),
