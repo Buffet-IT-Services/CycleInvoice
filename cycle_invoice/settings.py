@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import datetime
 import os
 import sys
 from pathlib import Path
@@ -235,4 +235,14 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": (
         "rest_framework.renderers.JSONRenderer",
     ),
+}
+
+JWT_AUTH = {
+    "JWT_SECRET_KEY": os.getenv("JWT_SECRET_KEY"),
+    "JWT_EXPIRATION_DELTA": datetime.timedelta(seconds=900),
+    "JWT_ALLOW_REFRESH": os.getenv("JWT_ALLOW_REFRESH", True),
+    "JWT_REFRESH_EXPIRATION_DELTA": os.getenv("JWT_REFRESH_EXPIRATION_DELTA", datetime.timedelta(hours=1)),
+    "JWT_AUTH_COOKIE": os.getenv("JWT_AUTH_COOKIE", default="jwt"),
+    "JWT_AUTH_COOKIE_SAMESITE": os.getenv("JWT_AUTH_COOKIE_SAMESITE", default="Lax"),
+    "JWT_AUTH_HEADER_PREFIX": os.getenv("JWT_AUTH_HEADER_PREFIX", default="Bearer"),
 }

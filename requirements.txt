@@ -20,6 +20,7 @@ weasyprint==65.1
 # for API
 djangorestframework>=3.16.0 # Django REST framework for building APIs
 django-filter>=25.1 # For filtering API results
+drf-jwt>=1.19.2 # JWT authentication for Django REST framework
 
 # for development
 django-debug-toolbar>=5.2.0 # Debugging tool for Django applications
