@@ -18,20 +18,20 @@ class InvoiceListApi(ApiAuthMixin, APIView):
     class FiltersSerializer(serializers.Serializer):
         """Serializer for filtering invoices."""
 
-        id = serializers.IntegerField(required=False, help_text="Filter by invoice ID")
-        customer = serializers.IntegerField(required=False, help_text="Filter by customer ID")
-        invoice_number = serializers.CharField(required=False, help_text="Filter by invoice number")
-        date = serializers.DateField(required=False, help_text="Filter by invoice date")
-        due_date = serializers.DateField(required=False, help_text="Filter by invoice due date")
+        id = serializers.IntegerField(required=False)
+        customer = serializers.IntegerField(required=False)
+        invoice_number = serializers.CharField(required=False)
+        date = serializers.DateField(required=False)
+        due_date = serializers.DateField(required=False)
 
-    class OutputSerializer(serializers.ModelSerializer):
+    class OutputSerializer(serializers.Serializer):
         """Serializer for outputting invoice data."""
 
-        class Meta:
-            """Metaclass for output serializer."""
-
-            model = DocumentInvoice
-            fields = ("id", "customer", "invoice_number", "date", "due_date")
+        id = serializers.IntegerField()
+        customer = serializers.IntegerField(source='customer.id')
+        invoice_number = serializers.CharField()
+        date = serializers.DateField()
+        due_date = serializers.DateField()
 
     def get(self, request: Request, *args, **kwargs) -> Response:
         """Handle GET requests to list invoices."""
