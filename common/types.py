@@ -1,3 +1,4 @@
+"""Common types for the Django application."""
 from typing import TypeVar
 
 from django.db import models

@@ -10,9 +10,10 @@ class RandomModelFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         """Metaclass for RandomModelFactory."""
+
         model = RandomModel
 
-    end_date = factory.LazyAttribute(lambda self: faker.date_object())
+    end_date = factory.LazyAttribute(lambda self: faker.date_object())  # noqa: ARG005
     start_date = factory.LazyAttribute(lambda self: faker.date_object(end_datetime=self.end_date))
 
 
@@ -21,6 +22,7 @@ class SimpleModelFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         """Metaclass for SimpleModelFactory."""
+
         model = SimpleModel
 
-    name = factory.LazyAttribute(lambda self: faker.word())
+    name = factory.LazyAttribute(lambda self: faker.word()) # noqa: ARG005

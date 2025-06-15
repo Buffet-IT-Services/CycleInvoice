@@ -1,5 +1,5 @@
 """Common services for Django models."""
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from django.db import models
 from django.utils import timezone
@@ -7,10 +7,10 @@ from django.utils import timezone
 from common.types import DjangoModelType
 
 
-def model_update(*, instance: DjangoModelType, fields: List[str], data: Dict[str, Any], auto_updated_at=True) -> Tuple[
-    DjangoModelType, bool]:
+def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str, Any],
+                 auto_updated_at: bool = True) -> tuple[DjangoModelType, bool]:
     """
-    Generic update service meant to be reused in local update services.
+    Update service for Django models.
 
     :param instance: The model instance to be updated.
     :param fields: A list of field names that should be updated.
@@ -30,7 +30,7 @@ def model_update(*, instance: DjangoModelType, fields: List[str], data: Dict[str
     m2m_data = {}
     update_fields = []
 
-    model_fields = {field.name: field for field in instance._meta.get_fields()}
+    model_fields = get_model_fields(instance)
 
     for field in fields:
         # Skip if a field is not present in the actual data
@@ -40,7 +40,9 @@ def model_update(*, instance: DjangoModelType, fields: List[str], data: Dict[str
         # If field is not an actual model field, raise an error
         model_field = model_fields.get(field)
 
-        assert model_field is not None, f"{field} is not part of {instance.__class__.__name__} fields."
+        if model_field is None:
+            error_message = f"Field '{field}' is not part of {instance.__class__.__name__}"
+            raise AssertionError(error_message)
 
         # If we have m2m field, handle differently
         if isinstance(model_field, models.ManyToManyField):
@@ -56,7 +58,7 @@ def model_update(*, instance: DjangoModelType, fields: List[str], data: Dict[str
     if has_updated:
         if auto_updated_at and "updated_at" in model_fields:
             update_fields.append("updated_at")
-            instance.updated_at = timezone.now()  # type: ignore
+            instance.updated_at = timezone.now()
 
         instance.full_clean()
 
@@ -68,3 +70,8 @@ def model_update(*, instance: DjangoModelType, fields: List[str], data: Dict[str
         related_manager.set(value)
 
     return instance, has_updated
+
+
+def get_model_fields(instance: models.Model) -> dict[str, models.Field]:
+    """Return a dict of model fields for a Django model instance."""
+    return {field.name: field for field in instance._meta.get_fields()} # noqa: SLF001

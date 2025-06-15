@@ -12,13 +12,14 @@ from common.services import model_update
 
 class ModelUpdateTests(TestCase):
     """Tests for the model_update service."""
-    def setUp(self):
+
+    def setUp(self) -> None:
         """Set up the test case with a model instance and a simple object."""
         self.model_instance = RandomModelFactory()
         self.simple_object = SimpleModelFactory()
         self.instance = Mock(field_a=None, field_b=None, field_c=None)
 
-    def test_model_update_does_nothing(self):
+    def test_model_update_does_nothing(self) -> None:
         """Test that model_update does nothing when no fields are provided."""
         with self.subTest("when no fields are provided"):
             instance = RandomModelFactory()
@@ -38,7 +39,7 @@ class ModelUpdateTests(TestCase):
             self.assertFalse(has_updated)
             self.assertNumQueries(0)
 
-    def test_model_update_updates_only_passed_fields_from_data(self):
+    def test_model_update_updates_only_passed_fields_from_data(self) -> None:
         """Test that model_update updates only the fields that are passed in the data."""
         instance = RandomModelFactory()
 
@@ -65,7 +66,7 @@ class ModelUpdateTests(TestCase):
 
         self.assertNotIn("end_date", update_query)
 
-    def test_model_update_raises_error_when_called_with_non_existent_field(self):
+    def test_model_update_raises_error_when_called_with_non_existent_field(self) -> None:
         """Test that model_update raises an error when called with a non-existent field."""
         instance = RandomModelFactory()
 
@@ -75,7 +76,7 @@ class ModelUpdateTests(TestCase):
         with self.assertRaises(AssertionError):
             updated_instance, has_updated = model_update(instance=instance, fields=update_fields, data=data)
 
-    def test_model_update_updates_many_to_many_fields(self):
+    def test_model_update_updates_many_to_many_fields(self) -> None:
         """Test that model_update updates many-to-many fields correctly."""
         instance = RandomModelFactory()
         simple_obj = SimpleModelFactory()
@@ -98,7 +99,7 @@ class ModelUpdateTests(TestCase):
             "If we are only updating m2m fields, don't auto-bump `updated_at`",
         )
 
-    def test_model_update_updates_standard_and_many_to_many_fields(self):
+    def test_model_update_updates_standard_and_many_to_many_fields(self) -> None:
         """Test that model_update updates both standard and many-to-many fields correctly."""
         instance = RandomModelFactory()
         simple_obj = SimpleModelFactory()
@@ -114,7 +115,7 @@ class ModelUpdateTests(TestCase):
         self.assertEqual(updated_instance.start_date, data["start_date"])
         self.assertIn(simple_obj, updated_instance.simple_objects.all())
 
-    def test_model_update_does_not_automatically_update_updated_at_if_model_does_not_have_it(self):
+    def test_model_update_does_not_automatically_update_updated_at_if_model_does_not_have_it(self) -> None:
         """Test that model_update does not automatically update `updated_at` if the model does not have it."""
         instance = SimpleModelFactory()
 
