@@ -47,3 +47,39 @@ class InvoiceListApi(ApiAuthMixin, APIView):
             request=request,
             view=self,
         )
+
+class InvoiceDetailApi(ApiAuthMixin, APIView):
+    """API view to handle retrieving a single invoice."""
+
+    queryset = DocumentInvoice.objects.all()
+
+    class OutputSerializer(serializers.ModelSerializer):
+        """Serializer for outputting invoice data."""
+
+        id = serializers.IntegerField()
+        customer = serializers.IntegerField(source='customer.id')
+        invoice_number = serializers.CharField()
+        date = serializers.DateField()
+        due_date = serializers.DateField()
+        header_text = serializers.CharField()
+        footer_text = serializers.CharField()
+
+    def get(self, request: Request, pk: int, *args, **kwargs) -> Response:
+        """Handle GET requests to retrieve a single invoice."""
+        try:
+            invoice = self.queryset.get(pk=pk)
+        except DocumentInvoice.DoesNotExist:
+            return Response({'detail': 'Invoice not found'}, status=404)
+
+        serializer = self.OutputSerializer(invoice)
+        return Response(serializer.data)
+
+    def get(self, request: Request, pk: int, *args, **kwargs) -> Response:
+        """Handle GET requests to retrieve a single invoice."""
+        try:
+            invoice = self.queryset.get(pk=pk)
+        except DocumentInvoice.DoesNotExist:
+            return Response({'detail': 'Invoice not found'}, status=404)
+
+        serializer = self.OutputSerializer(invoice)
+        return Response(serializer.data)
