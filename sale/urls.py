@@ -1,8 +1,9 @@
 """URL configuration for the sale app."""
 from django.urls import path
 
-from sale.api import InvoiceListApi
+from sale.api.document_invoice import InvoiceListApi, InvoiceDetailApi
 
 urlpatterns = [
-    path("", InvoiceListApi.as_view(), name="invoice-list"),
+    path("", InvoiceListApi.as_view(), name="list"),
+    path("<int:pk>/", InvoiceDetailApi.as_view(), name="detail"),
 ]

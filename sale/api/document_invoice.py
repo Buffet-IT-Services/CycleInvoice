@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from api.mixins import ApiAuthMixin
 from api.pagination import LimitOffsetPagination, get_paginated_response
+from api.serializers import inline_serializer
 from sale.models import DocumentInvoice
 from sale.selectors import invoice_list
 
@@ -53,26 +54,19 @@ class InvoiceDetailApi(ApiAuthMixin, APIView):
 
     queryset = DocumentInvoice.objects.all()
 
-    class OutputSerializer(serializers.ModelSerializer):
+    class OutputSerializer(serializers.Serializer):
         """Serializer for outputting invoice data."""
 
         id = serializers.IntegerField()
-        customer = serializers.IntegerField(source='customer.id')
         invoice_number = serializers.CharField()
         date = serializers.DateField()
         due_date = serializers.DateField()
         header_text = serializers.CharField()
         footer_text = serializers.CharField()
-
-    def get(self, request: Request, pk: int, *args, **kwargs) -> Response:
-        """Handle GET requests to retrieve a single invoice."""
-        try:
-            invoice = self.queryset.get(pk=pk)
-        except DocumentInvoice.DoesNotExist:
-            return Response({'detail': 'Invoice not found'}, status=404)
-
-        serializer = self.OutputSerializer(invoice)
-        return Response(serializer.data)
+        customer = inline_serializer(fields={
+            'id': serializers.IntegerField(),
+            'name': serializers.CharField(source="__str__"),
+        })
 
     def get(self, request: Request, pk: int, *args, **kwargs) -> Response:
         """Handle GET requests to retrieve a single invoice."""
