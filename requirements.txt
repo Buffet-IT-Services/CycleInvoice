@@ -24,3 +24,5 @@ drf-jwt>=1.19.2 # JWT authentication for Django REST framework
 
 # for development
 django-debug-toolbar>=5.2.0 # Debugging tool for Django applications
+factory_boy>=3.3.3 # For creating test data
+Faker>=37.4.0 # For generating fake data
