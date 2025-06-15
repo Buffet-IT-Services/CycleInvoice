@@ -1,8 +1,9 @@
 """Selectors for the sale app."""
-from typing import Any
+from typing import Any, Optional
 
 from django.db.models import QuerySet
 
+from common.selectors import get_object
 from sale.filters import DocumentInvoiceFilter
 from sale.models import DocumentInvoice
 
@@ -14,3 +15,8 @@ def invoice_list(*, filters: dict[str, Any] | None = None) -> QuerySet[DocumentI
     qs = DocumentInvoice.objects.all()
 
     return DocumentInvoiceFilter(filters, queryset=qs).qs
+
+def invoice_get(invoice_id: int) -> Optional[DocumentInvoice]:
+    """Retrieve a single invoice by its ID."""
+    invoice = get_object(DocumentInvoice, id=invoice_id)
+    return invoice
