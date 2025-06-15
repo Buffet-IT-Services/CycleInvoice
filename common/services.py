@@ -11,22 +11,14 @@ def model_update(*, instance: DjangoModelType, fields: List[str], data: Dict[str
     """
     Generic update service meant to be reused in local update services.
 
-    For example:
+    :param instance: The model instance to be updated.
+    :param fields: A list of field names that should be updated.
+    :param data: A dictionary containing the new values for the fields.
+    :param auto_updated_at: If True, will automatically update the `updated_at` field if it exists.
 
-    def user_update(*, user: User, data) -> User:
-        fields = ['first_name', 'last_name']
-        user, has_updated = model_update(instance=user, fields=fields, data=data)
-
-        // Do other actions with the user here
-
-        return user
-
-    Return value: Tuple with the following elements:
-        1. The instance we updated.
-        2. A boolean value representing whether we performed an update or not.
+    :return: A tuple containing the updated instance and a boolean indicating whether any fields were updated.
 
     Some important notes:
-
         - Only keys present in `fields` will be taken from `data`.
         - If something is present in `fields` but not present in `data`, we simply skip.
         - There's a strict assertion that all values in `fields` are actual fields in `instance`.
