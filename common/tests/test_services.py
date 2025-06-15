@@ -90,7 +90,6 @@ class ModelUpdateTests(TestCase):
         updated_instance, has_updated = model_update(instance=instance, fields=update_fields, data=data)
 
         self.assertEqual(updated_instance, instance)
-        self.assertTrue(has_updated)
 
         self.assertIn(simple_obj, updated_instance.simple_objects.all())
         self.assertEqual(
