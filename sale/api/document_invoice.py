@@ -57,7 +57,6 @@ class InvoiceDetailApi(ApiAuthMixin, APIView):
 
     queryset = DocumentInvoice.objects.all()
 
-    # noinspection DuplicatedCode
     class OutputSerializer(serializers.Serializer):
         """Serializer for outputting invoice data."""
 
