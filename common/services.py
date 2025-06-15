@@ -1,3 +1,4 @@
+"""Common services for Django models."""
 from typing import Any, Dict, List, Tuple
 
 from django.db import models
@@ -53,26 +54,17 @@ def model_update(*, instance: DjangoModelType, fields: List[str], data: Dict[str
 
     # Perform an update only if any of the fields were actually changed
     if has_updated:
-        if auto_updated_at:
-            # We want to take care of the `updated_at` field,
-            # Only if the models has that field
-            # And if no value for updated_at has been provided
-            if "updated_at" in model_fields and "updated_at" not in update_fields:
-                update_fields.append("updated_at")
-                instance.updated_at = timezone.now()  # type: ignore
+        if auto_updated_at and "updated_at" in model_fields:
+            update_fields.append("updated_at")
+            instance.updated_at = timezone.now()  # type: ignore
 
         instance.full_clean()
+
         # Update only the fields that are meant to be updated.
-        # Django docs reference:
-        # https://docs.djangoproject.com/en/dev/ref/models/instances/#specifying-which-fields-to-save
         instance.save(update_fields=update_fields)
 
     for field_name, value in m2m_data.items():
         related_manager = getattr(instance, field_name)
         related_manager.set(value)
-
-        # Still not sure about this.
-        # What if we only update m2m relations & nothing on the model? Is this still considered as updated?
-        has_updated = True
 
     return instance, has_updated
