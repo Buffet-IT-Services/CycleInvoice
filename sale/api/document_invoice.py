@@ -71,7 +71,7 @@ class InvoiceDetailApi(ApiAuthMixin, APIView):
             "name": serializers.CharField(source="__str__"),
         })
 
-    def get(self, request: Request, pk: int, *args, **kwargs) -> Response:
+    def get(self, request: Request, pk: int, *args, **kwargs) -> Response:  # noqa: ARG002
         """Handle GET requests to retrieve a single invoice."""
         invoice = invoice_get(invoice_id=pk)
 
