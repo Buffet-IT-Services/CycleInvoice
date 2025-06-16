@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from api.tests.base import token_admin_create, token_norights_create, token_user_create
-from sale.tests.models.test_document_invoice import fake_document_invoice
+from sale.tests.models.test_document_invoice import fake_document_invoice, fake_document_invoice_with_invoice_number
 
 
 class InvoiceListApiTest(TestCase):
@@ -12,6 +12,7 @@ class InvoiceListApiTest(TestCase):
     def setUp(self) -> None:
         """Set up test data."""
         fake_document_invoice()
+        fake_document_invoice_with_invoice_number("INV-2")
         self.token_admin = token_admin_create(self.client)
         self.token_norights = token_norights_create(self.client)
         self.url = reverse("document-invoice-list")
@@ -22,7 +23,7 @@ class InvoiceListApiTest(TestCase):
         data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertTrue("results" in data)
-        self.assertEqual(len(data["results"]), 1)
+        self.assertEqual(len(data["results"]), 2)
         self.assertEqual("INV-12345", data["results"][0]["invoice_number"])
 
     def test_get_invoices_with_rights(self) -> None:
