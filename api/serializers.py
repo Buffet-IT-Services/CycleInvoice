@@ -1,13 +1,14 @@
 """"Inline serializer for DRF."""
+
 from rest_framework import serializers
 
 
-def create_serializer_class(name, fields):
+def create_serializer_class(name: str, fields: dict) -> type:
     """Create a serializer class dynamically."""
     return type(name, (serializers.Serializer,), fields)
 
 
-def inline_serializer(*, fields, data=None, **kwargs):
+def inline_serializer(*, fields: dict, data: dict | None = None, **kwargs) -> serializers.Serializer:
     """Create an inline serializer for use in DRF views."""
     # Important note if you are using `drf-spectacular`
     # Please refer to the following issue:
