@@ -34,6 +34,7 @@ def document_invoice_update(*, invoice: DocumentInvoice, data: dict) -> Document
 
     # If 'customer' is provided as an ID, convert it to a Customer object
     # TODO: Replace this with a call to the selector of the customer
+    # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/43
     if "customer" in data and isinstance(data["customer"], int):
         from contact.models import Customer
         data["customer"] = Customer.objects.get(pk=data["customer"])
