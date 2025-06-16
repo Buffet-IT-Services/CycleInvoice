@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
 
-from common.models import RandomModel
+from common.models import RandomModel, SimpleModel
 
 
 class RandomModelTests(TestCase):
@@ -40,3 +40,28 @@ class RandomModelTests(TestCase):
         RandomModel.objects.create(start_date=start_date, end_date=end_date)
 
         self.assertEqual(1, RandomModel.objects.count())
+
+    def test_string_representation(self) -> None:
+        """Test the string representation of RandomModel."""
+        start_date = timezone.now().date()
+        end_date = start_date + timedelta(days=1)
+
+        obj = RandomModel.objects.create(start_date=start_date, end_date=end_date)
+
+        self.assertEqual(
+            str(obj), f"RandomModel from {start_date} to {end_date}"
+        )
+
+
+class SimpleModelTest(TestCase):
+    """Tests for SimpleModel."""
+
+    def test_string_representation(self) -> None:
+        """Test the string representation of SimpleModel."""
+        obj = SimpleModel.objects.create(name="Test SimpleModel")
+        self.assertEqual(str(obj), "Test SimpleModel")
+
+    def test_string_representation_with_empty_name(self) -> None:
+        """Test the string representation of SimpleModel with an empty name."""
+        obj = SimpleModel.objects.create(name="")
+        self.assertEqual(str(obj), "Unnamed SimpleModel")

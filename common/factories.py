@@ -25,4 +25,4 @@ class SimpleModelFactory(factory.django.DjangoModelFactory):
 
         model = SimpleModel
 
-    name = factory.LazyAttribute(lambda self: faker.word()) # noqa: ARG005
+    name = factory.LazyAttribute(lambda self: faker.word())  # noqa: ARG005
