@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from api.tests.base import token_admin_create, token_norights_create, token_user_create
+from contact.tests.models.test_contact import fake_contact
 from sale.tests.models.test_document_invoice import fake_document_invoice, fake_document_invoice_with_invoice_number
 
 
@@ -80,6 +81,7 @@ class InvoiceDetailApiTest(TestCase):
         # Make sure only expected fields are returned
         self.assertSetEqual(set(data.keys()),
                             {"id", "invoice_number", "date", "due_date", "header_text", "footer_text", "customer"})
+        self.assertEqual(set(data["customer"].keys()), {"id", "name"})
 
     def test_get_invoice_with_rights(self) -> None:
         """Test GET request returns invoices with specific permissions."""
@@ -97,3 +99,135 @@ class InvoiceDetailApiTest(TestCase):
         invalid_url = reverse("document-invoice-detail", kwargs={"pk": 9999})
         response = self.client.get(invalid_url, HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
         self.assertEqual(response.status_code, 404)
+
+
+class InvoiceCreateApiTest(TestCase):
+    """Test cases for the InvoiceCreateApi."""
+
+    def setUp(self) -> None:
+        """Set up test data."""
+        self.token_admin = token_admin_create(self.client)
+        self.token_norights = token_norights_create(self.client)
+        self.url = reverse("document-invoice-create")
+        self.customer = fake_contact()
+        self.content = {
+            "invoice_number": "INV-12345",
+            "date": "2023-10-01",
+            "due_date": "2023-10-15",
+            "header_text": "Header Text",
+            "footer_text": "Footer Text",
+            "customer": self.customer.id
+        }
+
+    def test_put_invoice_with_admin(self) -> None:
+        """Test PUT request returns the invoice with all details."""
+        response = self.client.post(
+            self.url,
+            self.content,
+            content_type="application/json",
+            HTTP_AUTHORIZATION=f"Bearer {self.token_admin}"
+        )
+
+        data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertGreaterEqual(data["id"], 1)
+        self.assertEqual(self.content["invoice_number"], data["invoice_number"])
+        self.assertEqual(self.content["date"], data["date"])
+        self.assertEqual(self.content["due_date"], data["due_date"])
+        self.assertEqual(self.content["header_text"], data["header_text"])
+        self.assertEqual(self.content["footer_text"], data["footer_text"])
+        self.assertEqual(self.customer.id, data["customer"]["id"])
+        self.assertEqual(self.customer.__str__(), data["customer"]["name"])
+
+        # Make sure only expected fields are returned
+        self.assertSetEqual(set(data.keys()),
+                            {"id", "invoice_number", "date", "due_date", "header_text", "footer_text", "customer"})
+        self.assertEqual(set(data["customer"].keys()), {"id", "name"})
+
+    def test_get_invoice_with_rights(self) -> None:
+        """Test PUT request with specific permissions."""
+        token = token_user_create(self.client, permissions=["add_documentinvoice"])
+        response = self.client.post(self.url, self.content, content_type="application/json",
+                                    HTTP_AUTHORIZATION=f"Bearer {token}")
+        self.assertEqual(response.status_code, 201)
+
+    def test_get_invoice_with_no_rights(self) -> None:
+        """Test PUT request returns 403 Forbidden without permissions."""
+        response = self.client.post(self.url, self.content, content_type="application/json",
+                                    HTTP_AUTHORIZATION=f"Bearer {self.token_norights}")
+        self.assertEqual(response.status_code, 403)
+
+    def test_add_invoice_with_existing_invoice_number(self) -> None:
+        """Test POST request with an existing invoice number returns 400 Bad Request."""
+        fake_document_invoice_with_invoice_number(self.content["invoice_number"])
+        response = self.client.post(
+            self.url,
+            self.content,
+            content_type="application/json",
+            HTTP_AUTHORIZATION=f"Bearer {self.token_admin}"
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_add_invoice_with_invalid_date(self) -> None:
+        """Test POST request with an invalid date format returns 400 Bad Request."""
+        invalid_content = self.content.copy()
+        invalid_content["date"] = "invalid-date"
+        response = self.client.post(
+            self.url,
+            invalid_content,
+            content_type="application/json",
+            HTTP_AUTHORIZATION=f"Bearer {self.token_admin}"
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_add_invoice_with_invalid_due_date(self) -> None:
+        """Test POST request with an invalid date format returns 400 Bad Request."""
+        invalid_content = self.content.copy()
+        invalid_content["due_date"] = "invalid-date"
+        response = self.client.post(
+            self.url,
+            invalid_content,
+            content_type="application/json",
+            HTTP_AUTHORIZATION=f"Bearer {self.token_admin}"
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_add_invoice_with_missing_fields(self) -> None:
+        """Test POST request with missing required fields returns 400 Bad Request."""
+        incomplete_content = self.content.copy()
+        del incomplete_content["invoice_number"]
+        response = self.client.post(
+            self.url,
+            incomplete_content,
+            content_type="application/json",
+            HTTP_AUTHORIZATION=f"Bearer {self.token_admin}"
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_add_invoice_with_invalid_customer(self) -> None:
+        """Test POST request with an invalid customer ID returns 400 Bad Request."""
+        invalid_content = self.content.copy()
+        invalid_content["customer"] = 9999
+        response = self.client.post(
+            self.url,
+            invalid_content,
+            content_type="application/json",
+            HTTP_AUTHORIZATION=f"Bearer {self.token_admin}"
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_add_invoice_without_header_and_footer(self) -> None:
+        """Test POST request without header and footer text."""
+        content_without_header_footer = self.content.copy()
+        del content_without_header_footer["header_text"]
+        del content_without_header_footer["footer_text"]
+        response = self.client.post(
+            self.url,
+            content_without_header_footer,
+            content_type="application/json",
+            HTTP_AUTHORIZATION=f"Bearer {self.token_admin}"
+        )
+        self.assertEqual(response.status_code, 201)
+        data = response.json()
+        self.assertEqual("", data["header_text"])
+        self.assertEqual("", data["footer_text"])

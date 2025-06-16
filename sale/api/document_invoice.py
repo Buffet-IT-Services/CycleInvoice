@@ -95,10 +95,27 @@ class InvoiceCreateApi(ApiAuthMixin, APIView):
         customer = serializers.IntegerField()
         date = serializers.DateField()
         due_date = serializers.DateField()
-        header_text = serializers.CharField(required=False, allow_blank=True)
-        footer_text = serializers.CharField(required=False, allow_blank=True)
+        header_text = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+        footer_text = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
-    def put(self, request: Request, *args, **kwargs) -> Response:
+        @staticmethod
+        def validate_invoice_number(value: str) -> str:
+            """Validate that the invoice number is not empty."""
+            if DocumentInvoice.objects.filter(invoice_number=value).exists():
+                error_message = "There is already an invoice with this number."
+                raise serializers.ValidationError(error_message)
+            return value
+
+        @staticmethod
+        def validate_customer(value: int) -> int:
+            """Validate that the customer exists."""
+            from contact.models import Customer
+            if not Customer.objects.filter(id=value).exists():
+                error_message = "Customer with this ID does not exist."
+                raise serializers.ValidationError(error_message)
+            return value
+
+    def post(self, request: Request, *args, **kwargs) -> Response:
         """Handle POST requests to create a new invoice."""
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
