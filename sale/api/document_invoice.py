@@ -9,7 +9,7 @@ from api.mixins import ApiAuthMixin
 from api.pagination import LimitOffsetPagination, get_paginated_response
 from api.serializers import inline_serializer
 from sale.models import DocumentInvoice
-from sale.selectors import invoice_list, invoice_get
+from sale.selectors import invoice_get, invoice_list
 from sale.services.document_invoice import document_invoice_create, document_invoice_update
 
 
@@ -31,7 +31,7 @@ class InvoiceListApi(ApiAuthMixin, APIView):
         """Serializer for outputting invoice data."""
 
         id = serializers.IntegerField()
-        customer = serializers.IntegerField(source='customer.id')
+        customer = serializers.IntegerField(source="customer.id")
         invoice_number = serializers.CharField()
         date = serializers.DateField()
         due_date = serializers.DateField()
@@ -67,8 +67,8 @@ class InvoiceDetailApi(ApiAuthMixin, APIView):
         header_text = serializers.CharField()
         footer_text = serializers.CharField()
         customer = inline_serializer(fields={
-            'id': serializers.IntegerField(),
-            'name': serializers.CharField(source="__str__"),
+            "id": serializers.IntegerField(),
+            "name": serializers.CharField(source="__str__"),
         })
 
     def get(self, request: Request, pk: int, *args, **kwargs) -> Response:
@@ -127,7 +127,6 @@ class InvoiceUpdateApi(ApiAuthMixin, APIView):
 
     def post(self, request: Request, pk: int, *args, **kwargs) -> Response:
         """Handle PUT requests to update an existing invoice."""
-
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
