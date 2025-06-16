@@ -21,7 +21,7 @@ def get_paginated_response(
     """Get a paginated response for the given queryset."""
     paginator = pagination_class()
 
-    page = paginator.paginate_queryset(queryset, request, view=view)
+    page = paginator.paginate_queryset(queryset, request, view)
 
     if page is not None:
         serializer = serializer_class(page, many=True)
@@ -38,7 +38,7 @@ class LimitOffsetPagination(_LimitOffsetPagination):
     default_limit = 10
     max_limit = 100
 
-    def get_paginated_data(self, data: OrderedDict) -> OrderedDict:
+    def get_paginated_data(self, data: list) -> OrderedDict:
         """Return the paginated data in a specific format."""
         return OrderedDict(
             [
@@ -51,7 +51,7 @@ class LimitOffsetPagination(_LimitOffsetPagination):
             ]
         )
 
-    def get_paginated_response(self, data: OrderedDict) -> Response:
+    def get_paginated_response(self, data: list) -> Response:
         """
         We redefine this method in order to return `limit` and `offset`.
 
