@@ -1,5 +1,5 @@
 """Selectors for the sale app."""
-from typing import Any, Optional
+from typing import Any
 
 from django.db.models import QuerySet
 
@@ -16,7 +16,6 @@ def invoice_list(*, filters: dict[str, Any] | None = None) -> QuerySet[DocumentI
 
     return DocumentInvoiceFilter(filters, queryset=qs).qs
 
-def invoice_get(invoice_id: int) -> Optional[DocumentInvoice]:
+def invoice_get(invoice_id: int) -> DocumentInvoice | None:
     """Retrieve a single invoice by its ID."""
-    invoice = get_object(DocumentInvoice, id=invoice_id)
-    return invoice
+    return get_object(DocumentInvoice, id=invoice_id)
