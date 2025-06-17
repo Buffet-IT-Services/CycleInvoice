@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from cycle_invoice import accounting, contact, vehicle
 from cycle_invoice.accounting.models import Account, get_default_buy_account, get_default_sell_account
 from cycle_invoice.common.models import ChangeLoggerAll
 
