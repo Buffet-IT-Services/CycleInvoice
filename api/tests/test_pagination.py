@@ -1,6 +1,9 @@
 """Tests for API pagination."""
 from django.db.models import QuerySet
 from django.test import TestCase
+from rest_framework.request import Request
+
+
 class PaginationTest(TestCase):
     """Tests for API pagination."""
 
