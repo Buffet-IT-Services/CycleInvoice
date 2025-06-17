@@ -4,8 +4,8 @@ from datetime import date
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
-from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import CheckConstraint, Q
 from django.utils.translation import gettext_lazy as _
 
 from cycle_invoice.accounting.models import Account, get_default_buy_account, get_default_sell_account
@@ -188,93 +188,78 @@ class DocumentItem(ChangeLoggerAll):
                                 blank=True)
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name="document_item_subscription",
                                      null=True, blank=True)
-    comment_title = models.CharField(max_length=255, verbose_name=_("comment title"), blank=True)
-    comment_description = models.TextField(verbose_name=_("comment"), blank=True)
+    comment_title = models.CharField(max_length=255, verbose_name=_("comment title"), blank=True, default="")
+    comment_description = models.TextField(verbose_name=_("comment"), blank=True, default="")
     vehicle = models.ForeignKey("vehicle.Vehicle", on_delete=models.PROTECT, related_name="document_item_vehicle",
                                 null=True, blank=True)
     work_type = models.ForeignKey(WorkType, on_delete=models.PROTECT, related_name="document_item_work_type", null=True,
                                   blank=True)
 
-    def clean_product(self) -> None:
-        """Validate the product item."""
-        errors = {}
-        if not self.product:
-            errors["product"] = "Product must be selected."
-        if self.subscription or self.work_type or self.vehicle or self.comment_title or self.comment_description:
-            errors["fields"] = "Only the product field may be filled."
-        if errors:
-            raise ValidationError(errors)
+    class Meta:
+        """Meta options for the DocumentItem model."""
 
-    # noinspection DuplicatedCode
-    def clean_subscription(self) -> None:
-        """Validate the subscription item."""
-        errors = {}
-        if not self.subscription:
-            errors["subscription"] = "Subscription must be selected."
-        if not self.product:
-            errors["product"] = "Product must be selected for subscription."
-        if not self.comment_title:
-            errors["comment_title"] = "Comment title must be set for subscription."
-        if self.work_type or self.vehicle or self.comment_description:
-            errors["fields"] = "Only the subscription field may be filled."
-        if errors:
-            raise ValidationError(errors)
+        constraints = [
+            # Constraint for valid item_type values
+            CheckConstraint(
+                name="%(app_label)s_%(class)s_validate_item_type",
+                check=Q(item_type__in=["product", "subscription", "work", "expense_vehicle"])
+            ),
 
-    def clean_work(self) -> None:
-        """Validate the work item."""
-        errors = {}
-        if not self.work_type:
-            errors["work_type"] = "Work type must be selected."
-        if not self.comment_title:
-            errors["comment_title"] = "Comment title must be set for work type."
-        if self.product or self.subscription or self.vehicle:
-            errors["fields"] = "Only the work type field may be filled."
-        if errors:
-            raise ValidationError(errors)
+            # PRODUCT constraint
+            CheckConstraint(
+                name="%(app_label)s_%(class)s_fields_match_product",
+                check=(
+                              Q(item_type="product") &
+                              Q(product__isnull=False) &
+                              Q(subscription__isnull=True) &
+                              Q(work_type__isnull=True) &
+                              Q(vehicle__isnull=True) &
+                              Q(comment_title="") &
+                              Q(comment_description="")
+                      ) | ~Q(item_type="product")
+            ),
 
-    # noinspection DuplicatedCode
-    def clean_expense_vehicle(self) -> None:
-        """Validate the vehicle expense item."""
-        errors = {}
-        if not self.vehicle:
-            errors["vehicle"] = "Vehicle must be selected."
-        if not self.comment_title:
-            errors["comment_title"] = "Comment title must be set for vehicle expense."
-        if not self.comment_description:
-            errors["comment_description"] = "Comment description must be set for vehicle expense."
-        if self.product or self.subscription or self.work_type:
-            errors["fields"] = "Only the vehicle field may be filled."
-        if errors:
-            raise ValidationError(errors)
+            # SUBSCRIPTION constraint
+            CheckConstraint(
+                name="%(app_label)s_%(class)s_fields_match_subscription",
+                check=(
+                              Q(item_type="subscription") &
+                              Q(subscription__isnull=False) &
+                              Q(product__isnull=False) &
+                              Q(comment_title__isnull=False) & ~Q(comment_title="") &
+                              Q(work_type__isnull=True) &
+                              Q(vehicle__isnull=True) &
+                              Q(comment_description="")
+                      ) | ~Q(item_type="subscription")
+            ),
 
-    def clean(self) -> None:
-        """Clean and validate the DocumentItem."""
-        super().clean()
-        error = None
-        if self.item_type == "product":
-            try:
-                self.clean_product()
-            except ValidationError as e:
-                error = e
-        elif self.item_type == "subscription":
-            try:
-                self.clean_subscription()
-            except ValidationError as e:
-                error = e
-        elif self.item_type == "work":
-            try:
-                self.clean_work()
-            except ValidationError as e:
-                error = e
-        elif self.item_type == "expense_vehicle":
-            try:
-                self.clean_expense_vehicle()
-            except ValidationError as e:
-                error = e
-        else:
-            error = ValidationError({"item_type": "Invalid item type."})
-        if error:
-            raise error
+            # WORK constraint
+            CheckConstraint(
+                name="%(app_label)s_%(class)s_fields_match_work",
+                check=(
+                              Q(item_type="work") &
+                              Q(work_type__isnull=False) &
+                              Q(comment_title__isnull=False) & ~Q(comment_title="") &
+                              Q(product__isnull=True) &
+                              Q(subscription__isnull=True) &
+                              Q(vehicle__isnull=True)
+                      ) | ~Q(item_type="work")
+            ),
+
+            # EXPENSE VEHICLE constraint
+            CheckConstraint(
+                name="%(app_label)s_%(class)s_fields_match_expense_vehicle",
+                check=(
+                              Q(item_type="expense_vehicle") &
+                              Q(vehicle__isnull=False) &
+                              Q(comment_title__isnull=False) & ~Q(comment_title="") &
+                              Q(comment_description__isnull=False) & ~Q(comment_description="") &
+                              Q(product__isnull=True) &
+                              Q(subscription__isnull=True) &
+                              Q(work_type__isnull=True)
+                      ) | ~Q(item_type="expense_vehicle")
+            ),
+        ]
 
     @property
     def title(self) -> str:
