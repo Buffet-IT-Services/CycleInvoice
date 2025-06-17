@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import datetime
 import os
 import sys
 from pathlib import Path
@@ -44,10 +44,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "storages",  # for S3 storage
     "contact.apps.ContactConfig",  # for contact management
+    "common.apps.CommonConfig",  # for common utilities
     "sale.apps.SaleConfig",  # for sale management
     "accounting.apps.AccountingConfig",  # for accounting management
     "vehicle.apps.VehicleConfig",  # for vehicle management
     "web.apps.WebConfig",  # for web application
+    "api.apps.ApiConfig",  # for API endpoints
     "simple_history",  # for history tracking
     "debug_toolbar",  # for debugging
 ]
@@ -227,4 +229,21 @@ CELERY_BEAT_SCHEDULE = {
         "task": "sale.tasks.subscription_processing_to_document_items",
         "schedule": crontab(hour=0, minute=0),
     },
+}
+
+# REST Framework Einstellungen: Nur JSON Renderer aktivieren
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
+    ),
+}
+
+JWT_AUTH = {
+    "JWT_SECRET_KEY": os.getenv("JWT_SECRET_KEY"),
+    "JWT_EXPIRATION_DELTA": datetime.timedelta(hours=6),
+    "JWT_ALLOW_REFRESH": os.getenv("JWT_ALLOW_REFRESH", "False"),
+    "JWT_REFRESH_EXPIRATION_DELTA": os.getenv("JWT_REFRESH_EXPIRATION_DELTA", datetime.timedelta(days=1)),
+    "JWT_AUTH_COOKIE": os.getenv("JWT_AUTH_COOKIE", default="jwt"),
+    "JWT_AUTH_COOKIE_SAMESITE": os.getenv("JWT_AUTH_COOKIE_SAMESITE", default="Lax"),
+    "JWT_AUTH_HEADER_PREFIX": os.getenv("JWT_AUTH_HEADER_PREFIX", default="Bearer"),
 }

@@ -8,8 +8,20 @@ from contact.tests.models.test_contact import fake_contact
 from sale.models import DocumentInvoice
 
 
+def fake_document_invoice_with_invoice_number(invoice_number: str) -> DocumentInvoice:
+    """Create a fake invoice with provided invoice number."""
+    return DocumentInvoice.objects.create(
+        customer=fake_contact(),
+        invoice_number=invoice_number,
+        date=datetime.datetime.now(tz=datetime.UTC).date(),
+        due_date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=30),
+        header_text="Header text",
+        footer_text="Footer text",
+    )
+
+
 def fake_document_invoice() -> DocumentInvoice:
-    """Create a fake work type."""
+    """Create a fake invoice with a default invoice number."""
     return DocumentInvoice.objects.create(
         customer=fake_contact(),
         invoice_number="INV-12345",
