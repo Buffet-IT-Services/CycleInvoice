@@ -110,7 +110,7 @@ class InvoicePDFGenerationTest(TestCase):
         self.item.save()
 
     # noinspection DuplicatedCode
-    @patch("sale.utils.invoice_pdf_generation.generate_swiss_qr")
+    @patch("cycle_invoice.sale.utils.invoice_pdf_generation.generate_swiss_qr")
     def test_generate_content(self, mock_qr: object) -> None:
         """Test that prepare_invoice_context returns the expected dictionary."""
         mock_qr.side_effect = lambda ctx: ctx.update({"qr_bill_svg": "<svg>QR</svg>"})
@@ -209,11 +209,11 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertIn("Seite 1 von 2", text_page1)
         self.assertIn("Seite 2 von 2", text_page2)
 
-    @patch("sale.utils.invoice_pdf_generation.generate_content")
-    @patch("sale.utils.invoice_pdf_generation.generate_html_invoice")
-    @patch("sale.utils.invoice_pdf_generation.generate_html_qr_page")
-    @patch("sale.utils.invoice_pdf_generation.generate_pdf_from_html")
-    @patch("sale.utils.invoice_pdf_generation.add_page_numbers_to_pdf")
+    @patch("cycle_invoice.sale.utils.invoice_pdf_generation.generate_content")
+    @patch("cycle_invoice.sale.utils.invoice_pdf_generation.generate_html_invoice")
+    @patch("cycle_invoice.sale.utils.invoice_pdf_generation.generate_html_qr_page")
+    @patch("cycle_invoice.sale.utils.invoice_pdf_generation.generate_pdf_from_html")
+    @patch("cycle_invoice.sale.utils.invoice_pdf_generation.add_page_numbers_to_pdf")
     def test_generate_invoice_pdf_two_pass(self, mock_add_page_numbers: NonCallableMock,
                                            mock_generate_pdf_from_html: NonCallableMock,
                                            mock_generate_html_qr_page: NonCallableMock,
@@ -261,8 +261,8 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertEqual(mock_generate_pdf_from_html.call_count, 2)
         mock_add_page_numbers.assert_called_once()
 
-    @patch("django.core.files.storage.default_storage")
-    @patch("django.core.files.base.ContentFile")
+    @patch("cycle_invoice.sale.utils.invoice_pdf_generation.default_storage")
+    @patch("cycle_invoice.sale.utils.invoice_pdf_generation.ContentFile")
     def test_add_pdf_to_storage(self, mock_content_file: NonCallableMock,
                                 mock_default_storage: NonCallableMock) -> None:
         """Test that add_pdf_to_storage saves the PDF to default storage with correct filename and content."""
@@ -277,3 +277,4 @@ class InvoicePDFGenerationTest(TestCase):
         args, kwargs = mock_default_storage.save.call_args
         self.assertEqual(args[0], "test_invoice.pdf")
         self.assertIs(args[1], mock_content_file.return_value)
+

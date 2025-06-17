@@ -124,7 +124,7 @@ class ModelUpdateTests(TestCase):
         update_fields = ["name"]
         data = {"name": "HackSoft"}
 
-        with patch("common.services.timezone.now") as now:
+        with patch("cycle_invoice.common.services.timezone.now") as now:
             updated_instance, has_updated = model_update(instance=instance, fields=update_fields, data=data)
 
             now.assert_not_called()

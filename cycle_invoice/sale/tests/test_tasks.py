@@ -4,7 +4,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 
-from cycle_invoice.sale.services.subscription import subscription_extension
+from cycle_invoice.sale.tasks import subscription_processing_to_document_items
 from cycle_invoice.sale.tests.models.test_subscription import fake_subscription
 
 
@@ -30,7 +30,7 @@ class TasksTest(TestCase):
         subscription2.end_billed_date = today + relativedelta(months=1)
         subscription2.save()
 
-        subscription_extension.apply()
+        subscription_processing_to_document_items.apply()
 
         subscription1.refresh_from_db()
         subscription2.refresh_from_db()
