@@ -1,9 +1,6 @@
 """Tests for API pagination."""
 from django.db.models import QuerySet
 from django.test import TestCase
-from kombu.asynchronous.http import Request
-
-
 class PaginationTest(TestCase):
     """Tests for API pagination."""
 
