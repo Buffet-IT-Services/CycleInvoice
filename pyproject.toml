@@ -13,11 +13,12 @@ exclude = [
     "node_modules",
     "*/migrations/*",
 ]
-line-length = 120
-indent-width = 4
-target-version = "py312"
+line-length = 120 # Maximum line length for code.
+indent-width = 4 # Number of spaces per indentation level.
+target-version = "py312" # Target Python version for compatibility.
 
 [tool.ruff.lint]
+select = ["ALL", ]
 ignore = [
     "D203", # conflicting with D211 (no blank line before class docstring)
     "D212", # conflicting with D213 (multiline docstring summary should start at the first line)
@@ -31,26 +32,28 @@ ignore = [
     "FIX002", # todos are meant to be fixed later
 ]
 
-select = [
-    "ALL",
-]
+# Allow fix for all rules (when --fix is used).
 fixable = ["ALL"]
 unfixable = []
+
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = "lf"
+quote-style = "double" # Use double quotes for strings.
+indent-style = "space" # Use spaces for indentation.
+skip-magic-trailing-comma = false # Do not skip trailing commas in multiline constructs.
+line-ending = "auto" # Use LF line endings.
 docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["D"]
-"manage.py" = ["TRY003", "EM101", "ANN201", "EXE001"]
+"manage.py" = ["TRY003", "EM101", "ANN201", "EXE001", "PLC0415"]
 "*/services/*" = ["PLR0913"] # Services have many arguments to create a single item.
 
 [tool.ruff.lint.flake8-unused-arguments]
 ignore-variadic-names = true
+
+[tool.ruff.lint.isort]
+case-sensitive = true # Sort imports in a case-sensitive manner.
