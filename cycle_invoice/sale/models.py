@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from cycle_invoice import accounting, contact, vehicle
 from cycle_invoice.accounting.models import Account, get_default_buy_account, get_default_sell_account
 from cycle_invoice.common.models import ChangeLoggerAll
 
@@ -73,7 +74,7 @@ class Subscription(ChangeLoggerAll):
     """Model representing a subscription."""
 
     product = models.ForeignKey(SubscriptionProduct, on_delete=models.CASCADE, related_name="subscription")
-    customer = models.ForeignKey("Customer", on_delete=models.CASCADE, related_name="subscription")
+    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="subscription")
     start_date = models.DateField(verbose_name=_("start date"))
     end_billed_date = models.DateField(verbose_name=_("end billed date"), null=True, blank=True)
     cancelled_date = models.DateField(verbose_name=_("canceled date"), null=True, blank=True)
@@ -119,7 +120,7 @@ class WorkType(ChangeLoggerAll):
 
     name = models.CharField(max_length=255, verbose_name=_("name"))
     account = models.ForeignKey(
-        "Account",
+        "accounting.Account",
         on_delete=models.SET_DEFAULT,
         default=get_default_sell_account,
         related_name="work_type_account",
@@ -140,7 +141,8 @@ class WorkType(ChangeLoggerAll):
 class DocumentInvoice(ChangeLoggerAll):
     """Model representing a document invoice."""
 
-    customer = models.ForeignKey("Customer", on_delete=models.CASCADE, related_name="document_invoice")
+    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE,
+                                 related_name="document_invoice")
     invoice_number = models.CharField(max_length=255, unique=True, verbose_name=_("invoice number"))
     date = models.DateField(verbose_name=_("date"))
     due_date = models.DateField(verbose_name=_("due date"))
@@ -180,7 +182,7 @@ class DocumentItem(ChangeLoggerAll):
     price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
     quantity = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("quantity"))
     discount = models.DecimalField(verbose_name=_("discount percent"), max_digits=5, decimal_places=4, default=0)
-    customer = models.ForeignKey("Customer", on_delete=models.CASCADE, related_name="document_customer")
+    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="document_customer")
     invoice = models.ForeignKey(DocumentInvoice, on_delete=models.CASCADE, related_name="document_item", null=True,
                                 blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="document_item_product", null=True,
@@ -189,7 +191,7 @@ class DocumentItem(ChangeLoggerAll):
                                      null=True, blank=True)
     comment_title = models.CharField(max_length=255, verbose_name=_("comment title"), blank=True)
     comment_description = models.TextField(verbose_name=_("comment"), blank=True)
-    vehicle = models.ForeignKey("Vehicle", on_delete=models.PROTECT, related_name="document_item_vehicle",
+    vehicle = models.ForeignKey("vehicle.Vehicle", on_delete=models.PROTECT, related_name="document_item_vehicle",
                                 null=True, blank=True)
     work_type = models.ForeignKey(WorkType, on_delete=models.PROTECT, related_name="document_item_work_type", null=True,
                                   blank=True)
