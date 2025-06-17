@@ -231,3 +231,89 @@ class InvoiceCreateApiTest(TestCase):
         data = response.json()
         self.assertEqual("", data["header_text"])
         self.assertEqual("", data["footer_text"])
+
+
+class InvoiceUpdateApiTest(TestCase):
+    """Test cases for the InvoiceUpdateApi."""
+
+    def setUp(self) -> None:
+        """Set up test data."""
+        self.token_admin = token_admin_create(self.client)
+        self.token_norights = token_norights_create(self.client)
+        self.invoice = fake_document_invoice()
+        self.url = reverse("document-invoice-update", kwargs={"pk": self.invoice.id})
+
+    def test_patch_invoice_with_admin(self) -> None:
+        """Test PATCH request returns the updated invoice."""
+        content = {"invoice_number": "INV-12345-UPDATED" }
+        response = self.client.patch(self.url, content, content_type="application/json",
+                                     HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+
+        data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual("INV-12345-UPDATED", data["invoice_number"])
+
+        # Make sure only expected fields are returned
+        self.assertSetEqual(set(data.keys()),
+                            {"id", "invoice_number", "date", "due_date", "header_text", "footer_text", "customer"})
+        self.assertEqual(set(data["customer"].keys()), {"id", "name"})
+
+    def test_get_invoice_with_rights(self) -> None:
+        """Test PATCH request with specific permissions."""
+        token = token_user_create(self.client, permissions=["change_documentinvoice"])
+        content = {"invoice_number": "INV-12345-UPDATED" }
+        response = self.client.patch(self.url, content, content_type="application/json",
+                                     HTTP_AUTHORIZATION=f"Bearer {token}")
+        self.assertEqual(response.status_code, 201)
+
+    def test_get_invoice_with_no_rights(self) -> None:
+        """Test PATCH request returns 403 Forbidden without permissions."""
+        content = {"invoice_number": "INV-12345-UPDATED" }
+        response = self.client.patch(self.url, content, content_type="application/json",
+                                     HTTP_AUTHORIZATION=f"Bearer {self.token_norights}")
+        self.assertEqual(response.status_code, 403)
+
+    def test_add_invoice_with_existing_invoice_number(self) -> None:
+        """Test PATCH request with an existing invoice number returns 400 Bad Request."""
+        fake_document_invoice_with_invoice_number("INV-12345-NEW")
+        content = {"invoice_number": "INV-12345-NEW" }
+        response = self.client.patch(self.url, content, content_type="application/json",
+                                     HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+        self.assertEqual(response.status_code, 400)
+
+    def test_add_invoice_with_invalid_date(self) -> None:
+        """Test PATCH request with an invalid date format returns 400 Bad Request."""
+        content = {"date": "invalid-date" }
+        response = self.client.patch(self.url, content, content_type="application/json",
+                                     HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+        self.assertEqual(response.status_code, 400)
+
+    def test_add_invoice_with_invalid_due_date(self) -> None:
+        """Test POST request with an invalid date format returns 400 Bad Request."""
+        content = {"due_date": "invalid-date" }
+        response = self.client.patch(self.url, content, content_type="application/json",
+                                     HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+        self.assertEqual(response.status_code, 400)
+
+    def test_add_invoice_with_invalid_customer(self) -> None:
+        """Test POST request with an invalid customer ID returns 400 Bad Request."""
+        content = {"customer": "9999" }
+        response = self.client.patch(self.url, content, content_type="application/json",
+                                     HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+        self.assertEqual(response.status_code, 400)
+
+    def test_add_invoice_with_valid_customer(self) -> None:
+        """Test POST request with a valid customer ID returns 201 Success."""
+        contact = fake_contact()
+        content = {"customer": contact.id }
+        response = self.client.patch(self.url, content, content_type="application/json",
+                                     HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+        self.assertEqual(response.status_code, 201)
+
+    def test_patch_invalid_invoice(self) -> None:
+        """Test POST request with an invalid customer ID returns 404 Not Found."""
+        url = reverse("document-invoice-update", kwargs={"pk": 9999})
+        content = {"invoice_number": "INV-12345-UPDATED" }
+        response = self.client.patch(url, content, content_type="application/json",
+                                     HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+        self.assertEqual(response.status_code, 404)

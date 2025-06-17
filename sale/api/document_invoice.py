@@ -142,18 +142,35 @@ class InvoiceUpdateApi(ApiAuthMixin, APIView):
         header_text = serializers.CharField(required=False, allow_blank=True)
         footer_text = serializers.CharField(required=False, allow_blank=True)
 
-    def post(self, request: Request, pk: int, *args, **kwargs) -> Response:
-        """Handle PUT requests to update an existing invoice."""
-        serializer = self.InputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        @staticmethod
+        def validate_invoice_number(value: str) -> str:
+            """Validate that the invoice number is not empty."""
+            if DocumentInvoice.objects.filter(invoice_number=value).exists():
+                error_message = "There is already an invoice with this number."
+                raise serializers.ValidationError(error_message)
+            return value
 
+        @staticmethod
+        def validate_customer(value: int) -> int:
+            """Validate that the customer exists."""
+            from contact.models import Customer
+            if not Customer.objects.filter(id=value).exists():
+                error_message = "Customer with this ID does not exist."
+                raise serializers.ValidationError(error_message)
+            return value
+
+    def patch(self, request: Request, pk: int, *args, **kwargs) -> Response:
+        """Handle PUT requests to update an existing invoice."""
         invoice = invoice_get(invoice_id=pk)
 
         if invoice is None:
             raise Http404
 
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         invoice = document_invoice_update(invoice=invoice, data=serializer.validated_data)
 
         data = InvoiceDetailApi.OutputSerializer(invoice).data
 
-        return Response(data)
+        return Response(data, status=201)
