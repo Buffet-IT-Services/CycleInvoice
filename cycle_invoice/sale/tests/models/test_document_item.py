@@ -51,32 +51,32 @@ class DocumentItemTest(TestCase):
 
         document_item.product = None
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.product = fake_product()
 
         document_item.subscription = fake_subscription()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.subscription = None
 
         document_item.comment_title = "Test"
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.comment_title = None
 
         document_item.comment_description = "Test"
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.comment_description = None
 
         document_item.vehicle = fake_vehicle()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.vehicle = None
 
         document_item.work_type = fake_work_type()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.work_type = None
 
     # noinspection DuplicatedCode
@@ -86,32 +86,32 @@ class DocumentItemTest(TestCase):
 
         document_item.product = None
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.product = fake_product()
 
         document_item.subscription = None
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.subscription = fake_subscription()
 
         document_item.comment_title = None
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.comment_title = "Test"
 
         document_item.comment_description = "Test"
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.comment_description = None
 
         document_item.vehicle = fake_vehicle()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.vehicle = None
 
         document_item.work_type = fake_work_type()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.work_type = None
 
     # noinspection DuplicatedCode
@@ -121,33 +121,33 @@ class DocumentItemTest(TestCase):
 
         document_item.product = fake_product()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.product = None
 
         document_item.subscription = fake_subscription()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.subscription = None
 
         document_item.comment_title = None
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.comment_title = "Test"
 
         document_item.comment_description = None
         try:
-            document_item.clean()
+            document_item.validate_constraints()
         except ValidationError:
-            self.fail("clean() raised ValidationError unexpectedly when comment_description is None")
+            self.fail("validate_constraints() raised ValidationError unexpectedly when comment_description is None")
 
         document_item.vehicle = fake_vehicle()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.vehicle = None
 
         document_item.work_type = None
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.work_type = fake_work_type()
 
     # noinspection DuplicatedCode
@@ -157,32 +157,32 @@ class DocumentItemTest(TestCase):
 
         document_item.product = fake_product()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.product = None
 
         document_item.subscription = fake_subscription()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.subscription = None
 
         document_item.comment_title = None
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.comment_title = "Test"
 
         document_item.comment_description = None
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.comment_description = "Test"
 
         document_item.vehicle = None
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.vehicle = fake_vehicle()
 
         document_item.work_type = fake_work_type()
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
         document_item.work_type = None
 
     def test_clean_invalid_item_type(self) -> None:
@@ -190,7 +190,7 @@ class DocumentItemTest(TestCase):
         document_item = fake_document_item_product()
         document_item.item_type = "invalid_type"
         with self.assertRaises(ValidationError):
-            document_item.clean()
+            document_item.validate_constraints()
 
     def test_property_price_str(self) -> None:
         """Test the price_str property."""
