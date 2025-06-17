@@ -35,7 +35,6 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "DJANGO_DB_HOST=localhost" >> .env
           echo "DJANGO_SECRET_KEY=supersecretkey" >> .env
           echo "JWT_SECRET_KEY=supersecretjwt" >> .env
 

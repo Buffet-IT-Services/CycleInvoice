@@ -8,7 +8,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cycle_invoice.settings")
 
 app = Celery("cycle_invoice")
 
-# Configure Celery using settings from Django settings.py.
+# Configure Celery using settings from Django base.py.
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 # Load tasks from all registered Django app configs.
