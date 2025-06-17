@@ -48,7 +48,7 @@ docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["D"]
+"__init__.py" = ["D", "N999"]
 "manage.py" = ["TRY003", "EM101", "ANN201", "EXE001", "PLC0415"]
 "*/services/*" = ["PLR0913"] # Services have many arguments to create a single item.
 
