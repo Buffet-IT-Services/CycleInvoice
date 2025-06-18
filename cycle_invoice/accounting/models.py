@@ -69,6 +69,7 @@ class Account(BaseModel):
         return f"{self.name} ({self.number})"
 
 # TODO: Remove the None option in the user parameter
+# https://github.com/Buffet-IT-Services/CycleInvoice/issues/53
 # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/53
 def get_default_buy_account(user: get_user_model = None) -> int:
     """Retrieve the ID of the account with default_buy set to True."""
@@ -88,6 +89,7 @@ def get_default_buy_account(user: get_user_model = None) -> int:
 
 
 # TODO: Remove the None option in the user parameter
+# https://github.com/Buffet-IT-Services/CycleInvoice/issues/52
 # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/52
 def get_default_sell_account(user: get_user_model = None) -> int:
     """Retrieve the ID of the account with default_sell set to True."""
