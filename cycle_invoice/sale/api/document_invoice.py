@@ -10,7 +10,7 @@ from cycle_invoice.api.pagination import LimitOffsetPagination, get_paginated_re
 from cycle_invoice.api.serializers import inline_serializer
 from cycle_invoice.contact.models import Customer
 from cycle_invoice.sale.models import DocumentInvoice
-from cycle_invoice.sale.selectors import invoice_get, invoice_list
+from cycle_invoice.sale.selectors.document_invoice import invoice_get, invoice_list
 from cycle_invoice.sale.services.document_invoice import document_invoice_create, document_invoice_update
 
 
