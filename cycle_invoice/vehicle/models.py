@@ -9,10 +9,29 @@ from cycle_invoice.common.models import BaseModel
 class Vehicle(BaseModel):
     """Model representing a vehicle."""
 
-    name_internal = models.CharField(_("internal name"), max_length=255, unique=True)
-    name_external = models.CharField(_("external name"), max_length=50)
-    km_buy = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("km buy"), null=True, blank=True)
-    km_sell = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("km sell"), null=True, blank=True)
+    name_internal = models.CharField(
+        _("internal name"),
+        max_length=255,
+        unique=True
+    )
+    name_external = models.CharField(
+        _("external name"),
+        max_length=50
+    )
+    km_buy = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        verbose_name=_("km buy"),
+        null=True,
+        blank=True
+    )
+    km_sell = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        verbose_name=_("km sell"),
+        null=True,
+        blank=True
+    )
 
     class Meta:
         """Meta options for the Vehicle model."""
