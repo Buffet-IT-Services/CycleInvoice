@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from cycle_invoice.common.models import BaseModel
+from cycle_invoice.common.tests.base import get_default_user
 
 
 class Account(BaseModel):
@@ -67,8 +68,8 @@ class Account(BaseModel):
         """Return a string representation of the account."""
         return f"{self.name} ({self.number})"
 
-
-def get_default_buy_account(user: get_user_model) -> int:
+# TODO: Remove the None option in the user parameter
+def get_default_buy_account(user: get_user_model = None) -> int:
     """Retrieve the ID of the account with default_buy set to True."""
     try:
         return Account.objects.get(default_buy=True).id
@@ -79,11 +80,14 @@ def get_default_buy_account(user: get_user_model) -> int:
             number="sys0001",
             default_buy=True,
         )
+        if user is None:
+            user = get_default_user()
         account.save(user=user)
         return account.id
 
 
-def get_default_sell_account(user: get_user_model) -> int:
+# TODO: Remove the None option in the user parameter
+def get_default_sell_account(user: get_user_model = None) -> int:
     """Retrieve the ID of the account with default_sell set to True."""
     try:
         return Account.objects.get(default_sell=True).id
@@ -94,6 +98,8 @@ def get_default_sell_account(user: get_user_model) -> int:
             number="sys0002",
             default_sell=True,
         )
+        if user is None:
+            user = get_default_user()
         account.save(user=user)
         return account.id
 
