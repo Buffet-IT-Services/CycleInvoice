@@ -4,12 +4,12 @@ import logging
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from cycle_invoice.common.models import ChangeLoggerAll
+from cycle_invoice.common.models import BaseModel
 
 logger = logging.getLogger(__name__)
 
 
-class Customer(ChangeLoggerAll):
+class Customer(BaseModel):
     """Model representing a customer."""
 
     address = models.ForeignKey(
@@ -82,7 +82,7 @@ class Contact(Customer):
         return f"{self.first_name} {self.last_name}"
 
 
-class CompanyContact(ChangeLoggerAll):
+class CompanyContact(BaseModel):
     """Model representing a company contact."""
 
     company = models.ForeignKey(Organisation, on_delete=models.CASCADE, verbose_name=_("company"))
@@ -101,7 +101,7 @@ class CompanyContact(ChangeLoggerAll):
         return f"{self.company} - {self.contact} - {self.role}"
 
 
-class Address(ChangeLoggerAll):
+class Address(BaseModel):
     """Model representing an address."""
 
     additional = models.CharField(_("additional"), max_length=255, blank=True)

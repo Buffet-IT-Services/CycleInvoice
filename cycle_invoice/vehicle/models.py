@@ -3,10 +3,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from cycle_invoice.common.models import ChangeLoggerAll
+from cycle_invoice.common.models import BaseModel
 
 
-class Vehicle(ChangeLoggerAll):
+class Vehicle(BaseModel):
     """Model representing a vehicle."""
 
     name_internal = models.CharField(_("internal name"), max_length=255, unique=True)

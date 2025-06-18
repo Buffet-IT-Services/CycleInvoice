@@ -9,10 +9,10 @@ from django.db.models import CheckConstraint, Q
 from django.utils.translation import gettext_lazy as _
 
 from cycle_invoice.accounting.models import Account, get_default_buy_account, get_default_sell_account
-from cycle_invoice.common.models import ChangeLoggerAll
+from cycle_invoice.common.models import BaseModel
 
 
-class Product(ChangeLoggerAll):
+class Product(BaseModel):
     """Model representing a sale product."""
 
     name = models.CharField(_("name"), max_length=255)
@@ -42,7 +42,7 @@ class Product(ChangeLoggerAll):
         return self.name
 
 
-class SubscriptionProduct(ChangeLoggerAll):
+class SubscriptionProduct(BaseModel):
     """Model representing a subscription."""
 
     RECURRENCE_CHOICES = [
@@ -69,7 +69,7 @@ class SubscriptionProduct(ChangeLoggerAll):
         return f"{self.product.name} - {self.get_recurrence_display()}"
 
 
-class Subscription(ChangeLoggerAll):
+class Subscription(BaseModel):
     """Model representing a subscription."""
 
     product = models.ForeignKey(SubscriptionProduct, on_delete=models.CASCADE, related_name="subscription")
@@ -114,7 +114,7 @@ class Subscription(ChangeLoggerAll):
         raise ValueError(error_message)
 
 
-class WorkType(ChangeLoggerAll):
+class WorkType(BaseModel):
     """Model representing a work type."""
 
     name = models.CharField(max_length=255, verbose_name=_("name"))
@@ -137,7 +137,7 @@ class WorkType(ChangeLoggerAll):
         return f"{self.name} - {self.price_per_hour:.2f}"
 
 
-class DocumentInvoice(ChangeLoggerAll):
+class DocumentInvoice(BaseModel):
     """Model representing a document invoice."""
 
     customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE,
@@ -164,7 +164,7 @@ class DocumentInvoice(ChangeLoggerAll):
         return sum((item.total for item in self.document_item.all()), start=Decimal(0))
 
 
-class DocumentItem(ChangeLoggerAll):
+class DocumentItem(BaseModel):
     """Model representing a document item."""
 
     ITEM_TYPE_CHOICES = [

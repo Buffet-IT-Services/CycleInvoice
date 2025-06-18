@@ -2,11 +2,11 @@
 
 from django.db import models
 
-from cycle_invoice.common.models import ChangeLoggerAll
+from cycle_invoice.common.models import BaseModel
 from cycle_invoice.contact.models import Customer
 
 
-class Domain(ChangeLoggerAll):
+class Domain(BaseModel):
     """Model representing a domain."""
 
     name = models.CharField(max_length=255, unique=True)

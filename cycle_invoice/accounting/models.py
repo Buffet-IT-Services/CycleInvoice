@@ -4,10 +4,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from cycle_invoice.common.models import ChangeLoggerAll
+from cycle_invoice.common.models import BaseModel
 
 
-class Account(ChangeLoggerAll):
+class Account(BaseModel):
     """Model representing an account."""
 
     name = models.CharField(_("name"), max_length=255, unique=True)
@@ -85,7 +85,7 @@ def get_default_sell_account() -> int:
         return account.id
 
 
-class Transaction(ChangeLoggerAll):
+class Transaction(BaseModel):
     """Model representing a transaction."""
 
     date = models.DateField(_("transaction date"), auto_now_add=True)
