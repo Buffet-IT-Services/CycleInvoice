@@ -1,5 +1,5 @@
 """A module for accounting models."""
-
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -10,8 +10,16 @@ from cycle_invoice.common.models import BaseModel
 class Account(BaseModel):
     """Model representing an account."""
 
-    name = models.CharField(_("name"), max_length=255, unique=True)
-    number = models.CharField(_("account number"), max_length=20, unique=True)
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        unique=True
+    )
+    number = models.CharField(
+        _("account number"),
+        max_length=20,
+        unique=True
+    )
     default_buy = models.BooleanField(
         _("default buy account"),
         default=False,
@@ -29,6 +37,7 @@ class Account(BaseModel):
         verbose_name = "Account"
         verbose_name_plural = "Accounts"
 
+    # TODO: Replace by CheckConstraint
     def clean(self) -> None:
         """
         Clean the model.
@@ -57,38 +66,43 @@ class Account(BaseModel):
         return f"{self.name} ({self.number})"
 
 
-def get_default_buy_account() -> int:
+def get_default_buy_account(user: get_user_model) -> int:
     """Retrieve the ID of the account with default_buy set to True."""
     try:
         return Account.objects.get(default_buy=True).id
     except Account.DoesNotExist:
         # Create the default account
-        account = Account.objects.create(
+        account = Account(
             name="Default Buy Account",
             number="sys0001",
             default_buy=True,
         )
+        account.save(user=user)
         return account.id
 
 
-def get_default_sell_account() -> int:
+def get_default_sell_account(user: get_user_model) -> int:
     """Retrieve the ID of the account with default_sell set to True."""
     try:
         return Account.objects.get(default_sell=True).id
     except Account.DoesNotExist:
         # Create the default account
-        account = Account.objects.create(
+        account = Account(
             name="Default Sell Account",
             number="sys0002",
             default_sell=True,
         )
+        account.save(user=user)
         return account.id
 
 
 class Transaction(BaseModel):
     """Model representing a transaction."""
 
-    date = models.DateField(_("transaction date"), auto_now_add=True)
+    date = models.DateField(
+        _("transaction date"),
+        auto_now_add=True
+    )
     account_from = models.ForeignKey(
         Account,
         on_delete=models.CASCADE,
@@ -101,7 +115,11 @@ class Transaction(BaseModel):
         related_name="transactions_to",
         verbose_name=_("account to"),
     )
-    amount = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("amount"))
+    amount = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        verbose_name=_("amount")
+    )
 
 
 class Payment(Transaction):
@@ -116,4 +134,3 @@ class Payment(Transaction):
 
         verbose_name = "Payment"
         verbose_name_plural = "Payments"
-
