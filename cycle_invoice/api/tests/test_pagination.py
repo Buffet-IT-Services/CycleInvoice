@@ -11,7 +11,8 @@ from rest_framework.serializers import Serializer
 from rest_framework.views import APIView
 
 from cycle_invoice.api.pagination import LimitOffsetPagination, get_paginated_response
-from cycle_invoice.common.models import SimpleModel
+from cycle_invoice.common.models import TestBaseModel
+from cycle_invoice.common.tests.base import get_default_user
 
 
 class PaginationTest(TestCase):
@@ -19,9 +20,11 @@ class PaginationTest(TestCase):
 
     def setUp(self) -> None:
         """Set up the test environment."""
-        SimpleModel.objects.all().delete()
+        TestBaseModel.objects.all().delete()
+        self.user = get_default_user()
         for i in range(1, 6):
-            SimpleModel.objects.create(name=f"Name {i}")
+            instance = TestBaseModel(name=f"Name {i}")
+            instance.save(user=self.user)
 
     def test_get_paginated_response_with_real_pagination(self) -> None:
         """Test the get_paginated_response function with real pagination."""
@@ -33,7 +36,7 @@ class PaginationTest(TestCase):
         class SmallPagePagination(PageNumberPagination):
             page_size = 2
 
-        queryset = SimpleModel.objects.order_by("id")
+        queryset = TestBaseModel.objects.order_by("id")
         request = MagicMock()
         request.query_params = {"page": 1}
         view = APIView()
@@ -61,7 +64,7 @@ class PaginationTest(TestCase):
                                   inner_view: APIView = None) -> None:  # noqa: ARG002
                 return None  # disables pagination
 
-        queryset = SimpleModel.objects.order_by("id")
+        queryset = TestBaseModel.objects.order_by("id")
         request = MagicMock()
         request.query_params = {}
         view = APIView()
