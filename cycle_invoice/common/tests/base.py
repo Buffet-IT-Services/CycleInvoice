@@ -1,13 +1,17 @@
 """Import faker for generating fake data in tests."""
+from django.contrib.auth import get_user_model
 from faker import Faker
-from django.contrib.auth.models import User
 
 faker = Faker()
 
 
-def create_default_user():
+def get_default_user() -> get_user_model:
     """Create a default user for testing."""
-    from django.contrib.auth import get_user_model
     user_model = get_user_model()
-    user, created = user_model.objects.get_or_create(username='createuser', defaults={'password': 'createuser'})
+    user, created = user_model.objects.get_or_create(
+        username="default_test_user",
+        defaults={
+            "password": "default_test_password"
+        }
+    )
     return user
