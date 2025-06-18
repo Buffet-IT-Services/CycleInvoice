@@ -38,6 +38,7 @@ class Account(BaseModel):
         verbose_name_plural = "Accounts"
 
     # TODO: Replace by CheckConstraint
+    # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/51
     def clean(self) -> None:
         """
         Clean the model.
