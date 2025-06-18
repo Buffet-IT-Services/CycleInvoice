@@ -11,7 +11,7 @@ class CustomerFilter(django_filters.FilterSet):
         """Metaclass for CustomerFiler."""
 
         model = Customer
-        fields = ("id", "address")
+        fields = ("uuid", "address", "email", "phone")
 
 
 class OrganisationFilter(django_filters.FilterSet):
@@ -21,7 +21,7 @@ class OrganisationFilter(django_filters.FilterSet):
         """Metaclass for OrganisationFilter."""
 
         model = Organisation
-        fields = ("id", "name", "email", "phone", "uid")
+        fields = ("uuid", "name", "uid")
 
 
 class ContactFilter(django_filters.FilterSet):
@@ -31,7 +31,7 @@ class ContactFilter(django_filters.FilterSet):
         """Metaclass for ContactFilter."""
 
         model = Contact
-        fields = ("id", "first_name", "last_name", "email", "phone")
+        fields = ("uuid", "first_name", "last_name")
 
 
 class AddressFilter(django_filters.FilterSet):
@@ -41,4 +41,4 @@ class AddressFilter(django_filters.FilterSet):
         """Metaclass for AddressFilter."""
 
         model = Address
-        fields = ("id", "street", "number", "city", "zip_code", "country")
+        fields = ("uuid", "street", "number", "city", "zip_code", "country")

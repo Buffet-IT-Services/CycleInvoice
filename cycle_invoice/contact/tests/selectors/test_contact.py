@@ -1,6 +1,7 @@
 """Test cases for the Contact selector."""
 from django.test import TestCase
 
+from cycle_invoice.common.tests.base import get_default_user
 from cycle_invoice.contact.selectors.contact import contact_get, contact_list
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 
@@ -10,8 +11,11 @@ class ContactTest(TestCase):
 
     def setUp(self) -> None:
         """Set up test data for Contact selectors."""
+        self.user = get_default_user()
         self.contact1 = fake_contact()
+        self.contact1.save(user=self.user)
         self.contact2 = fake_contact()
+        self.contact2.save(user=self.user)
 
     def test_contact_list_returns_all(self) -> None:
         """Test that contact_list returns all contacts."""

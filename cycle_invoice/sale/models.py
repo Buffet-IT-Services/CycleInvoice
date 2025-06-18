@@ -9,14 +9,20 @@ from django.db.models import CheckConstraint, Q
 from django.utils.translation import gettext_lazy as _
 
 from cycle_invoice.accounting.models import Account, get_default_buy_account, get_default_sell_account
-from cycle_invoice.common.models import ChangeLoggerAll
+from cycle_invoice.common.models import BaseModel
 
 
-class Product(ChangeLoggerAll):
+class Product(BaseModel):
     """Model representing a sale product."""
 
-    name = models.CharField(_("name"), max_length=255)
-    description = models.TextField(_("description"), blank=True)
+    name = models.CharField(
+        _("name"),
+        max_length=255
+    )
+    description = models.TextField(
+        _("description"),
+        blank=True
+    )
     account_buy = models.ForeignKey(
         Account,
         on_delete=models.SET_DEFAULT,
@@ -29,7 +35,13 @@ class Product(ChangeLoggerAll):
         default=get_default_sell_account,
         related_name="sale_products_sell_account",
     )
-    price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"), null=True, blank=True)
+    price = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        verbose_name=_("price"),
+        null=True,
+        blank=True
+    )
 
     class Meta:
         """Meta options for the Product model."""
@@ -42,21 +54,32 @@ class Product(ChangeLoggerAll):
         return self.name
 
 
-class SubscriptionProduct(ChangeLoggerAll):
+class SubscriptionProduct(BaseModel):
     """Model representing a subscription."""
 
     RECURRENCE_CHOICES = [
         ("monthly", "Monthly"),
         ("yearly", "Yearly"),
     ]
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="subscriptionproduct")
-    price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="subscriptionproduct"
+    )
+    price = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        verbose_name=_("price")
+    )
     recurrence = models.CharField(
         max_length=10,
         choices=RECURRENCE_CHOICES,
         default="yearly",
     )
-    bill_days_before_end = models.PositiveIntegerField(verbose_name=_("bill x days before expiration"), default=20)
+    bill_days_before_end = models.PositiveIntegerField(
+        verbose_name=_("bill x days before expiration"),
+        default=20
+    )
 
     class Meta:
         """Meta options for the Subscription model."""
@@ -69,14 +92,32 @@ class SubscriptionProduct(ChangeLoggerAll):
         return f"{self.product.name} - {self.get_recurrence_display()}"
 
 
-class Subscription(ChangeLoggerAll):
+class Subscription(BaseModel):
     """Model representing a subscription."""
 
-    product = models.ForeignKey(SubscriptionProduct, on_delete=models.CASCADE, related_name="subscription")
-    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="subscription")
-    start_date = models.DateField(verbose_name=_("start date"))
-    end_billed_date = models.DateField(verbose_name=_("end billed date"), null=True, blank=True)
-    cancelled_date = models.DateField(verbose_name=_("canceled date"), null=True, blank=True)
+    product = models.ForeignKey(
+        SubscriptionProduct,
+        on_delete=models.CASCADE,
+        related_name="subscription"
+    )
+    customer = models.ForeignKey(
+        "contact.Customer",
+        on_delete=models.CASCADE,
+        related_name="subscription"
+    )
+    start_date = models.DateField(
+        verbose_name=_("start date")
+    )
+    end_billed_date = models.DateField(
+        verbose_name=_("end billed date"),
+        null=True,
+        blank=True
+    )
+    cancelled_date = models.DateField(
+        verbose_name=_("canceled date"),
+        null=True,
+        blank=True
+    )
 
     class Meta:
         """Meta options for the Subscription model."""
@@ -114,17 +155,24 @@ class Subscription(ChangeLoggerAll):
         raise ValueError(error_message)
 
 
-class WorkType(ChangeLoggerAll):
+class WorkType(BaseModel):
     """Model representing a work type."""
 
-    name = models.CharField(max_length=255, verbose_name=_("name"))
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_("name")
+    )
     account = models.ForeignKey(
         "accounting.Account",
         on_delete=models.SET_DEFAULT,
         default=get_default_sell_account,
         related_name="work_type_account",
     )
-    price_per_hour = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price per hour"))
+    price_per_hour = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        verbose_name=_("price per hour")
+    )
 
     class Meta:
         """Meta options for the WorkType model."""
@@ -137,16 +185,33 @@ class WorkType(ChangeLoggerAll):
         return f"{self.name} - {self.price_per_hour:.2f}"
 
 
-class DocumentInvoice(ChangeLoggerAll):
+class DocumentInvoice(BaseModel):
     """Model representing a document invoice."""
 
-    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE,
-                                 related_name="document_invoice")
-    invoice_number = models.CharField(max_length=255, unique=True, verbose_name=_("invoice number"))
-    date = models.DateField(verbose_name=_("date"))
-    due_date = models.DateField(verbose_name=_("due date"))
-    header_text = models.TextField(verbose_name=_("header text"), blank=True)
-    footer_text = models.TextField(verbose_name=_("footer text"), blank=True)
+    customer = models.ForeignKey(
+        "contact.Customer",
+        on_delete=models.CASCADE,
+        related_name="document_invoice"
+    )
+    invoice_number = models.CharField(
+        max_length=255,
+        unique=True,
+        verbose_name=_("invoice number")
+    )
+    date = models.DateField(
+        verbose_name=_("date")
+    )
+    due_date = models.DateField(
+        verbose_name=_("due date")
+    )
+    header_text = models.TextField(
+        verbose_name=_("header text"),
+        blank=True
+    )
+    footer_text = models.TextField(
+        verbose_name=_("footer text"),
+        blank=True
+    )
 
     class Meta:
         """Meta options for the DocumentInvoice model."""
@@ -164,7 +229,7 @@ class DocumentInvoice(ChangeLoggerAll):
         return sum((item.total for item in self.document_item.all()), start=Decimal(0))
 
 
-class DocumentItem(ChangeLoggerAll):
+class DocumentItem(BaseModel):
     """Model representing a document item."""
 
     ITEM_TYPE_CHOICES = [
@@ -178,22 +243,73 @@ class DocumentItem(ChangeLoggerAll):
         choices=ITEM_TYPE_CHOICES,
         verbose_name=_("Type")
     )
-    price = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("price"))
-    quantity = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("quantity"))
-    discount = models.DecimalField(verbose_name=_("discount percent"), max_digits=5, decimal_places=4, default=0)
-    customer = models.ForeignKey("contact.Customer", on_delete=models.CASCADE, related_name="document_customer")
-    invoice = models.ForeignKey(DocumentInvoice, on_delete=models.CASCADE, related_name="document_item", null=True,
-                                blank=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="document_item_product", null=True,
-                                blank=True)
-    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name="document_item_subscription",
-                                     null=True, blank=True)
-    comment_title = models.CharField(max_length=255, verbose_name=_("comment title"), blank=True, default="")
-    comment_description = models.TextField(verbose_name=_("comment"), blank=True, default="")
-    vehicle = models.ForeignKey("vehicle.Vehicle", on_delete=models.PROTECT, related_name="document_item_vehicle",
-                                null=True, blank=True)
-    work_type = models.ForeignKey(WorkType, on_delete=models.PROTECT, related_name="document_item_work_type", null=True,
-                                  blank=True)
+    price = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        verbose_name=_("price")
+    )
+    quantity = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        verbose_name=_("quantity")
+    )
+    discount = models.DecimalField(
+        verbose_name=_("discount percent"),
+        max_digits=5,
+        decimal_places=4,
+        default=0
+    )
+    customer = models.ForeignKey(
+        "contact.Customer",
+        on_delete=models.CASCADE,
+        related_name="document_customer"
+    )
+    invoice = models.ForeignKey(
+        DocumentInvoice,
+        on_delete=models.CASCADE,
+        related_name="document_item",
+        null=True,
+        blank=True
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="document_item_product",
+        null=True,
+        blank=True
+    )
+    subscription = models.ForeignKey(
+        Subscription,
+        on_delete=models.CASCADE,
+        related_name="document_item_subscription",
+        null=True,
+        blank=True
+    )
+    comment_title = models.CharField(
+        max_length=255,
+        verbose_name=_("comment title"),
+        blank=True,
+        default=""
+    )
+    comment_description = models.TextField(
+        verbose_name=_("comment"),
+        blank=True,
+        default=""
+    )
+    vehicle = models.ForeignKey(
+        "vehicle.Vehicle",
+        on_delete=models.PROTECT,
+        related_name="document_item_vehicle",
+        null=True,
+        blank=True
+    )
+    work_type = models.ForeignKey(
+        WorkType,
+        on_delete=models.PROTECT,
+        related_name="document_item_work_type",
+        null=True,
+        blank=True
+    )
 
     class Meta:
         """Meta options for the DocumentItem model."""

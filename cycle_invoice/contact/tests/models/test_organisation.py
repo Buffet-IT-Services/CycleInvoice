@@ -7,11 +7,16 @@ from cycle_invoice.contact.models import Organisation
 
 def fake_organisation() -> Organisation:
     """Create a fake organisation."""
-    return Organisation.objects.create(name="Fake Org")
+    return Organisation(
+        name="Fake Org"
+    )
+
 
 def fake_organisation_with_name(name: str) -> Organisation:
     """Create a fake organisation with custom name."""
-    return Organisation.objects.create(name=name)
+    return Organisation(
+        name=name
+    )
 
 
 class OrganisationTest(TestCase):

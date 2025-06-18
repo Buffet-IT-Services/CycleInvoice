@@ -61,14 +61,14 @@ class InvoiceDetailApi(ApiAuthMixin, APIView):
     class OutputSerializer(serializers.Serializer):
         """Serializer for outputting invoice data."""
 
-        id = serializers.IntegerField()
+        uuid = serializers.UUIDField()
         invoice_number = serializers.CharField()
         date = serializers.DateField()
         due_date = serializers.DateField()
         header_text = serializers.CharField()
         footer_text = serializers.CharField()
         customer = inline_serializer(fields={
-            "id": serializers.IntegerField(),
+            "uuid": serializers.UUIDField(),
             "name": serializers.CharField(source="__str__"),
         })
 
@@ -120,7 +120,7 @@ class InvoiceCreateApi(ApiAuthMixin, APIView):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        invoice = document_invoice_create(**serializer.validated_data)
+        invoice = document_invoice_create(**serializer.validated_data, user=request.user)
 
         output_serializer = InvoiceDetailApi.OutputSerializer(invoice)
 
@@ -168,7 +168,7 @@ class InvoiceUpdateApi(ApiAuthMixin, APIView):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        invoice = document_invoice_update(invoice=invoice, data=serializer.validated_data)
+        invoice = document_invoice_update(invoice=invoice, data=serializer.validated_data, user=request.user)
 
         data = InvoiceDetailApi.OutputSerializer(invoice).data
 

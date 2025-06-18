@@ -6,11 +6,17 @@ from cycle_invoice.contact.tests.models.test_organisation import fake_organisati
 from cycle_invoice.web.models import Domain
 
 
+def fake_domain() -> Domain:
+    """Create a fake work type."""
+    return Domain(
+        name="domain.com",
+        customer=fake_organisation()
+    )
+
+
 class DomainTest(TestCase):
     """Test cases for the Domain model."""
 
     def test_str(self) -> None:
         """Test the __str__ of Domain."""
-        organisation = fake_organisation()
-        domain = Domain.objects.create(name="domain.com", customer=organisation)
-        self.assertEqual("domain.com", str(domain))
+        self.assertEqual("domain.com", str(fake_domain()))

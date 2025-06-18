@@ -7,7 +7,10 @@ from cycle_invoice.contact.models import Contact
 
 def fake_contact() -> Contact:
     """Create a fake contact."""
-    return Contact.objects.create(first_name="John", last_name="Doe")
+    return Contact(
+        first_name="John",
+        last_name="Doe"
+    )
 
 
 class ContactTest(TestCase):

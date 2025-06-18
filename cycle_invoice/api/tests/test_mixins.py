@@ -6,12 +6,14 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from cycle_invoice.api.mixins import ApiAuthMixin, DjangoModelPermissions, get_auth_header
 
 
-class MixinsTest(TestCase):
-    """Tests for API mixins."""
+class GetAuthHeaderTest(TestCase):
+    """Tests for get_auth_header function."""
 
     def test_get_auth_header_valid(self) -> None:
         """Test that get_auth_header correctly extracts the auth type and value."""
-        headers = {"Authorization": "Bearer sometoken"}
+        headers = {
+            "Authorization": "Bearer sometoken",
+        }
         result = get_auth_header(headers)
         self.assertEqual(result[0], "Bearer")
         self.assertEqual(result[1], "sometoken")
@@ -24,7 +26,9 @@ class MixinsTest(TestCase):
 
     def test_get_auth_header_invalid_format(self) -> None:
         """Test that get_auth_header raises ValueError for invalid Authorization header format."""
-        headers = {"Authorization": "Bearer"}
+        headers = {
+            "Authorization": "Bearer",
+        }
         self.assertRaises(ValueError, get_auth_header, headers)
 
 

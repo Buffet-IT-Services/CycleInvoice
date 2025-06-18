@@ -4,12 +4,12 @@ import logging
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from cycle_invoice.common.models import ChangeLoggerAll
+from cycle_invoice.common.models import BaseModel
 
 logger = logging.getLogger(__name__)
 
 
-class Customer(ChangeLoggerAll):
+class Customer(BaseModel):
     """Model representing a customer."""
 
     address = models.ForeignKey(
@@ -19,6 +19,16 @@ class Customer(ChangeLoggerAll):
         verbose_name=_("address"),
         null=True,
         blank=True,
+    )
+    email = models.EmailField(
+        _("email"),
+        max_length=255,
+        blank=True
+    )
+    phone = models.CharField(
+        _("phone"),
+        max_length=20,
+        blank=True
     )
 
     class Meta:
@@ -46,10 +56,18 @@ class Customer(ChangeLoggerAll):
 class Organisation(Customer):
     """Model representing an organisation."""
 
-    name = models.CharField(_("name"), max_length=255, unique=True)
-    email = models.EmailField(_("email"), max_length=255, blank=True)
-    phone = models.CharField(_("phone"), max_length=20, blank=True)
-    uid = models.CharField(_("uid"), max_length=20, unique=True, blank=True, null=True)
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        unique=True
+    )
+    uid = models.CharField(
+        _("uid"),
+        max_length=20,
+        unique=True,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         """Meta options for the Organisation model."""
@@ -65,11 +83,18 @@ class Organisation(Customer):
 class Contact(Customer):
     """Model representing a contact."""
 
-    first_name = models.CharField(_("first name"), max_length=255)
-    last_name = models.CharField(_("last name"), max_length=255)
-    email = models.EmailField(_("email"), max_length=255, blank=True)
-    phone = models.CharField(_("phone"), max_length=20, blank=True)
-    company = models.ManyToManyField(Organisation, through="CompanyContact")
+    first_name = models.CharField(
+        _("first name"),
+        max_length=255
+    )
+    last_name = models.CharField(
+        _("last name"),
+        max_length=255
+    )
+    company = models.ManyToManyField(
+        Organisation,
+        through="CompanyContact"
+    )
 
     class Meta:
         """Meta options for the Contact model."""
@@ -82,12 +107,23 @@ class Contact(Customer):
         return f"{self.first_name} {self.last_name}"
 
 
-class CompanyContact(ChangeLoggerAll):
+class CompanyContact(BaseModel):
     """Model representing a company contact."""
 
-    company = models.ForeignKey(Organisation, on_delete=models.CASCADE, verbose_name=_("company"))
-    contact = models.ForeignKey(Contact, on_delete=models.CASCADE, verbose_name=_("contact"))
-    role = models.CharField(_("role"), max_length=255)
+    company = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE,
+        verbose_name=_("company")
+    )
+    contact = models.ForeignKey(
+        Contact,
+        on_delete=models.CASCADE,
+        verbose_name=_("contact")
+    )
+    role = models.CharField(
+        _("role"),
+        max_length=255
+    )
 
     class Meta:
         """Meta options for the CompanyContact model."""
@@ -101,15 +137,34 @@ class CompanyContact(ChangeLoggerAll):
         return f"{self.company} - {self.contact} - {self.role}"
 
 
-class Address(ChangeLoggerAll):
+class Address(BaseModel):
     """Model representing an address."""
 
-    additional = models.CharField(_("additional"), max_length=255, blank=True)
-    street = models.CharField(_("street"), max_length=255)
-    number = models.CharField(_("number"), max_length=10)
-    city = models.CharField(_("city"), max_length=255)
-    zip_code = models.CharField(_("zip code"), max_length=12)
-    country = models.CharField(_("country"), max_length=255)
+    additional = models.CharField(
+        _("additional"),
+        max_length=255,
+        blank=True
+    )
+    street = models.CharField(
+        _("street"),
+        max_length=255
+    )
+    number = models.CharField(
+        _("number"),
+        max_length=10
+    )
+    city = models.CharField(
+        _("city"),
+        max_length=255
+    )
+    zip_code = models.CharField(
+        _("zip code"),
+        max_length=12
+    )
+    country = models.CharField(
+        _("country"),
+        max_length=255
+    )
 
     class Meta:
         """Meta options for the Address model."""
@@ -121,6 +176,7 @@ class Address(ChangeLoggerAll):
         """Return a string representation of the address."""
         additional = f"{self.additional}, " if self.additional else ""
         return f"{additional}{self.street} {self.number}, {self.zip_code} {self.city}, {self.country}"
+
 
 def address_block(address: Address) -> str:
     """Return the address block for the given address."""

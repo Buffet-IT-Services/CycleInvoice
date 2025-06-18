@@ -2,6 +2,7 @@
 
 from django.test import TestCase
 
+from cycle_invoice.common.tests.base import get_default_user
 from cycle_invoice.contact.models import Customer
 from cycle_invoice.contact.tests.models.test_address import fake_address, fake_address_with_additional
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
@@ -25,9 +26,11 @@ class ContactTest(TestCase):
     def test__str__(self) -> None:
         """Test the __str__ method of customer."""
         contact = fake_contact()
+        contact.save(user=get_default_user())
         self.assertEqual("John Doe", Customer.__str__(contact))
 
         organization = fake_organisation()
+        organization.save(user=get_default_user())
         self.assertEqual("Fake Org", Customer.__str__(organization))
 
         self.assertEqual("Customer", Customer.__str__(Customer()))

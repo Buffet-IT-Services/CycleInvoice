@@ -7,12 +7,18 @@ from cycle_invoice.contact.models import Address, address_block
 
 def fake_address() -> Address:
     """Create a fake address."""
-    return Address.objects.create(street="Main St", number="1", city="Any town", zip_code="1234", country="Switzerland")
+    return Address(
+        street="Main St",
+        number="1",
+        city="Any town",
+        zip_code="1234",
+        country="Switzerland"
+    )
 
 
 def fake_address_with_additional() -> Address:
     """Create a fake address with additional info."""
-    return Address.objects.create(
+    return Address(
         street="Main St",
         number="1",
         additional="c/o Company",

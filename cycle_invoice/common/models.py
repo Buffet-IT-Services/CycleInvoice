@@ -1,62 +1,76 @@
-"""Model for inheriting change logger functionality."""
+"""Base models for the Cycle Invoice application."""
+import uuid
 
+from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import F, Q
 from simple_history.models import HistoricalRecords
-
-
-class ChangeLoggerAll(models.Model):
-    """Model representing a change logger."""
-
-    history = HistoricalRecords(inherit=True)
-
-    class Meta:
-        """Meta options for the ChangeLoggerAll model."""
-
-        abstract = True
 
 
 class BaseModel(models.Model):
     """Base model to inherit from for common fields."""
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        """Meta options for the BaseModel."""
-
-        abstract = True
-
-
-class SimpleModel(models.Model):
-    """Basic model used to illustrate a many-to-many relationship with RandomModel."""
-
-    name = models.CharField(max_length=255, blank=True)
-
-    def __str__(self) -> str:
-        """Return a string representation of the SimpleModel."""
-        return self.name or "Unnamed SimpleModel"
-
-
-class RandomModel(BaseModel):
-    """Basic model with a date range and a many-to-many relationship with SimpleModel."""
-
-    start_date = models.DateField()
-    end_date = models.DateField()
-
-    simple_objects = models.ManyToManyField(
-        SimpleModel, blank=True, related_name="random_objects"
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        editable=False,
+        related_name="%(class)s_created_by"
+    )
+    updated_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        editable=False,
+        related_name="%(class)s_updated_by"
+    )
+    soft_deleted = models.BooleanField(
+        default=False
+    )
+    history = HistoricalRecords(
+        inherit=True
     )
 
     class Meta:
-        """Meta options for the RandomModel."""
+        """Meta options for BaseModel."""
 
-        constraints = [
-            models.CheckConstraint(
-                name="start_date_before_end_date", check=Q(start_date__lt=F("end_date"))
-            )
-        ]
+        abstract = True
+
+    def save(self, *args, **kwargs) -> None:
+        """Override save method to set created_by and updated_by."""
+        user = kwargs.pop("user", None)
+        if not user:
+            error_message = "You must provide a user to save the model."
+            raise ValueError(error_message)
+        if not self.pk:
+            self.created_by = user
+        self.updated_by = user
+        super().save(*args, **kwargs)
+
+class TestBaseModel(BaseModel):
+    """Test model to verify BaseModel functionality."""
+
+    name = models.CharField(
+        max_length=255,
+        verbose_name="Name",
+        default="",
+        blank=True,
+    )
+
+    class Meta:
+        """Meta options for TestBaseModel."""
+
+        verbose_name = "Test Base Model"
+        verbose_name_plural = "Test Base Models"
 
     def __str__(self) -> str:
-        """Return a string representation of the RandomModel."""
-        return f"RandomModel from {self.start_date} to {self.end_date}"
+        """Return str representation of the TestBaseModel."""
+        return self.name

@@ -1,5 +1,5 @@
 """Service for document invoice."""
-
+from django.contrib.auth import get_user_model
 from django.db import transaction
 
 from cycle_invoice.common.services import model_update
@@ -9,9 +9,9 @@ from cycle_invoice.sale.models import DocumentInvoice
 
 @transaction.atomic
 def document_invoice_create(*, invoice_number: str, customer: int, date: str, due_date: str, header_text: str = "",
-                            footer_text: str = "") -> DocumentInvoice:
+                            footer_text: str = "", user: get_user_model) -> DocumentInvoice:
     """Create a new document invoice."""
-    return DocumentInvoice.objects.create(
+    document_invoice = DocumentInvoice(
         invoice_number=invoice_number,
         customer_id=customer,
         date=date,
@@ -19,10 +19,12 @@ def document_invoice_create(*, invoice_number: str, customer: int, date: str, du
         header_text=header_text,
         footer_text=footer_text
     )
+    document_invoice.save(user=user)
+    return document_invoice
 
 
 @transaction.atomic
-def document_invoice_update(*, invoice: DocumentInvoice, data: dict) -> DocumentInvoice:
+def document_invoice_update(*, invoice: DocumentInvoice, data: dict, user: get_user_model) -> DocumentInvoice:
     """Update an existing document invoice."""
     non_side_effect_fields: list[str] = [
         "invoice_number",
@@ -37,6 +39,6 @@ def document_invoice_update(*, invoice: DocumentInvoice, data: dict) -> Document
     if "customer" in data and isinstance(data["customer"], int):
         data["customer"] = customer_get(data["customer"])
 
-    invoice, has_updates = model_update(instance=invoice, fields=non_side_effect_fields, data=data)
+    invoice, has_updates = model_update(instance=invoice, fields=non_side_effect_fields, data=data, user=user)
 
     return invoice

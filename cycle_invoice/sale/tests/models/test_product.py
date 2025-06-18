@@ -7,7 +7,11 @@ from cycle_invoice.sale.models import Product
 
 def fake_product() -> Product:
     """Create a fake product."""
-    return Product.objects.create(name="Test Product", description="This is a test description.", price=10.00)
+    return Product(
+        name="Test Product",
+        description="This is a test description.",
+        price=10.00
+    )
 
 
 class ProductTest(TestCase):
@@ -15,5 +19,4 @@ class ProductTest(TestCase):
 
     def test_str(self) -> None:
         """Test the __str__ of Product."""
-        product = Product.objects.create(name="Test Product", price=10.00)
-        self.assertEqual("Test Product", str(product))
+        self.assertEqual("Test Product", str(fake_product()))
