@@ -29,5 +29,6 @@ def subscription_processing_to_document_items() -> None:
             log_message = f"Processing subscription {sub.id} with end_billed_date {next_end}"
             logger.info(log_message)
             # TODO: Replace by System User
+            # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/55
             subscription_extension(sub.id, user=get_default_user())
     logger.info("Finished subscription processing task.")
