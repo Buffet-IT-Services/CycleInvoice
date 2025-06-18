@@ -3,7 +3,7 @@
 from django.db import transaction
 
 from cycle_invoice.common.services import model_update
-from cycle_invoice.contact.models import Customer
+from cycle_invoice.contact.selectors.customer import customer_get
 from cycle_invoice.sale.models import DocumentInvoice
 
 
@@ -34,12 +34,8 @@ def document_invoice_update(*, invoice: DocumentInvoice, data: dict) -> Document
     ]
 
     # If 'customer' is provided as an ID, convert it to a Customer object
-    # TODO: Replace this with a call to the selector of the customer
-    # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/44
-    # https://github.com/Buffet-IT-Services/CycleInvoice/issues/43
-
     if "customer" in data and isinstance(data["customer"], int):
-        data["customer"] = Customer.objects.get(pk=data["customer"])
+        data["customer"] = customer_get(data["customer"])
 
     invoice, has_updates = model_update(instance=invoice, fields=non_side_effect_fields, data=data)
 

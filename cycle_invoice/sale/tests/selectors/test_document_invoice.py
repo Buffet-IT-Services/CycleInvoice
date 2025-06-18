@@ -1,7 +1,7 @@
 """Test cases for selectors in the sale application."""
 from django.test import TestCase
 
-from cycle_invoice.sale.selectors import invoice_get, invoice_list
+from cycle_invoice.sale.selectors.document_invoice import invoice_get, invoice_list
 from cycle_invoice.sale.tests.models.test_document_invoice import fake_document_invoice_with_invoice_number
 
 

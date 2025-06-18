@@ -1,5 +1,5 @@
 """URL configuration for the sale app."""
-from django.urls import path, include
+from django.urls import include, path
 
 from cycle_invoice.sale.api.document_invoice import InvoiceCreateApi, InvoiceDetailApi, InvoiceListApi, InvoiceUpdateApi
 

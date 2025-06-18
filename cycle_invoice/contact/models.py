@@ -110,7 +110,6 @@ class Address(ChangeLoggerAll):
     city = models.CharField(_("city"), max_length=255)
     zip_code = models.CharField(_("zip code"), max_length=12)
     country = models.CharField(_("country"), max_length=255)
-    disabled = models.BooleanField(default=False)
 
     class Meta:
         """Meta options for the Address model."""
