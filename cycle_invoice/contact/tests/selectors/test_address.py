@@ -1,11 +1,8 @@
 """Test cases for selector of address."""
 from django.test import TestCase
 
-from cycle_invoice.contact.models import Address
 from cycle_invoice.contact.selectors.address import address_get, address_list
 from cycle_invoice.contact.tests.models.test_address import fake_address
-from cycle_invoice.contact.tests.models.test_contact import fake_contact
-from cycle_invoice.contact.tests.models.test_organisation import fake_organisation
 
 
 class AddressTest(TestCase):
