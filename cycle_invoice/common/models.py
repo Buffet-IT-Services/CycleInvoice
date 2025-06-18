@@ -9,7 +9,7 @@ from simple_history.models import HistoricalRecords
 class BaseModel(models.Model):
     """Base model to inherit from for common fields."""
 
-    uid = models.UUIDField(
+    uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
         unique=True
@@ -58,6 +58,13 @@ class BaseModel(models.Model):
 class TestBaseModel(BaseModel):
     """Test model to verify BaseModel functionality."""
 
+    name = models.CharField(
+        max_length=255,
+        verbose_name="Name",
+        default="",
+        blank=True,
+    )
+
     class Meta:
         """Meta options for TestBaseModel."""
 
@@ -66,4 +73,4 @@ class TestBaseModel(BaseModel):
 
     def __str__(self) -> str:
         """Return str representation of the TestBaseModel."""
-        return self.uid.__str__()
+        return self.name

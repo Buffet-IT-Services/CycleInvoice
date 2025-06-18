@@ -5,13 +5,19 @@ from faker import Faker
 faker = Faker()
 
 
-def get_default_user() -> get_user_model:
-    """Create a default user for testing."""
+def get_default_user(username: str = "default_test_user") -> get_user_model:
+    """
+    Create a default user for testing.
+
+    :param username: The username for the user to be created or retrieved. Default is "default_test_user".
+
+    :return: A user instance, creating it if it does not exist.
+    """
     user_model = get_user_model()
     user, created = user_model.objects.get_or_create(
-        username="default_test_user",
+        username=username,
         defaults={
-            "password": "default_test_password"
+            "password": username
         }
     )
     return user
