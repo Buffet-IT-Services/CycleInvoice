@@ -1,6 +1,7 @@
 """Test cases for selectors in the sale application."""
 from django.test import TestCase
 
+from cycle_invoice.common.tests.base import get_default_user
 from cycle_invoice.sale.selectors.document_invoice import invoice_get, invoice_list
 from cycle_invoice.sale.tests.models.test_document_invoice import fake_document_invoice_with_invoice_number
 
@@ -10,8 +11,13 @@ class SelectorsDocumentInvoiceTest(TestCase):
 
     def setUp(self) -> None:
         """Set up test data for DocumentInvoice selectors."""
+        user = get_default_user()
         self.invoice1 = fake_document_invoice_with_invoice_number(invoice_number="INV-1")
+        self.invoice1.customer.save(user=user)
+        self.invoice1.save(user=user)
         self.invoice2 = fake_document_invoice_with_invoice_number(invoice_number="INV-2")
+        self.invoice2.customer.save(user=user)
+        self.invoice2.save(user=user)
 
     def test_invoice_list_returns_all(self) -> None:
         """Test that invoice_list returns all invoices."""

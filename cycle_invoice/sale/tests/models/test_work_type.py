@@ -8,7 +8,11 @@ from cycle_invoice.sale.models import WorkType
 
 def fake_work_type() -> WorkType:
     """Create a fake work type."""
-    return WorkType.objects.create(name="Test Work Type", account=fake_account(), price_per_hour=100.0)
+    return WorkType(
+        name="Test Work Type",
+        account=fake_account(),
+        price_per_hour=100.0
+    )
 
 
 class WorkTypeTest(TestCase):

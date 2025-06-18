@@ -3,6 +3,7 @@ import datetime
 
 from django.test import TestCase
 
+from cycle_invoice.common.tests.base import get_default_user
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.models import Subscription
 from cycle_invoice.sale.tests.models.test_subscription_product import fake_subscription_product
@@ -10,7 +11,7 @@ from cycle_invoice.sale.tests.models.test_subscription_product import fake_subsc
 
 def fake_subscription() -> Subscription:
     """Create a fake subscription."""
-    return Subscription.objects.create(
+    return Subscription(
         product=fake_subscription_product(),
         customer=fake_contact(),
         start_date=datetime.date(2000, 1, 1),
@@ -22,8 +23,7 @@ class SubscriptionTest(TestCase):
 
     def test__str__(self) -> None:
         """Test the __str__ method."""
-        subscription = fake_subscription()
-        self.assertEqual("Test Product - John Doe", str(subscription))
+        self.assertEqual("Test Product - John Doe", str(fake_subscription()))
 
     def test_property_is_cancelled(self) -> None:
         """Test the is_cancelled property."""
@@ -31,7 +31,11 @@ class SubscriptionTest(TestCase):
         self.assertFalse(subscription.is_cancelled)
 
         subscription.cancelled_date = datetime.date(2001, 12, 31)
-        subscription.save()
+        user = get_default_user()
+        subscription.product.product.save(user=user)
+        subscription.product.save(user=user)
+        subscription.customer.save(user=user)
+        subscription.save(user=user)
         subscription.refresh_from_db()
         self.assertTrue(subscription.is_cancelled)
 

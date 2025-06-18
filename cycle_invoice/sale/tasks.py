@@ -4,6 +4,7 @@ import logging
 
 from celery import shared_task
 
+from cycle_invoice.common.tests.base import get_default_user
 from cycle_invoice.sale.models import Subscription
 from cycle_invoice.sale.services.subscription import subscription_extension
 
@@ -27,5 +28,6 @@ def subscription_processing_to_document_items() -> None:
         if next_end and (next_end - today).days <= bill_days:
             log_message = f"Processing subscription {sub.id} with end_billed_date {next_end}"
             logger.info(log_message)
-            subscription_extension(sub.id)
+            # TODO: Replace by System User
+            subscription_extension(sub.id, user=get_default_user())
     logger.info("Finished subscription processing task.")

@@ -1,4 +1,5 @@
 """Services for handling subscriptions."""
+from django.contrib.auth import get_user_model
 from django.db import transaction
 
 from cycle_invoice.sale.models import DocumentItem, Subscription
@@ -8,13 +9,13 @@ class SubscriptionExtensionError(Exception):
     """Custom exception for subscription extension errors."""
 
 
-
 @transaction.atomic
-def subscription_extension(subscription_id: int) -> None:
+def subscription_extension(subscription_id: int, user: get_user_model) -> None:
     """
     Extend a subscription by one billing period.
 
     :param subscription_id:
+    :param user: User who is extending the subscription
     """
     subscription = Subscription.objects.get(id=subscription_id)
     if subscription.is_cancelled is True:
@@ -27,7 +28,7 @@ def subscription_extension(subscription_id: int) -> None:
     time_range = f"{start.strftime('%d.%m.%Y')} - {end.strftime('%d.%m.%Y')}"
 
     # create DocumentItemSubscription
-    DocumentItem.objects.create(
+    document_item = DocumentItem(
         product=subscription.product.product,
         subscription=subscription,
         comment_title=time_range,
@@ -36,8 +37,8 @@ def subscription_extension(subscription_id: int) -> None:
         quantity=1,
         item_type="subscription",
     )
+    document_item.save(user=user)
 
     # update Subscription
     subscription.end_billed_date = end
-    subscription.save()
-
+    subscription.save(user=user)

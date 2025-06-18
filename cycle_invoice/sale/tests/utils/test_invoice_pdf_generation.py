@@ -10,6 +10,7 @@ from pypdf import PdfReader
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
+from cycle_invoice.common.tests.base import get_default_user
 from cycle_invoice.contact.tests.models.test_address import fake_address
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.tests.models.test_document_invoice import fake_document_invoice
@@ -95,19 +96,27 @@ class InvoicePDFGenerationTest(TestCase):
         os.environ["COMPANY_COUNTRY"] = "Switzerland"
         os.environ["COMPANY_BANK_ACCOUNT"] = "CH12 3456 7890 1234 5678 9"
 
+        self.user = get_default_user()
+
         # Create a fake customer and invoice with items
         self.customer = fake_contact()
         self.customer.address = fake_address()
-        self.customer.save()
+        self.customer.address.save(user=self.user)
+        self.customer.save(user=self.user)
         self.invoice = fake_document_invoice()
         self.invoice.customer = self.customer
-        self.invoice.save()
+        self.invoice.save(user=self.user)
         self.item = fake_document_item_product()
         self.item.invoice = self.invoice
-        self.item.save()
+        self.item.customer.save(user=self.user)
+        self.item.product.save(user=self.user)
+        self.item.save(user=self.user)
         self.item = fake_document_item_work()
         self.item.invoice = self.invoice
-        self.item.save()
+        self.item.customer.save(user=self.user)
+        self.item.work_type.account.save(user=self.user)
+        self.item.work_type.save(user=self.user)
+        self.item.save(user=self.user)
 
     # noinspection DuplicatedCode
     @patch("cycle_invoice.sale.utils.invoice_pdf_generation.generate_swiss_qr")
@@ -277,4 +286,3 @@ class InvoicePDFGenerationTest(TestCase):
         args, kwargs = mock_default_storage.save.call_args
         self.assertEqual(args[0], "test_invoice.pdf")
         self.assertIs(args[1], mock_content_file.return_value)
-
