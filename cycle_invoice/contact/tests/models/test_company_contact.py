@@ -12,7 +12,9 @@ class CompanyContactTest(TestCase):
 
     def test_str(self) -> None:
         """Test the __str__ of CompanyContact."""
-        company_contact = CompanyContact.objects.create(
-            contact=fake_contact(), company=fake_organisation(), role="Manager"
+        company_contact = CompanyContact(
+            contact=fake_contact(),
+            company=fake_organisation(),
+            role="Manager"
         )
         self.assertEqual(str(company_contact), "Fake Org - John Doe - Manager")
