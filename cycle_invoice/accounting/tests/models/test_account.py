@@ -8,48 +8,64 @@ from cycle_invoice.common.selectors import get_object
 from cycle_invoice.common.tests.base import get_default_user
 
 
-def fake_account() -> Account:
+def fake_account(
+        save: bool,  # noqa: FBT001
+        default_buy: bool = False,  # noqa: FBT001,FBT002
+        default_sell: bool = False,  # noqa: FBT001,FBT002
+) -> Account:
     """Create a fake account."""
-    return Account(
-        name="Test Account",
+    account = get_object(
+        Account,
         number="1234567890",
     )
+    if account is None:
+        account = Account(
+            name="Test Account",
+            number="1234567890",
+            default_buy=default_buy,
+            default_sell=default_sell,
+        )
+        if save:
+            account.save(user=get_default_user())
+    return account
 
 
 class AccountTest(TestCase):
     """Test cases for the Account model."""
 
     def setUp(self) -> None:
-        """Set up the test case with a fake account."""
+        """Set up the test case."""
         self.user = get_default_user()
-        self.account = fake_account()
 
     def test_prevent_default_buy_deletion(self) -> None:
         """Test that default buy account cannot be deleted."""
-        account = self.account
-        account.default_buy = True
-        account.save(user=self.user)
+        account = fake_account(
+            save=True,
+            default_buy=True,
+        )
         with self.assertRaises(ValidationError):
             account.delete()
 
     def test_prevent_default_sell_deletion(self) -> None:
         """Test that default sell account cannot be deleted."""
-        account = self.account
-        account.default_sell = True
-        account.save(user=self.user)
+        account = fake_account(
+            save=True,
+            default_sell=True,
+        )
         with self.assertRaises(ValidationError):
             account.delete()
 
     def test_only_one_default_buy_account(self) -> None:
         """Test that only one account can be set as default buy."""
-        account1 = self.account
-        account1.default_buy = True
+        account1 = fake_account(
+            save=True,
+            default_buy=True,
+        )
+
         account2 = Account(
             name="Test Account 2",
             number="0987654321",
         )
-
-        account1.save(user=self.user)
         account2.save(user=self.user)
 
         account2.default_buy = True
@@ -64,14 +80,15 @@ class AccountTest(TestCase):
 
     def test_only_one_default_sell_account(self) -> None:
         """Test that only one account can be set as default sell."""
-        account1 = self.account
-        account1.default_sell = True
+        account1 = fake_account(
+            save=True,
+            default_sell=True,
+        )
+
         account2 = Account(
             name="Test Account 2",
             number="0987654321",
         )
-
-        account1.save(user=self.user)
         account2.save(user=self.user)
 
         account2.default_sell = True
@@ -86,9 +103,10 @@ class AccountTest(TestCase):
 
     def test_remove_default_buy_account(self) -> None:
         """Test that you can't remove the default buy."""
-        account = self.account
-        account.default_buy = True
-        account.save(user=self.user)
+        account = fake_account(
+            save=True,
+            default_buy=True,
+        )
 
         account.default_buy = False
 
@@ -97,9 +115,10 @@ class AccountTest(TestCase):
 
     def test_remove_default_sell_account(self) -> None:
         """Test that you can't remove the default sell."""
-        account = self.account
-        account.default_sell = True
-        account.save(user=self.user)
+        account = fake_account(
+            save=True,
+            default_sell=True,
+        )
 
         account.default_sell = False
 
@@ -108,21 +127,23 @@ class AccountTest(TestCase):
 
     def test_str(self) -> None:
         """Test the string representation of the account."""
-        self.assertEqual("Test Account (1234567890)", str(self.account))
+        self.assertEqual("Test Account (1234567890)", str(fake_account(save=False)))
 
     def test_get_default_buy_account(self) -> None:
         """Test the get_default_buy_account function."""
-        account = self.account
-        account.default_buy = True
-        account.save(user=self.user)
+        account = fake_account(
+            save=True,
+            default_buy=True,
+        )
 
         self.assertEqual(account.id, get_default_buy_account(user=self.user))
 
     def test_get_default_sell_account(self) -> None:
         """Test the get_default_sell_account function."""
-        account = self.account
-        account.default_sell = True
-        account.save(user=self.user)
+        account = fake_account(
+            save=True,
+            default_sell=True,
+        )
 
         self.assertEqual(account.id, get_default_sell_account(user=self.user))
 

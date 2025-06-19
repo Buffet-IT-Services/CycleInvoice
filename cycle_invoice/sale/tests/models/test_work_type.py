@@ -10,7 +10,7 @@ def fake_work_type() -> WorkType:
     """Create a fake work type."""
     return WorkType(
         name="Test Work Type",
-        account=fake_account(),
+        account=fake_account(save=True),
         price_per_hour=100.0
     )
 

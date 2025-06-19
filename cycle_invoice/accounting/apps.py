@@ -12,4 +12,4 @@ class AccountingConfig(AppConfig):
 
     def ready(self) -> None:
         """Call to import signals."""
-        from . import signals  # noqa: F401, PLC0415
+        from . import signals  # noqa: F401
