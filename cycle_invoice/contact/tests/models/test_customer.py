@@ -17,10 +17,10 @@ class ContactTest(TestCase):
         contact = fake_contact()
         self.assertEqual("John Doe", contact.address_block)
 
-        contact.address = fake_address()
+        contact.address = fake_address(save=False)
         self.assertEqual("John Doe\nMain St 1\n1234 Any town\nSwitzerland", contact.address_block)
 
-        contact.address = fake_address_with_additional()
+        contact.address = fake_address_with_additional(save=False)
         self.assertEqual("John Doe\nc/o Company\nMain St 1\n1234 Any town\nSwitzerland", contact.address_block)
 
     def test__str__(self) -> None:

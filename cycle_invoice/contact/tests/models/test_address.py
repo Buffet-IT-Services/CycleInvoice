@@ -2,23 +2,27 @@
 
 from django.test import TestCase
 
+from cycle_invoice.common.tests.base import get_default_user
 from cycle_invoice.contact.models import Address, address_block
 
 
-def fake_address() -> Address:
+def fake_address(save: bool) -> Address:
     """Create a fake address."""
-    return Address(
+    address = Address(
         street="Main St",
         number="1",
         city="Any town",
         zip_code="1234",
         country="Switzerland"
     )
+    if save:
+        address.save(user=get_default_user())
+    return address
 
 
-def fake_address_with_additional() -> Address:
+def fake_address_with_additional(save: bool) -> Address:
     """Create a fake address with additional info."""
-    return Address(
+    address = Address(
         street="Main St",
         number="1",
         additional="c/o Company",
@@ -26,6 +30,9 @@ def fake_address_with_additional() -> Address:
         zip_code="1234",
         country="Switzerland",
     )
+    if save:
+        address.save(user=get_default_user())
+    return address
 
 
 class AddressTest(TestCase):
@@ -33,16 +40,16 @@ class AddressTest(TestCase):
 
     def test_str(self) -> None:
         """Test the __str__ of Address."""
-        address = fake_address_with_additional()
+        address = fake_address_with_additional(save=False)
         self.assertEqual("c/o Company, Main St 1, 1234 Any town, Switzerland", str(address))
 
-        address = fake_address()
+        address = fake_address(save=False)
         self.assertEqual("Main St 1, 1234 Any town, Switzerland", str(address))
 
     def test_address_block(self) -> None:
         """Test the address block function."""
-        address = fake_address_with_additional()
+        address = fake_address_with_additional(save=False)
         self.assertEqual("c/o Company\nMain St 1\n1234 Any town\nSwitzerland", address_block(address))
 
-        address = fake_address()
+        address = fake_address(save=False)
         self.assertEqual("Main St 1\n1234 Any town\nSwitzerland", address_block(address))

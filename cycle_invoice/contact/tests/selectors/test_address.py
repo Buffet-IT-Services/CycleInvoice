@@ -12,10 +12,8 @@ class AddressTest(TestCase):
     def setUp(self) -> None:
         """Set up test data for Address selectors."""
         self.user = get_default_user()
-        self.address1 = fake_address()
-        self.address1.save(user=self.user)
-        self.address2 = fake_address()
-        self.address2.save(user=self.user)
+        self.address1 = fake_address(save=True)
+        self.address2 = fake_address(save=True)
 
     def test_address_list_returns_all(self) -> None:
         """Test that address_list returns all addresses."""
