@@ -2,6 +2,7 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from cycle_invoice.common.tests.base import get_default_user
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.models import DocumentItem
 from cycle_invoice.sale.tests.models.test_product import fake_product
@@ -10,17 +11,20 @@ from cycle_invoice.sale.tests.models.test_work_type import fake_work_type
 from cycle_invoice.vehicle.tests.models.test_vehicle import fake_vehicle
 
 
-def fake_document_item_product() -> DocumentItem:
+def fake_document_item_product(save: bool) -> DocumentItem:
     """Create a fake document item for a product."""
-    product = fake_product()
-    return DocumentItem(
+    product = fake_product(save=save)
+    document_item = DocumentItem(
         item_type="product",
         price=product.price,
         quantity=1,
         discount=0.1,
         customer=fake_contact(save=True),
-        product=product
+        product=product,
     )
+    if save:
+        document_item.save(user=get_default_user())
+    return document_item
 
 
 def fake_document_item_subscription() -> DocumentItem:
@@ -54,7 +58,7 @@ def fake_document_item_work() -> DocumentItem:
 
 def fake_document_item_vehicle() -> DocumentItem:
     """Create a fake document item for a vehicle."""
-    vehicle = fake_vehicle()
+    vehicle = fake_vehicle(save=True)
     return DocumentItem(
         item_type="expense_vehicle",
         price=vehicle.km_sell,
@@ -69,15 +73,21 @@ def fake_document_item_vehicle() -> DocumentItem:
 class DocumentItemTest(TestCase):
     """Test cases for the DocumentItem model."""
 
+    def setUp(self):
+        """Set up test data for DocumentItem tests."""
+        self.vehicle = fake_vehicle(save=True)
+        self.product = fake_product(save=True)
+
+
     # noinspection DuplicatedCode
     def test_clean_product(self) -> None:
         """Test the clean method for a product item."""
-        document_item = fake_document_item_product()
+        document_item = fake_document_item_product(save=True)
 
         document_item.product = None
         with self.assertRaises(ValidationError):
             document_item.validate_constraints()
-        document_item.product = fake_product()
+        document_item.product = self.product
 
         document_item.subscription = fake_subscription()
         with self.assertRaises(ValidationError):
@@ -94,7 +104,7 @@ class DocumentItemTest(TestCase):
             document_item.validate_constraints()
         document_item.comment_description = None
 
-        document_item.vehicle = fake_vehicle()
+        document_item.vehicle = self.vehicle
         with self.assertRaises(ValidationError):
             document_item.validate_constraints()
         document_item.vehicle = None
@@ -112,7 +122,7 @@ class DocumentItemTest(TestCase):
         document_item.product = None
         with self.assertRaises(ValidationError):
             document_item.validate_constraints()
-        document_item.product = fake_product()
+        document_item.product = self.product
 
         document_item.subscription = None
         with self.assertRaises(ValidationError):
@@ -129,7 +139,7 @@ class DocumentItemTest(TestCase):
             document_item.validate_constraints()
         document_item.comment_description = None
 
-        document_item.vehicle = fake_vehicle()
+        document_item.vehicle = self.vehicle
         with self.assertRaises(ValidationError):
             document_item.validate_constraints()
         document_item.vehicle = None
@@ -144,7 +154,7 @@ class DocumentItemTest(TestCase):
         """Test the clean method for a work item."""
         document_item = fake_document_item_work()
 
-        document_item.product = fake_product()
+        document_item.product = self.product
         with self.assertRaises(ValidationError):
             document_item.validate_constraints()
         document_item.product = None
@@ -169,7 +179,7 @@ class DocumentItemTest(TestCase):
         #     self.fail("validate_constraints() raised ValidationError
         #     unexpectedly when comment_description is None")
 
-        document_item.vehicle = fake_vehicle()
+        document_item.vehicle = self.vehicle
         with self.assertRaises(ValidationError):
             document_item.validate_constraints()
         document_item.vehicle = None
@@ -184,7 +194,7 @@ class DocumentItemTest(TestCase):
         """Test the clean method for a vehicle expense item."""
         document_item = fake_document_item_vehicle()
 
-        document_item.product = fake_product()
+        document_item.product = self.product
         with self.assertRaises(ValidationError):
             document_item.validate_constraints()
         document_item.product = None
@@ -207,7 +217,7 @@ class DocumentItemTest(TestCase):
         document_item.vehicle = None
         with self.assertRaises(ValidationError):
             document_item.validate_constraints()
-        document_item.vehicle = fake_vehicle()
+        document_item.vehicle = self.vehicle
 
         document_item.work_type = fake_work_type()
         with self.assertRaises(ValidationError):
@@ -216,7 +226,7 @@ class DocumentItemTest(TestCase):
 
     def test_clean_invalid_item_type(self) -> None:
         """Test that ValueError is raised for an invalid item_type in clean property."""
-        document_item = fake_document_item_product()
+        document_item = fake_document_item_product(save=False)
         document_item.item_type = "invalid_type"
         with self.assertRaises(ValidationError):
             document_item.validate_constraints()
@@ -284,8 +294,7 @@ class DocumentItemTest(TestCase):
 
     def test_description_product(self) -> None:
         """Test the description property for a product."""
-        document_item = fake_document_item_product()
-        self.assertEqual("This is a test description.", document_item.description)
+        self.assertEqual("This is a test description.", fake_document_item_product(save=False).description)
 
     def test_description_subscription(self) -> None:
         """Test the description property for a subscription."""

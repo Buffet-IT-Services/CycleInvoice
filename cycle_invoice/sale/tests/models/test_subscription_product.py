@@ -9,7 +9,7 @@ from cycle_invoice.sale.tests.models.test_product import fake_product
 def fake_subscription_product() -> SubscriptionProduct:
     """Create a fake subscription product."""
     return SubscriptionProduct(
-        product=fake_product(),
+        product=fake_product(save=True),
         price=10.00,
         recurrence="monthly"
     )

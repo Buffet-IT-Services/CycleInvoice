@@ -16,13 +16,9 @@ class InvoiceListApiTest(TestCase):
 
     def setUp(self) -> None:
         """Set up test data."""
-        self.invoice1 = fake_document_invoice()
-        self.invoice2 = fake_document_invoice_with_invoice_number("INV-2")
+        self.invoice1 = fake_document_invoice(save=True)
+        self.invoice2 = fake_document_invoice_with_invoice_number(invoice_number="INV-2", save=True)
         self.user = get_default_user()
-        self.invoice1.customer.save(user=self.user)
-        self.invoice2.customer.save(user=self.user)
-        self.invoice1.save(user=self.user)
-        self.invoice2.save(user=self.user)
 
         self.token_admin = token_admin_create(self.client)
         self.token_norights = token_norights_create(self.client)
@@ -69,9 +65,7 @@ class InvoiceDetailApiTest(TestCase):
 
     def setUp(self) -> None:
         """Set up test data."""
-        self.invoice = fake_document_invoice()
-        self.invoice.customer.save(user=get_default_user())
-        self.invoice.save(user=get_default_user())
+        self.invoice = fake_document_invoice(save=True)
         self.token_admin = token_admin_create(self.client)
         self.token_norights = token_norights_create(self.client)
         self.url = reverse("document-invoice-detail", kwargs={"pk": self.invoice.pk})
@@ -166,9 +160,7 @@ class InvoiceCreateApiTest(TestCase):
 
     def test_post_existing_invoice_number_returns_400(self) -> None:
         """Test POST request with an existing invoice number returns 400 Bad Request."""
-        invoice = fake_document_invoice_with_invoice_number(self.content["invoice_number"])
-        invoice.customer.save(user=get_default_user())
-        invoice.save(user=get_default_user())
+        invoice = fake_document_invoice_with_invoice_number(self.content["invoice_number"], save=True)
         response = self.client.post(
             self.url,
             self.content,
@@ -249,9 +241,7 @@ class InvoiceUpdateApiTest(TestCase):
         """Set up test data."""
         self.token_admin = token_admin_create(self.client)
         self.token_norights = token_norights_create(self.client)
-        self.invoice = fake_document_invoice()
-        self.invoice.customer.save(user=get_default_user())
-        self.invoice.save(user=get_default_user())
+        self.invoice = fake_document_invoice(save=True)
         self.url = reverse("document-invoice-update", kwargs={"pk": self.invoice.id})
 
     def test_patch_invoice_with_admin(self) -> None:
@@ -286,9 +276,7 @@ class InvoiceUpdateApiTest(TestCase):
 
     def test_add_invoice_with_existing_invoice_number(self) -> None:
         """Test PATCH request with an existing invoice number returns 400 Bad Request."""
-        invoice = fake_document_invoice_with_invoice_number("INV-12345-NEW")
-        invoice.customer.save(user=get_default_user())
-        invoice.save(user=get_default_user())
+        fake_document_invoice_with_invoice_number(invoice_number="INV-12345-NEW", save=True)
         content = {"invoice_number": "INV-12345-NEW"}
         response = self.client.patch(self.url, content, content_type="application/json",
                                      HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")

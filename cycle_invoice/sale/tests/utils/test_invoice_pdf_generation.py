@@ -102,9 +102,7 @@ class InvoicePDFGenerationTest(TestCase):
         self.customer = fake_contact(save=False)
         self.customer.address = fake_address(save=True)
         self.customer.save(user=self.user)
-        self.invoice = fake_document_invoice()
-        self.invoice.customer = self.customer
-        self.invoice.save(user=self.user)
+        self.invoice = fake_document_invoice(save=True)
         self.item = fake_document_item_product()
         self.item.invoice = self.invoice
         self.item.customer.save(user=self.user)
