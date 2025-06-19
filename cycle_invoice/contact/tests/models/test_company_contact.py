@@ -13,7 +13,7 @@ class CompanyContactTest(TestCase):
     def test_str(self) -> None:
         """Test the __str__ of CompanyContact."""
         company_contact = CompanyContact(
-            contact=fake_contact(),
+            contact=fake_contact(save=True),
             company=fake_organisation(),
             role="Manager"
         )

@@ -13,7 +13,7 @@ def fake_subscription() -> Subscription:
     """Create a fake subscription."""
     return Subscription(
         product=fake_subscription_product(),
-        customer=fake_contact(),
+        customer=fake_contact(save=True),
         start_date=datetime.date(2000, 1, 1),
     )
 

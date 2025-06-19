@@ -14,7 +14,7 @@ class ContactTest(TestCase):
 
     def test_prop_address_block(self) -> None:
         """Test the property address_block of customer."""
-        contact = fake_contact()
+        contact = fake_contact(save=False)
         self.assertEqual("John Doe", contact.address_block)
 
         contact.address = fake_address(save=False)
@@ -25,8 +25,7 @@ class ContactTest(TestCase):
 
     def test__str__(self) -> None:
         """Test the __str__ method of customer."""
-        contact = fake_contact()
-        contact.save(user=get_default_user())
+        contact = fake_contact(save=True)
         self.assertEqual("John Doe", Customer.__str__(contact))
 
         organization = fake_organisation()

@@ -18,7 +18,7 @@ def fake_document_item_product() -> DocumentItem:
         price=product.price,
         quantity=1,
         discount=0.1,
-        customer=fake_contact(),
+        customer=fake_contact(save=True),
         product=product
     )
 
@@ -30,7 +30,7 @@ def fake_document_item_subscription() -> DocumentItem:
         item_type="subscription",
         price=subscription.product.price,
         quantity=1,
-        customer=fake_contact(),
+        customer=fake_contact(save=True),
         subscription=subscription,
         product=subscription.product.product,
         comment_title="Time Range"
@@ -43,7 +43,7 @@ def fake_document_item_work() -> DocumentItem:
     return DocumentItem(
         price=work.price_per_hour,
         quantity=2.00,
-        customer=fake_contact(),
+        customer=fake_contact(save=True),
         item_type="work",
         discount=0.1,
         comment_title="Test Date",
@@ -59,7 +59,7 @@ def fake_document_item_vehicle() -> DocumentItem:
         item_type="expense_vehicle",
         price=vehicle.km_sell,
         quantity=10,
-        customer=fake_contact(),
+        customer=fake_contact(save=True),
         vehicle=vehicle,
         comment_title="10 km",
         comment_description="Oberrieden - Zürich"

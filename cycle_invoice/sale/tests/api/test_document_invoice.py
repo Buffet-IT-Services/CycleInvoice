@@ -120,8 +120,7 @@ class InvoiceCreateApiTest(TestCase):
         self.token_admin = token_admin_create(self.client)
         self.token_norights = token_norights_create(self.client)
         self.url = reverse("document-invoice-create")
-        self.customer = fake_contact()
-        self.customer.save(user=get_default_user())
+        self.customer = fake_contact(save=True)
         self.content = {
             "invoice_number": "INV-12345",
             "date": "2023-10-01",
@@ -318,8 +317,7 @@ class InvoiceUpdateApiTest(TestCase):
 
     def test_patch_valid_customer_returns_201(self) -> None:
         """Test PATCH request with a valid customer ID returns 201 Success."""
-        contact = fake_contact()
-        contact.save(user=get_default_user())
+        contact = fake_contact(save=True)
         content = {"customer": contact.id}
         response = self.client.patch(self.url, content, content_type="application/json",
                                      HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")

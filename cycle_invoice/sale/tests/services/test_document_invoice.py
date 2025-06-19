@@ -15,8 +15,7 @@ class DocumentInvoiceServiceTest(TestCase):
 
     def setUp(self) -> None:
         """Set up test data."""
-        self.customer = fake_contact()
-        self.customer.save(user=get_default_user())
+        self.customer = fake_contact(save=True)
         self.data = {
             "invoice_number": "INV-2025-001",
             "customer": self.customer.id,

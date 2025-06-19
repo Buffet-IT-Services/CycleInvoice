@@ -23,12 +23,11 @@ class SubscriptionTest(TestCase):
         # Create a subscription
         subscription = Subscription(
             product=fake_subscription_product(),
-            customer=fake_contact(),
+            customer=fake_contact(save=True),
             start_date=datetime.date(2000, 1, 1),
         )
         subscription.product.product.save(user=self.user)
         subscription.product.save(user=self.user)
-        subscription.customer.save(user=self.user)
         subscription.save(user=self.user)
 
         try:
@@ -50,13 +49,12 @@ class SubscriptionTest(TestCase):
         """Test the subscription extension functionality with a cancelled subscription."""
         subscription = Subscription(
             product=fake_subscription_product(),
-            customer=fake_contact(),
+            customer=fake_contact(save=True),
             start_date=datetime.date(2000, 1, 1),
             cancelled_date=datetime.date(2000, 1, 15),
         )
         subscription.product.product.save(user=self.user)
         subscription.product.save(user=self.user)
-        subscription.customer.save(user=self.user)
         subscription.save(user=self.user)
 
         try:

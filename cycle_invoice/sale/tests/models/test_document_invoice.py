@@ -16,7 +16,7 @@ from cycle_invoice.sale.tests.models.test_document_item import (
 def fake_document_invoice_with_invoice_number(invoice_number: str) -> DocumentInvoice:
     """Create a fake invoice with provided invoice number."""
     return DocumentInvoice(
-        customer=fake_contact(),
+        customer=fake_contact(save=True),
         invoice_number=invoice_number,
         date=datetime.datetime.now(tz=datetime.UTC).date(),
         due_date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=30),
@@ -28,7 +28,7 @@ def fake_document_invoice_with_invoice_number(invoice_number: str) -> DocumentIn
 def fake_document_invoice() -> DocumentInvoice:
     """Create a fake invoice with a default invoice number."""
     return DocumentInvoice(
-        customer=fake_contact(),
+        customer=fake_contact(save=True),
         invoice_number="INV-12345",
         date=datetime.datetime.now(tz=datetime.UTC).date(),
         due_date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=30),

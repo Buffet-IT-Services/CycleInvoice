@@ -14,8 +14,7 @@ class CustomerTest(TestCase):
     def setUp(self) -> None:
         """Set up test data for Customer selectors."""
         self.user = get_default_user()
-        self.contact = fake_contact()
-        self.contact.save(user=self.user)
+        self.contact = fake_contact(save=True)
         self.organisation = fake_organisation()
         self.organisation.save(user=self.user)
         self.contact.__class__ = Customer

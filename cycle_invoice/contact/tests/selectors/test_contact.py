@@ -12,10 +12,8 @@ class ContactTest(TestCase):
     def setUp(self) -> None:
         """Set up test data for Contact selectors."""
         self.user = get_default_user()
-        self.contact1 = fake_contact()
-        self.contact1.save(user=self.user)
-        self.contact2 = fake_contact()
-        self.contact2.save(user=self.user)
+        self.contact1 = fake_contact(save=True)
+        self.contact2 = fake_contact(save=True)
 
     def test_contact_list_returns_all(self) -> None:
         """Test that contact_list returns all contacts."""
