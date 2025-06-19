@@ -14,7 +14,7 @@ class CompanyContactTest(TestCase):
         """Test the __str__ of CompanyContact."""
         company_contact = CompanyContact(
             contact=fake_contact(save=True),
-            company=fake_organisation(),
+            company=fake_organisation(save=True),
             role="Manager"
         )
         self.assertEqual(str(company_contact), "Fake Org - John Doe - Manager")

@@ -10,7 +10,7 @@ def fake_domain() -> Domain:
     """Create a fake work type."""
     return Domain(
         name="domain.com",
-        customer=fake_organisation()
+        customer=fake_organisation(save=True)
     )
 
 

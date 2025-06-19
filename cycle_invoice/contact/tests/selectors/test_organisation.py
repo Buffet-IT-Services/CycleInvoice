@@ -12,10 +12,11 @@ class OrganisationTest(TestCase):
     def setUp(self) -> None:
         """Set up test data for Organisation selectors."""
         self.user = get_default_user()
-        self.organisation1 = fake_organisation()
-        self.organisation1.save(user=self.user)
-        self.organisation2 = fake_organisation_with_name("Test Organisation")
-        self.organisation2.save(user=self.user)
+        self.organisation1 = fake_organisation(save=True)
+        self.organisation2 = fake_organisation_with_name(
+            name="Test Organisation",
+            save=True,
+        )
 
     def test_organisation_list_returns_all(self) -> None:
         """Test that organisation_list returns all organisations."""

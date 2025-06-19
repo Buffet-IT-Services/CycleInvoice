@@ -28,8 +28,7 @@ class ContactTest(TestCase):
         contact = fake_contact(save=True)
         self.assertEqual("John Doe", Customer.__str__(contact))
 
-        organization = fake_organisation()
-        organization.save(user=get_default_user())
+        organization = fake_organisation(save=True)
         self.assertEqual("Fake Org", Customer.__str__(organization))
 
         self.assertEqual("Customer", Customer.__str__(Customer()))

@@ -2,21 +2,33 @@
 
 from django.test import TestCase
 
+from cycle_invoice.common.tests.base import get_default_user
 from cycle_invoice.contact.models import Organisation
 
 
-def fake_organisation() -> Organisation:
+def fake_organisation(
+        save: bool,
+) -> Organisation:
     """Create a fake organisation."""
-    return Organisation(
+    organisation = Organisation(
         name="Fake Org"
     )
+    if save:
+        organisation.save(user=get_default_user())
+    return organisation
 
 
-def fake_organisation_with_name(name: str) -> Organisation:
+def fake_organisation_with_name(
+        name: str,
+        save: bool,
+) -> Organisation:
     """Create a fake organisation with custom name."""
-    return Organisation(
+    organisation = Organisation(
         name=name
     )
+    if save:
+        organisation.save(user=get_default_user())
+    return organisation
 
 
 class OrganisationTest(TestCase):
@@ -24,5 +36,4 @@ class OrganisationTest(TestCase):
 
     def test_str(self) -> None:
         """Test the __str__ of organisation."""
-        organisation = fake_organisation()
-        self.assertEqual(str(organisation), "Fake Org")
+        self.assertEqual(str(fake_organisation(save=False)), "Fake Org")
