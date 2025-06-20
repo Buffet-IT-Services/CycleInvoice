@@ -136,7 +136,7 @@ class AccountTest(TestCase):
             default_buy=True,
         )
 
-        self.assertEqual(account.id, get_default_buy_account(user=self.user))
+        self.assertEqual(account.id, get_default_buy_account())
 
     def test_get_default_sell_account(self) -> None:
         """Test the get_default_sell_account function."""
@@ -145,16 +145,16 @@ class AccountTest(TestCase):
             default_sell=True,
         )
 
-        self.assertEqual(account.id, get_default_sell_account(user=self.user))
+        self.assertEqual(account.id, get_default_sell_account())
 
     def test_get_default_buy_account_create(self) -> None:
         """Test the get_default_buy_account function when no default account exists."""
-        account_id = get_default_buy_account(user=self.user)
+        account_id = get_default_buy_account()
         account = get_object(Account, id=account_id)
         self.assertEqual(account.name, "Default Buy Account")
 
     def test_get_default_sell_account_create(self) -> None:
         """Test the get_default_sell_account function when no default account exists."""
-        account_id = get_default_sell_account(user=self.user)
+        account_id = get_default_sell_account()
         account = get_object(Account, id=account_id)
         self.assertEqual(account.name, "Default Sell Account")
