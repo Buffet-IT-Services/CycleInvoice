@@ -1,4 +1,4 @@
-"""URL configuration for the api app."""
+"""URLs for the api app."""
 from django.urls import include, path
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 

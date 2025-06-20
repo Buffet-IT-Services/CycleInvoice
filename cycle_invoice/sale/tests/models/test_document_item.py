@@ -4,11 +4,11 @@ from django.test import TestCase
 
 from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
+from cycle_invoice.product.tests.models.test_product import fake_product
 from cycle_invoice.sale.models import DocumentItem
-from cycle_invoice.sale.tests.models.test_product import fake_product
-from cycle_invoice.sale.tests.models.test_subscription import fake_subscription
-from cycle_invoice.sale.tests.models.test_work_type import fake_work_type
+from cycle_invoice.subscription.tests.models.test_subscription import fake_subscription
 from cycle_invoice.vehicle.tests.models.test_vehicle import fake_vehicle
+from cycle_invoice.work.test.models.test_work_type import fake_work_type
 
 
 def fake_document_item_product(save: bool) -> DocumentItem:  # noqa: FBT001

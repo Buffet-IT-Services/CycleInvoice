@@ -1,4 +1,4 @@
-"""Accounting app configuration module."""
+"""Config for the accounting app."""
 
 from django.apps import AppConfig
 

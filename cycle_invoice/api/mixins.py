@@ -1,4 +1,4 @@
-"""Provides mixins for API authentication and permissions."""
+"""Mixins for the api app."""
 import copy
 from collections.abc import Sequence
 

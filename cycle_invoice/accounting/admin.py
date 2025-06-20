@@ -1,4 +1,4 @@
-"""Register the Account models with the admin site."""
+"""Admin config for accounting app."""
 
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
