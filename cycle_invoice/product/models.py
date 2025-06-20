@@ -1,9 +1,9 @@
 """Models for the product app."""
 from django.db import models
-
-from cycle_invoice.accounting.models import get_default_buy_account, Account, get_default_sell_account
-from cycle_invoice.common.models import BaseModel
 from django.utils.translation import gettext_lazy as _
+
+from cycle_invoice.accounting.models import Account, get_default_buy_account, get_default_sell_account
+from cycle_invoice.common.models import BaseModel
 
 
 # Create your models here.

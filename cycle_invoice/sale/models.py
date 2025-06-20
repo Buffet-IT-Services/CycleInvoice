@@ -6,7 +6,6 @@ from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.utils.translation import gettext_lazy as _
 
-from cycle_invoice.accounting.models import get_default_sell_account
 from cycle_invoice.common.models import BaseModel
 from cycle_invoice.product.models import Product
 from cycle_invoice.subscription.models import Subscription

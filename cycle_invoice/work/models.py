@@ -1,9 +1,9 @@
 """Models for the work app."""
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from cycle_invoice.accounting.models import get_default_sell_account
 from cycle_invoice.common.models import BaseModel
-from django.utils.translation import gettext_lazy as _
 
 
 class WorkType(BaseModel):
