@@ -7,7 +7,7 @@ from cycle_invoice.contact.models import Organisation
 
 
 def fake_organisation(
-        save: bool,
+        save: bool,  # noqa: FBT001
 ) -> Organisation:
     """Create a fake organisation."""
     organisation = Organisation(
@@ -20,7 +20,7 @@ def fake_organisation(
 
 def fake_organisation_with_name(
         name: str,
-        save: bool,
+        save: bool,  # noqa: FBT001
 ) -> Organisation:
     """Create a fake organisation with custom name."""
     organisation = Organisation(

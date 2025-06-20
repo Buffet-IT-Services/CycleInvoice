@@ -11,7 +11,7 @@ from cycle_invoice.sale.tests.models.test_work_type import fake_work_type
 from cycle_invoice.vehicle.tests.models.test_vehicle import fake_vehicle
 
 
-def fake_document_item_product(save: bool) -> DocumentItem:
+def fake_document_item_product(save: bool) -> DocumentItem:  # noqa: FBT001
     """Create a fake document item for a product."""
     product = fake_product(save=True)
     document_item = DocumentItem(
@@ -27,7 +27,7 @@ def fake_document_item_product(save: bool) -> DocumentItem:
     return document_item
 
 
-def fake_document_item_subscription(save: bool) -> DocumentItem:
+def fake_document_item_subscription(save: bool) -> DocumentItem:  # noqa: FBT001
     """Create a fake document item for a subscription."""
     subscription = fake_subscription(save=True)
     document_item = DocumentItem(
@@ -44,7 +44,7 @@ def fake_document_item_subscription(save: bool) -> DocumentItem:
     return document_item
 
 
-def fake_document_item_work(save: bool) -> DocumentItem:
+def fake_document_item_work(save: bool) -> DocumentItem:  # noqa: FBT001
     """Create a fake document item for a work."""
     work = fake_work_type(save=True)
     document_item = DocumentItem(
@@ -79,7 +79,7 @@ def fake_document_item_vehicle() -> DocumentItem:
 class DocumentItemTest(TestCase):
     """Test cases for the DocumentItem model."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test data for DocumentItem tests."""
         self.vehicle = fake_vehicle(save=True)
         self.product = fake_product(save=True)

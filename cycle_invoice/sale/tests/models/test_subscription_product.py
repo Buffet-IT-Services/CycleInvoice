@@ -7,7 +7,7 @@ from cycle_invoice.sale.models import SubscriptionProduct
 from cycle_invoice.sale.tests.models.test_product import fake_product
 
 
-def fake_subscription_product(save: bool) -> SubscriptionProduct:
+def fake_subscription_product(save: bool) -> SubscriptionProduct:  # noqa: FBT001
     """Create a fake subscription product."""
     subscription_product = SubscriptionProduct(
         product=fake_product(save=True),

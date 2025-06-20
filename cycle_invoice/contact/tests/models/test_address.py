@@ -6,7 +6,9 @@ from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.models import Address, address_block
 
 
-def fake_address(save: bool) -> Address:
+def fake_address(
+        save: bool,  # noqa: FBT001
+) -> Address:
     """Create a fake address."""
     address = Address(
         street="Main St",
@@ -20,7 +22,9 @@ def fake_address(save: bool) -> Address:
     return address
 
 
-def fake_address_with_additional(save: bool) -> Address:
+def fake_address_with_additional(
+        save: bool,  # noqa: FBT001
+) -> Address:
     """Create a fake address with additional info."""
     address = Address(
         street="Main St",

@@ -7,7 +7,7 @@ from cycle_invoice.contact.tests.models.test_organisation import fake_organisati
 from cycle_invoice.web.models import Domain
 
 
-def fake_domain(save: bool) -> Domain:
+def fake_domain(save: bool) -> Domain:  # noqa: FBT001
     """Create a fake work type."""
     domain = Domain(
         name="domain.com",

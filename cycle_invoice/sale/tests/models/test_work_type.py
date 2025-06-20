@@ -7,7 +7,7 @@ from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.sale.models import WorkType
 
 
-def fake_work_type(save: bool) -> WorkType:
+def fake_work_type(save: bool) -> WorkType:  # noqa: FBT001
     """Create a fake work type."""
     work_type = WorkType(
         name="Test Work Type",

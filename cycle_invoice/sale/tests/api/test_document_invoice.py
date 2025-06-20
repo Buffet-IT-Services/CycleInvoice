@@ -160,7 +160,7 @@ class InvoiceCreateApiTest(TestCase):
 
     def test_post_existing_invoice_number_returns_400(self) -> None:
         """Test POST request with an existing invoice number returns 400 Bad Request."""
-        invoice = fake_document_invoice_with_invoice_number(self.content["invoice_number"], save=True)
+        fake_document_invoice_with_invoice_number(self.content["invoice_number"], save=True)
         response = self.client.post(
             self.url,
             self.content,

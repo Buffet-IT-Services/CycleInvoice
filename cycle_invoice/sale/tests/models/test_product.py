@@ -6,7 +6,7 @@ from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.sale.models import Product
 
 
-def fake_product(save: bool) -> Product:
+def fake_product(save: bool) -> Product:  # noqa: FBT001
     """Create a fake product."""
     product = Product(
         name="Test Product",

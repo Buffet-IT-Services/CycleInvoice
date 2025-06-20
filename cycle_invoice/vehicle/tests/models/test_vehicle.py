@@ -7,7 +7,7 @@ from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.vehicle.models import Vehicle
 
 
-def fake_vehicle(save: bool) -> Vehicle:
+def fake_vehicle(save: bool) -> Vehicle:  # noqa: FBT001
     """Create a fake work type."""
     vehicle = get_object(
         Vehicle,

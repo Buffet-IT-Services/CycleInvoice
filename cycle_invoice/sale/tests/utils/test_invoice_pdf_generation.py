@@ -12,7 +12,6 @@ from reportlab.pdfgen import canvas
 
 from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_address import fake_address
-from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.tests.models.test_document_invoice import fake_document_invoice
 from cycle_invoice.sale.tests.models.test_document_item import fake_document_item_product, fake_document_item_work
 from cycle_invoice.sale.utils.invoice_pdf_generation import (

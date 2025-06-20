@@ -13,7 +13,7 @@ from cycle_invoice.sale.tests.models.test_document_item import (
 )
 
 
-def fake_document_invoice_with_invoice_number(invoice_number: str, save: bool) -> DocumentInvoice:
+def fake_document_invoice_with_invoice_number(invoice_number: str, save: bool) -> DocumentInvoice:  # noqa: FBT001
     """Create a fake invoice with provided invoice number."""
     document_invoice = DocumentInvoice(
         customer=fake_contact(save=True),
@@ -28,7 +28,7 @@ def fake_document_invoice_with_invoice_number(invoice_number: str, save: bool) -
     return document_invoice
 
 
-def fake_document_invoice(save: bool) -> DocumentInvoice:
+def fake_document_invoice(save: bool) -> DocumentInvoice:  # noqa: FBT001
     """Create a fake invoice with a default invoice number."""
     document_invoice = DocumentInvoice(
         customer=fake_contact(save=True),
