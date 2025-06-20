@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.sale.models import SubscriptionProduct
 from cycle_invoice.sale.tests.models.test_product import fake_product
 
@@ -15,7 +15,7 @@ def fake_subscription_product(save: bool) -> SubscriptionProduct:
         recurrence="monthly"
     )
     if save:
-        subscription_product.save(user=get_default_user())
+        subscription_product.save(user=get_default_test_user())
     return subscription_product
 
 

@@ -1,7 +1,7 @@
 """Test cases for selector of address."""
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.selectors.address import address_get, address_list
 from cycle_invoice.contact.tests.models.test_address import fake_address
 
@@ -11,7 +11,7 @@ class AddressTest(TestCase):
 
     def setUp(self) -> None:
         """Set up test data for Address selectors."""
-        self.user = get_default_user()
+        self.user = get_default_test_user()
         self.address1 = fake_address(save=True)
         self.address2 = fake_address(save=True)
 

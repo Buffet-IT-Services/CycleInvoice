@@ -3,7 +3,7 @@
 from django.test import TestCase
 
 from cycle_invoice.common.selectors import get_object
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.vehicle.models import Vehicle
 
 
@@ -21,7 +21,7 @@ def fake_vehicle(save: bool) -> Vehicle:
             km_sell=2.0
         )
         if save:
-            vehicle.save(user=get_default_user())
+            vehicle.save(user=get_default_test_user())
     return vehicle
 
 

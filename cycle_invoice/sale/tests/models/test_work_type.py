@@ -3,7 +3,7 @@
 from django.test import TestCase
 
 from cycle_invoice.accounting.tests.models.test_account import fake_account
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.sale.models import WorkType
 
 
@@ -15,7 +15,7 @@ def fake_work_type(save: bool) -> WorkType:
         price_per_hour=100.0
     )
     if save:
-        work_type.save(user=get_default_user())
+        work_type.save(user=get_default_test_user())
     return work_type
 
 

@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.models import Contact
 
 
@@ -13,7 +13,7 @@ def fake_contact(save: bool) -> Contact:
         last_name="Doe"
     )
     if save:
-        contact.save(user=get_default_user())
+        contact.save(user=get_default_test_user())
     return contact
 
 

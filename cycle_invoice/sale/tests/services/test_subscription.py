@@ -4,7 +4,7 @@ import datetime
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.sale.models import DocumentItem
 from cycle_invoice.sale.services.subscription import SubscriptionExtensionError, subscription_extension
 from cycle_invoice.sale.tests.models.test_subscription import fake_subscription
@@ -15,7 +15,7 @@ class SubscriptionTest(TestCase):
 
     def setUp(self) -> None:
         """Set up the test case with necessary data."""
-        self.user = get_default_user()
+        self.user = get_default_test_user()
 
     def test_subscription_extension_valid(self) -> None:
         """Test the subscription extension functionality."""

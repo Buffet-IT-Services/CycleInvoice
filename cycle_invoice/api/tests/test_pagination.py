@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 
 from cycle_invoice.api.pagination import LimitOffsetPagination, get_paginated_response
 from cycle_invoice.common.models import TestBaseModel
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 
 
 class PaginationTest(TestCase):
@@ -21,7 +21,7 @@ class PaginationTest(TestCase):
     def setUp(self) -> None:
         """Set up the test environment."""
         TestBaseModel.objects.all().delete()
-        self.user = get_default_user()
+        self.user = get_default_test_user()
         for i in range(1, 6):
             instance = TestBaseModel(name=f"Name {i}")
             instance.save(user=self.user)

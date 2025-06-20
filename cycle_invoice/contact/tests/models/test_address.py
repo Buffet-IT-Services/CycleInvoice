@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.models import Address, address_block
 
 
@@ -16,7 +16,7 @@ def fake_address(save: bool) -> Address:
         country="Switzerland"
     )
     if save:
-        address.save(user=get_default_user())
+        address.save(user=get_default_test_user())
     return address
 
 
@@ -31,7 +31,7 @@ def fake_address_with_additional(save: bool) -> Address:
         country="Switzerland",
     )
     if save:
-        address.save(user=get_default_user())
+        address.save(user=get_default_test_user())
     return address
 
 

@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from cycle_invoice.api.tests.base import token_admin_create, token_norights_create, token_user_create
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.tests.models.test_document_invoice import (
     fake_document_invoice,
@@ -18,7 +18,7 @@ class InvoiceListApiTest(TestCase):
         """Set up test data."""
         self.invoice1 = fake_document_invoice(save=True)
         self.invoice2 = fake_document_invoice_with_invoice_number(invoice_number="INV-2", save=True)
-        self.user = get_default_user()
+        self.user = get_default_test_user()
 
         self.token_admin = token_admin_create(self.client)
         self.token_norights = token_norights_create(self.client)

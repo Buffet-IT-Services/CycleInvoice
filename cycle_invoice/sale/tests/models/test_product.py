@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.sale.models import Product
 
 
@@ -14,7 +14,7 @@ def fake_product(save: bool) -> Product:
         price=10.00
     )
     if save:
-        product.save(user=get_default_user())
+        product.save(user=get_default_test_user())
     return product
 
 

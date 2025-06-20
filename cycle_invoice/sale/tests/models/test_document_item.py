@@ -2,7 +2,7 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.models import DocumentItem
 from cycle_invoice.sale.tests.models.test_product import fake_product
@@ -23,7 +23,7 @@ def fake_document_item_product(save: bool) -> DocumentItem:
         product=product,
     )
     if save:
-        document_item.save(user=get_default_user())
+        document_item.save(user=get_default_test_user())
     return document_item
 
 
@@ -40,7 +40,7 @@ def fake_document_item_subscription(save: bool) -> DocumentItem:
         comment_title="Time Range"
     )
     if save:
-        document_item.save(user=get_default_user())
+        document_item.save(user=get_default_test_user())
     return document_item
 
 
@@ -58,7 +58,7 @@ def fake_document_item_work(save: bool) -> DocumentItem:
         comment_description="Test Description"
     )
     if save:
-        document_item.save(user=get_default_user())
+        document_item.save(user=get_default_test_user())
     return document_item
 
 

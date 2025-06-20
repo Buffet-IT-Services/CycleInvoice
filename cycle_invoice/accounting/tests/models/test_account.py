@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from cycle_invoice.accounting.models import Account, get_default_buy_account, get_default_sell_account
 from cycle_invoice.common.selectors import get_object
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 
 
 def fake_account(
@@ -26,7 +26,7 @@ def fake_account(
             default_sell=default_sell,
         )
         if save:
-            account.save(user=get_default_user())
+            account.save(user=get_default_test_user())
     return account
 
 
@@ -35,7 +35,7 @@ class AccountTest(TestCase):
 
     def setUp(self) -> None:
         """Set up the test case."""
-        self.user = get_default_user()
+        self.user = get_default_test_user()
 
     def test_prevent_default_buy_deletion(self) -> None:
         """Test that default buy account cannot be deleted."""

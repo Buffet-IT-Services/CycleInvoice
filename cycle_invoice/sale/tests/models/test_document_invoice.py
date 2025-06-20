@@ -4,7 +4,7 @@ import datetime
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.models import DocumentInvoice
 from cycle_invoice.sale.tests.models.test_document_item import (
@@ -24,7 +24,7 @@ def fake_document_invoice_with_invoice_number(invoice_number: str, save: bool) -
         footer_text="Footer text",
     )
     if save:
-        document_invoice.save(user=get_default_user())
+        document_invoice.save(user=get_default_test_user())
     return document_invoice
 
 
@@ -39,7 +39,7 @@ def fake_document_invoice(save: bool) -> DocumentInvoice:
         footer_text="Footer text",
     )
     if save:
-        document_invoice.save(user=get_default_user())
+        document_invoice.save(user=get_default_test_user())
     return document_invoice
 
 
@@ -52,7 +52,7 @@ class DocumentInvoiceTest(TestCase):
 
     def test_total_sum(self) -> None:
         """Test the total sum of the DocumentInvoice model."""
-        user = get_default_user()
+        user = get_default_test_user()
         invoice = fake_document_invoice(save=True)
         item = fake_document_item_subscription(save=False)
         item.invoice = invoice

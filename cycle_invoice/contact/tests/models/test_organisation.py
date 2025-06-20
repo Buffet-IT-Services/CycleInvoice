@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.models import Organisation
 
 
@@ -14,7 +14,7 @@ def fake_organisation(
         name="Fake Org"
     )
     if save:
-        organisation.save(user=get_default_user())
+        organisation.save(user=get_default_test_user())
     return organisation
 
 
@@ -27,7 +27,7 @@ def fake_organisation_with_name(
         name=name
     )
     if save:
-        organisation.save(user=get_default_user())
+        organisation.save(user=get_default_test_user())
     return organisation
 
 

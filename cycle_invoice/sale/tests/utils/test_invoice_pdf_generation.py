@@ -10,7 +10,7 @@ from pypdf import PdfReader
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_address import fake_address
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.tests.models.test_document_invoice import fake_document_invoice
@@ -96,7 +96,7 @@ class InvoicePDFGenerationTest(TestCase):
         os.environ["COMPANY_COUNTRY"] = "Switzerland"
         os.environ["COMPANY_BANK_ACCOUNT"] = "CH12 3456 7890 1234 5678 9"
 
-        self.user = get_default_user()
+        self.user = get_default_test_user()
 
         # Create a fake customer and invoice with items
         self.invoice = fake_document_invoice(save=True)

@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.models import Customer
 from cycle_invoice.contact.tests.models.test_address import fake_address, fake_address_with_additional
 from cycle_invoice.contact.tests.models.test_contact import fake_contact

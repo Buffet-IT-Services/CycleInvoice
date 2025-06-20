@@ -3,7 +3,7 @@ import datetime
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.models import Subscription
 from cycle_invoice.sale.tests.models.test_subscription_product import fake_subscription_product
@@ -17,7 +17,7 @@ def fake_subscription(save: bool) -> Subscription:
         start_date=datetime.date(2000, 1, 1),
     )
     if save:
-        subscription.save(user=get_default_user())
+        subscription.save(user=get_default_test_user())
     return subscription
 
 
@@ -34,7 +34,7 @@ class SubscriptionTest(TestCase):
         self.assertFalse(subscription.is_cancelled)
 
         subscription.cancelled_date = datetime.date(2001, 12, 31)
-        user = get_default_user()
+        user = get_default_test_user()
         subscription.save(user=user)
         subscription.refresh_from_db()
         self.assertTrue(subscription.is_cancelled)

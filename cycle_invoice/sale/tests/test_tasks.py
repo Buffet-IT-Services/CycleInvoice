@@ -4,7 +4,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.sale.tasks import subscription_processing_to_document_items
 from cycle_invoice.sale.tests.models.test_subscription import fake_subscription
 
@@ -19,7 +19,7 @@ class TasksTest(TestCase):
         This test checks if the task runs without errors.
         It does not check the actual processing logic, which should be tested separately.
         """
-        user = get_default_user()
+        user = get_default_test_user()
         today = datetime.datetime.now(tz=datetime.UTC).date()
 
         subscription1 = fake_subscription(save=False)
