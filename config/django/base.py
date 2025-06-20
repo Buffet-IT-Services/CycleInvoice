@@ -35,9 +35,12 @@ LOCAL_APPS = [
     "cycle_invoice.api.apps.ApiConfig",  # for API endpoints
     "cycle_invoice.common.apps.CommonConfig",  # for common utilities
     "cycle_invoice.contact.apps.ContactConfig",  # for contact management,
+    "cycle_invoice.product.apps.ProductConfig",  # for product management
     "cycle_invoice.sale.apps.SaleConfig",  # for sale management
+    "cycle_invoice.subscription.apps.SubscriptionConfig",  # for subscription management
     "cycle_invoice.vehicle.apps.VehicleConfig",  # for vehicle management
     "cycle_invoice.web.apps.WebConfig",  # for web application
+    "cycle_invoice.work.apps.WorkConfig",  # for work management
 ]
 
 THIRD_PARTY_APPS = [

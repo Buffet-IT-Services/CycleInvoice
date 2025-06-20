@@ -3,8 +3,8 @@
 from django.test import TestCase
 
 from cycle_invoice.common.tests.base import get_default_test_user
-from cycle_invoice.sale.models import SubscriptionProduct
-from cycle_invoice.sale.tests.models.test_product import fake_product
+from cycle_invoice.product.tests.models.test_product import fake_product
+from cycle_invoice.subscription.models import SubscriptionProduct
 
 
 def fake_subscription_product(save: bool) -> SubscriptionProduct:  # noqa: FBT001

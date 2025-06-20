@@ -6,7 +6,7 @@ from django.test import TestCase
 from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.models import Subscription
-from cycle_invoice.sale.tests.models.test_subscription_product import fake_subscription_product
+from cycle_invoice.subscription.tests.models.test_subscription_product import fake_subscription_product
 
 
 def fake_subscription(save: bool) -> Subscription:  # noqa: FBT001

@@ -6,8 +6,8 @@ from django.test import TestCase
 
 from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.sale.models import DocumentItem
-from cycle_invoice.sale.services.subscription import SubscriptionExtensionError, subscription_extension
-from cycle_invoice.sale.tests.models.test_subscription import fake_subscription
+from cycle_invoice.subscription.services.subscription import SubscriptionExtensionError, subscription_extension
+from cycle_invoice.subscription.tests.models.test_subscription import fake_subscription
 
 
 class SubscriptionTest(TestCase):
