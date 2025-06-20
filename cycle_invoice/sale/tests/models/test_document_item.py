@@ -177,14 +177,10 @@ class DocumentItemTest(TestCase):
         document_item.comment_title = "Test"
 
         document_item.comment_description = None
-        # TODO: Uncomment the following lines when the issue with comment_description is resolved
-        # https://github.com/Buffet-IT-Services/CycleInvoice/issues/56
-        # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/56
-        # try: noqa ERA001
-        #     document_item.validate_constraints() noqa ERA001
-        # except ValidationError: noqa ERA001
-        #     self.fail("validate_constraints() raised ValidationError
-        #     unexpectedly when comment_description is None")
+        try:
+            document_item.validate_constraints()
+        except ValidationError:
+            self.fail("validate_constraints() raised ValidationError unexpectedly when comment_description is None")
 
         document_item.vehicle = self.vehicle
         with self.assertRaises(ValidationError):
