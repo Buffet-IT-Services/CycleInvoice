@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 class Customer(BaseModel):
     """Model representing a customer."""
 
-    address = models.ForeignKey(
+    address = models.OneToOneField(
         "Address",
         on_delete=models.PROTECT,
-        related_name="organisations",
+        related_name="address",
         verbose_name=_("address"),
         null=True,
         blank=True,

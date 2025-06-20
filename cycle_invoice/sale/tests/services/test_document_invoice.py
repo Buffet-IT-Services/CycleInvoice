@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.models import DocumentInvoice
 from cycle_invoice.sale.services.document_invoice import document_invoice_create, document_invoice_update
@@ -15,8 +15,7 @@ class DocumentInvoiceServiceTest(TestCase):
 
     def setUp(self) -> None:
         """Set up test data."""
-        self.customer = fake_contact()
-        self.customer.save(user=get_default_user())
+        self.customer = fake_contact(save=True)
         self.data = {
             "invoice_number": "INV-2025-001",
             "customer": self.customer.id,
@@ -25,7 +24,7 @@ class DocumentInvoiceServiceTest(TestCase):
             "header_text": "Header",
             "footer_text": "Footer",
         }
-        self.user = get_default_user()
+        self.user = get_default_test_user()
 
     def test_document_invoice_create(self) -> None:
         """Test creating a document invoice."""

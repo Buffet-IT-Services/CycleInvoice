@@ -4,11 +4,10 @@ import datetime
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
-from cycle_invoice.contact.tests.models.test_contact import fake_contact
-from cycle_invoice.sale.models import DocumentItem, Subscription
+from cycle_invoice.common.tests.base import get_default_test_user
+from cycle_invoice.sale.models import DocumentItem
 from cycle_invoice.sale.services.subscription import SubscriptionExtensionError, subscription_extension
-from cycle_invoice.sale.tests.models.test_subscription_product import fake_subscription_product
+from cycle_invoice.sale.tests.models.test_subscription import fake_subscription
 
 
 class SubscriptionTest(TestCase):
@@ -16,20 +15,12 @@ class SubscriptionTest(TestCase):
 
     def setUp(self) -> None:
         """Set up the test case with necessary data."""
-        self.user = get_default_user()
+        self.user = get_default_test_user()
 
     def test_subscription_extension_valid(self) -> None:
         """Test the subscription extension functionality."""
         # Create a subscription
-        subscription = Subscription(
-            product=fake_subscription_product(),
-            customer=fake_contact(),
-            start_date=datetime.date(2000, 1, 1),
-        )
-        subscription.product.product.save(user=self.user)
-        subscription.product.save(user=self.user)
-        subscription.customer.save(user=self.user)
-        subscription.save(user=self.user)
+        subscription = fake_subscription(save=True)
 
         try:
             subscription_extension(subscription.id, user=self.user)
@@ -48,15 +39,8 @@ class SubscriptionTest(TestCase):
 
     def test_subscription_extension_cancelled(self) -> None:
         """Test the subscription extension functionality with a cancelled subscription."""
-        subscription = Subscription(
-            product=fake_subscription_product(),
-            customer=fake_contact(),
-            start_date=datetime.date(2000, 1, 1),
-            cancelled_date=datetime.date(2000, 1, 15),
-        )
-        subscription.product.product.save(user=self.user)
-        subscription.product.save(user=self.user)
-        subscription.customer.save(user=self.user)
+        subscription = fake_subscription(save=True)
+        subscription.cancelled_date = datetime.date(2000, 1, 15)
         subscription.save(user=self.user)
 
         try:

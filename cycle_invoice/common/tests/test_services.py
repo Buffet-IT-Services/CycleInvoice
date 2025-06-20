@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from cycle_invoice.common.models import TestBaseModel
 from cycle_invoice.common.services import get_model_fields, model_update
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 
 
 class ModelUpdateTest(TestCase):
@@ -11,8 +11,8 @@ class ModelUpdateTest(TestCase):
 
     def setUp(self) -> None:
         """Set up the test case with a default user and an instance of TestBaseModel."""
-        self.user = get_default_user()
-        self.new_user = get_default_user(username="otheruser")
+        self.user = get_default_test_user()
+        self.new_user = get_default_test_user(username="otheruser")
         self.instance = TestBaseModel()
         self.instance.save(user=self.user)
 

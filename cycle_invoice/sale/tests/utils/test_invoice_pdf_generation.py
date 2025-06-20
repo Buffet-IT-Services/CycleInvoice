@@ -10,9 +10,8 @@ from pypdf import PdfReader
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_address import fake_address
-from cycle_invoice.contact.tests.models.test_contact import fake_contact
 from cycle_invoice.sale.tests.models.test_document_invoice import fake_document_invoice
 from cycle_invoice.sale.tests.models.test_document_item import fake_document_item_product, fake_document_item_work
 from cycle_invoice.sale.utils.invoice_pdf_generation import (
@@ -96,26 +95,17 @@ class InvoicePDFGenerationTest(TestCase):
         os.environ["COMPANY_COUNTRY"] = "Switzerland"
         os.environ["COMPANY_BANK_ACCOUNT"] = "CH12 3456 7890 1234 5678 9"
 
-        self.user = get_default_user()
+        self.user = get_default_test_user()
 
         # Create a fake customer and invoice with items
-        self.customer = fake_contact()
-        self.customer.address = fake_address()
-        self.customer.address.save(user=self.user)
-        self.customer.save(user=self.user)
-        self.invoice = fake_document_invoice()
-        self.invoice.customer = self.customer
-        self.invoice.save(user=self.user)
-        self.item = fake_document_item_product()
+        self.invoice = fake_document_invoice(save=True)
+        self.invoice.customer.address = fake_address(save=True)
+        self.invoice.customer.save(user=self.user)
+        self.item = fake_document_item_product(save=True)
         self.item.invoice = self.invoice
-        self.item.customer.save(user=self.user)
-        self.item.product.save(user=self.user)
         self.item.save(user=self.user)
-        self.item = fake_document_item_work()
+        self.item = fake_document_item_work(save=True)
         self.item.invoice = self.invoice
-        self.item.customer.save(user=self.user)
-        self.item.work_type.account.save(user=self.user)
-        self.item.work_type.save(user=self.user)
         self.item.save(user=self.user)
 
     # noinspection DuplicatedCode
@@ -147,13 +137,13 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertEqual(context["invoice_details"]["footer_text"], self.invoice.footer_text)
 
         # check customer details
-        self.assertEqual(context["customer"]["name"], str(self.customer))
+        self.assertEqual(context["customer"]["name"], str(self.invoice.customer))
         self.assertEqual(context["customer"]["street"],
-                         f"{self.customer.address.street} {self.customer.address.number}")
-        self.assertEqual(context["customer"]["postal_code"], self.customer.address.zip_code)
-        self.assertEqual(context["customer"]["city"], self.customer.address.city)
-        self.assertEqual(context["customer"]["country"], self.customer.address.country)
-        self.assertEqual(context["customer"]["address_block"], self.customer.address_block)
+                         f"{self.invoice.customer.address.street} {self.invoice.customer.address.number}")
+        self.assertEqual(context["customer"]["postal_code"], self.invoice.customer.address.zip_code)
+        self.assertEqual(context["customer"]["city"], self.invoice.customer.address.city)
+        self.assertEqual(context["customer"]["country"], self.invoice.customer.address.country)
+        self.assertEqual(context["customer"]["address_block"], self.invoice.customer.address_block)
 
         # check invoice items
         self.assertEqual(len(context["invoice_items"]), 2)

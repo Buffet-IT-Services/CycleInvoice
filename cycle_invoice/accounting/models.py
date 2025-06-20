@@ -1,11 +1,10 @@
 """A module for accounting models."""
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from cycle_invoice.common.models import BaseModel
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.system import get_system_user
 
 
 class Account(BaseModel):
@@ -38,9 +37,6 @@ class Account(BaseModel):
         verbose_name = "Account"
         verbose_name_plural = "Accounts"
 
-    # TODO: Replace by CheckConstraint
-    # https://github.com/Buffet-IT-Services/CycleInvoice/issues/51
-    # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/51
     def clean(self) -> None:
         """
         Clean the model.
@@ -68,10 +64,8 @@ class Account(BaseModel):
         """Return a string representation of the account."""
         return f"{self.name} ({self.number})"
 
-# TODO: Remove the None option in the user parameter
-# https://github.com/Buffet-IT-Services/CycleInvoice/issues/53
-# Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/53
-def get_default_buy_account(user: get_user_model = None) -> int:
+
+def get_default_buy_account() -> int:
     """Retrieve the ID of the account with default_buy set to True."""
     try:
         return Account.objects.get(default_buy=True).id
@@ -82,16 +76,11 @@ def get_default_buy_account(user: get_user_model = None) -> int:
             number="sys0001",
             default_buy=True,
         )
-        if user is None:
-            user = get_default_user()
-        account.save(user=user)
+        account.save(user=get_system_user())
         return account.id
 
 
-# TODO: Remove the None option in the user parameter
-# https://github.com/Buffet-IT-Services/CycleInvoice/issues/52
-# Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/52
-def get_default_sell_account(user: get_user_model = None) -> int:
+def get_default_sell_account() -> int:
     """Retrieve the ID of the account with default_sell set to True."""
     try:
         return Account.objects.get(default_sell=True).id
@@ -102,9 +91,7 @@ def get_default_sell_account(user: get_user_model = None) -> int:
             number="sys0002",
             default_sell=True,
         )
-        if user is None:
-            user = get_default_user()
-        account.save(user=user)
+        account.save(user=get_system_user())
         return account.id
 
 

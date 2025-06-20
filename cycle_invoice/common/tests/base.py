@@ -5,7 +5,7 @@ from faker import Faker
 faker = Faker()
 
 
-def get_default_user(username: str = "default_test_user") -> get_user_model:
+def get_default_test_user(username: str = "default_test_user") -> get_user_model:
     """
     Create a default user for testing.
 

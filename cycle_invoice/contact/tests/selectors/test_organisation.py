@@ -1,7 +1,7 @@
 """Test cases for the Organisation selector."""
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_user
+from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.selectors.organisation import organisation_get, organisation_list
 from cycle_invoice.contact.tests.models.test_organisation import fake_organisation, fake_organisation_with_name
 
@@ -11,11 +11,12 @@ class OrganisationTest(TestCase):
 
     def setUp(self) -> None:
         """Set up test data for Organisation selectors."""
-        self.user = get_default_user()
-        self.organisation1 = fake_organisation()
-        self.organisation1.save(user=self.user)
-        self.organisation2 = fake_organisation_with_name("Test Organisation")
-        self.organisation2.save(user=self.user)
+        self.user = get_default_test_user()
+        self.organisation1 = fake_organisation(save=True)
+        self.organisation2 = fake_organisation_with_name(
+            name="Test Organisation",
+            save=True,
+        )
 
     def test_organisation_list_returns_all(self) -> None:
         """Test that organisation_list returns all organisations."""
