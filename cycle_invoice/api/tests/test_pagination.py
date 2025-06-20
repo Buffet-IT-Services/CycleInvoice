@@ -1,4 +1,4 @@
-"""Tests for API pagination."""
+"""Tests for the api pagination."""
 from collections import OrderedDict
 from unittest.mock import MagicMock
 

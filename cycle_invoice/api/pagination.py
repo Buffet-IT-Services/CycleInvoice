@@ -1,4 +1,4 @@
-"""Pagination for API responses."""
+"""Pagination for the api app."""
 from collections import OrderedDict
 
 from django.db.models import QuerySet

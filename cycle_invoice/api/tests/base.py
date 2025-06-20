@@ -1,4 +1,4 @@
-"""Provides Tokens for API tests."""
+"""Base for the api app tests."""
 from django.contrib.auth.models import Permission, User
 from django.test import Client
 from django.urls import reverse

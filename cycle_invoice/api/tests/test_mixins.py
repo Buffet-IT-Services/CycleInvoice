@@ -1,4 +1,4 @@
-"""Tests for API mixins."""
+"""Tests for the api mixins."""
 from django.test import TestCase
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication

@@ -1,4 +1,4 @@
-"""Contains signals for the accounting app."""
+"""Signals for the accounting app."""
 
 from django.core.exceptions import ValidationError
 from django.db.models import Model

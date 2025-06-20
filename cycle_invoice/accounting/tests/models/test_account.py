@@ -1,4 +1,4 @@
-"""Test cases for the Account model."""
+"""Tests for the Account model."""
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -55,6 +55,7 @@ class AccountTest(TestCase):
         with self.assertRaises(ValidationError):
             account.delete()
 
+    # noinspection DuplicatedCode
     def test_only_one_default_buy_account(self) -> None:
         """Test that only one account can be set as default buy."""
         account1 = fake_account(
@@ -78,13 +79,13 @@ class AccountTest(TestCase):
         self.assertFalse(account1.default_buy)
         self.assertTrue(account2.default_buy)
 
+    # noinspection DuplicatedCode
     def test_only_one_default_sell_account(self) -> None:
         """Test that only one account can be set as default sell."""
         account1 = fake_account(
             save=True,
             default_sell=True,
         )
-
         account2 = Account(
             name="Test Account 2",
             number="0987654321",

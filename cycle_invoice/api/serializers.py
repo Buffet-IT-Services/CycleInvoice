@@ -1,4 +1,4 @@
-""""Inline serializer for DRF."""
+"""Serializers for the api app."""
 
 from rest_framework import serializers
 

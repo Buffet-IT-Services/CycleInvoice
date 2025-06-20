@@ -1,4 +1,4 @@
-"""App configuration for the API module of the Cycle Invoice application."""
+"""Config for the api app."""
 from django.apps import AppConfig
 
 

@@ -1,4 +1,4 @@
-"""Tests for the inline_serializer and create_serializer_class utilities."""
+"""Tests for the api serializers."""
 from django.test import TestCase
 from rest_framework import serializers
 
