@@ -54,18 +54,11 @@ class DocumentInvoiceTest(TestCase):
         """Test the total sum of the DocumentInvoice model."""
         user = get_default_user()
         invoice = fake_document_invoice(save=True)
-        item = fake_document_item_subscription()
+        item = fake_document_item_subscription(save=False)
         item.invoice = invoice
-        item.customer.save(user=user)
-        item.product.save(user=user)
-        item.subscription.product.save(user=user)
-        item.subscription.customer.save(user=user)
-        item.subscription.save(user=user)
         item.save(user=user)
 
-        item = fake_document_item_product(save=True)
+        item = fake_document_item_product(save=False)
         item.invoice = invoice
-        item.customer.save(user=user)
-        item.product.save(user=user)
         item.save(user=user)
         self.assertEqual(19, invoice.total_sum)

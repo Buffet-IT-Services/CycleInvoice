@@ -22,20 +22,14 @@ class TasksTest(TestCase):
         user = get_default_user()
         today = datetime.datetime.now(tz=datetime.UTC).date()
 
-        subscription1 = fake_subscription()
+        subscription1 = fake_subscription(save=False)
         subscription1.start_date = today
         subscription1.end_billed_date = today
-        subscription1.product.product.save(user=user)
-        subscription1.product.save(user=user)
-        subscription1.customer.save(user=user)
         subscription1.save(user=user)
 
-        subscription2 = fake_subscription()
+        subscription2 = fake_subscription(save=False)
         subscription2.start_date = today
         subscription2.end_billed_date = today + relativedelta(months=1)
-        subscription2.product.product.save(user=user)
-        subscription2.product.save(user=user)
-        subscription2.customer.save(user=user)
         subscription2.save(user=user)
 
         subscription_processing_to_document_items.apply()
