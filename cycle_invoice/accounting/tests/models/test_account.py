@@ -44,7 +44,8 @@ class AccountTest(TestCase):
             default_buy=True,
         )
         with self.assertRaises(ValidationError):
-            account.delete()
+            # TODO: Fix this ugly workaround for the hard delete issue
+            account.delete(user=self.user, hard_delete=True)
 
     def test_prevent_default_sell_deletion(self) -> None:
         """Test that default sell account cannot be deleted."""
@@ -53,7 +54,8 @@ class AccountTest(TestCase):
             default_sell=True,
         )
         with self.assertRaises(ValidationError):
-            account.delete()
+            # TODO: Fix this ugly workaround for the hard delete issue
+            account.delete(user=self.user, hard_delete=True)
 
     # noinspection DuplicatedCode
     def test_only_one_default_buy_account(self) -> None:
