@@ -57,12 +57,29 @@ class BaseModel(models.Model):
         self.updated_by = user
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs) -> None:
+        """Override delete method to implement soft delete."""
+        hard_delete = kwargs.pop("hard_delete", False)
+        if hard_delete:
+            super().delete()
+            return
+
+        user = kwargs.pop("user", None)
+        if not user:
+            error_message = "You must provide a user to save the model."
+            raise ValueError(error_message)
+
+        self.soft_deleted = True
+        self.save(user=user)
+
+
 class BaseModelAdmin(SimpleHistoryAdmin):
     """Base admin class for models inheriting from BaseModel."""
 
     def save_model(self, request: Request, obj: BaseModel, form: object, change: bool) -> None:  # noqa: FBT001,ARG002
         """Override save_model to set the user."""
         obj.save(user=request.user)
+
 
 class TestBaseModel(BaseModel):
     """Test model to verify BaseModel functionality."""
