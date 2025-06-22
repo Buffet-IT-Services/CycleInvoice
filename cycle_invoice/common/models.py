@@ -69,6 +69,7 @@ class BaseModel(models.Model):
             error_message = "You must provide a user to save the model."
             raise ValueError(error_message)
 
+        # TODO: use update_model instead of directly modifying the field
         self.soft_deleted = True
         self.save(user=user)
 
