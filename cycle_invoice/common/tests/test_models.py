@@ -72,12 +72,16 @@ class TestBaseModelTest(TestCase):
 class TestBaseModelAdminTest(TestCase):
     """Tests for the BaseModelAdmin class."""
 
+    def setUp(self) -> None:
+        """Set up test data."""
+        self.user = User.objects.create(username="user1")
+
     def test_admin_save_model_sets_user(self) -> None:
         """Test that the admin save_model sets the user correctly."""
         admin = BaseModelAdmin(TestBaseModel, None)
         request = MagicMock()
-        request.user = self.user1
+        request.user = self.user
         obj = TestBaseModel(name="Admin Save")
         admin.save_model(request, obj, form=None, change=False)
-        self.assertEqual(obj.created_by, self.user1)
-        self.assertEqual(obj.updated_by, self.user1)
+        self.assertEqual(obj.created_by, self.user)
+        self.assertEqual(obj.updated_by, self.user)
