@@ -195,7 +195,7 @@ class InvoiceDeleteApi(ApiAuthMixin, APIView):
 
         hard = request.data.get("hard_delete", False)
         if hard and not request.user.is_superuser:
-            raise PermissionDenied()
+            raise PermissionDenied
 
         invoice.delete(user=request.user, hard_delete=hard)
 
