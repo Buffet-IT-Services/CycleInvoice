@@ -1,8 +1,10 @@
 """Base models for the Cycle Invoice application."""
 import uuid
+from urllib.request import Request
 
 from django.contrib.auth.models import User
 from django.db import models
+from simple_history.admin import SimpleHistoryAdmin
 from simple_history.models import HistoricalRecords
 
 
@@ -54,6 +56,13 @@ class BaseModel(models.Model):
             self.created_by = user
         self.updated_by = user
         super().save(*args, **kwargs)
+
+class BaseModelAdmin(SimpleHistoryAdmin):
+    """Base admin class for models inheriting from BaseModel."""
+
+    def save_model(self, request: Request, obj: BaseModel, form: object, change: bool) -> None:  # noqa: FBT001,ARG002
+        """Override save_model to set the user."""
+        obj.save(user=request.user)
 
 class TestBaseModel(BaseModel):
     """Test model to verify BaseModel functionality."""
