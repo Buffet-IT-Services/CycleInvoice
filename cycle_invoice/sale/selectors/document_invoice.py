@@ -17,6 +17,6 @@ def invoice_list(*, filters: dict[str, Any] | None = None) -> QuerySet[DocumentI
     return DocumentInvoiceFilter(filters, queryset=qs).qs
 
 
-def invoice_get(invoice_id: int) -> DocumentInvoice | None:
+def invoice_get(invoice_id: int | str) -> DocumentInvoice | None:
     """Retrieve a single invoice by its ID."""
-    return get_object(DocumentInvoice, id=invoice_id)
+    return get_object(DocumentInvoice, search_id=invoice_id)
