@@ -45,6 +45,7 @@ class AccountTest(TestCase):
         )
         with self.assertRaises(ValidationError):
             # TODO: Fix this ugly workaround for the hard delete issue
+            # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/66
             account.delete(user=self.user, hard_delete=True)
 
     def test_prevent_default_sell_deletion(self) -> None:
@@ -55,6 +56,7 @@ class AccountTest(TestCase):
         )
         with self.assertRaises(ValidationError):
             # TODO: Fix this ugly workaround for the hard delete issue
+            # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/65
             account.delete(user=self.user, hard_delete=True)
 
     # noinspection DuplicatedCode
