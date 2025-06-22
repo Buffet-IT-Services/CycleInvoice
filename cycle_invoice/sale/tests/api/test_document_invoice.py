@@ -5,6 +5,7 @@ from django.urls import reverse
 from cycle_invoice.api.tests.base import token_admin_create, token_norights_create, token_user_create
 from cycle_invoice.common.tests.base import get_default_test_user
 from cycle_invoice.contact.tests.models.test_contact import fake_contact
+from cycle_invoice.sale.selectors.document_invoice import invoice_get
 from cycle_invoice.sale.tests.models.test_document_invoice import (
     fake_document_invoice,
     fake_document_invoice_with_invoice_number,
@@ -322,3 +323,64 @@ class InvoiceUpdateApiTest(TestCase):
         response = self.client.patch(url, content, content_type="application/json",
                                      HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
         self.assertEqual(response.status_code, 404)
+
+
+class InvoiceDeleteApiTest(TestCase):
+    """Test cases for the InvoiceDeleteApi."""
+
+    def setUp(self) -> None:
+        """Set up test data."""
+        self.token_admin = token_admin_create(self.client)
+        self.token_rights = token_user_create(self.client, permissions=["delete_documentinvoice"])
+        self.token_norights = token_norights_create(self.client)
+        self.invoice = fake_document_invoice(save=True)
+        self.url = reverse("document-invoice-delete", kwargs={"invoice_uuid": self.invoice.uuid})
+
+    def test_delete_invoice_with_admin(self) -> None:
+        """Test DELETE request returns the updated invoice."""
+        updated_before = self.invoice.updated_at
+        response = self.client.delete(self.url, HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+
+        self.assertEqual(response.status_code, 204)
+        self.invoice.refresh_from_db()  # Refresh the invoice instance from the database
+        self.assertTrue(self.invoice.soft_deleted)
+        self.assertNotEqual(self.invoice.updated_at, updated_before)
+
+    def test_delete_invoice_with_rights(self) -> None:
+        """Test DELETE request with specific permissions."""
+        response = self.client.delete(self.url, HTTP_AUTHORIZATION=f"Bearer {self.token_rights}")
+
+        self.assertEqual(response.status_code, 204)
+        self.invoice.refresh_from_db()  # Refresh the invoice instance from the database
+        self.assertTrue(self.invoice.soft_deleted)
+
+    def test_delete_invoice_with_no_rights(self) -> None:
+        """Test DELETE request returns 403 Forbidden without permissions."""
+        response = self.client.delete(self.url, HTTP_AUTHORIZATION=f"Bearer {self.token_norights}")
+        self.assertEqual(response.status_code, 403)
+
+    def test_delete_invalid_invoice_returns_404(self) -> None:
+        """Test DELETE request with an invalid invoice ID returns 404 Not Found."""
+        url = reverse("document-invoice-delete", kwargs={"invoice_uuid": "4398f182-3c41-480a-afc7-15387ce5511c"})
+        response = self.client.delete(url, HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_invoice_with_admin_hard(self) -> None:
+        """Test DELETE request returns the updated invoice."""
+        content = {"hard_delete": True}
+        response = self.client.delete(self.url, content, content_type="application/json",
+                                      HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+
+        self.assertEqual(response.status_code, 204)
+        self.assertIsNone(invoice_get(invoice_id=self.invoice.uuid.__str__()))
+
+    def test_delete_invoice_with_rights_hard(self) -> None:
+        """Test DELETE request returns the updated invoice."""
+        content = {"hard_delete": True}
+        response = self.client.delete(self.url, content, content_type="application/json",
+                                      HTTP_AUTHORIZATION=f"Bearer {self.token_rights}")
+
+        self.assertEqual(response.status_code, 403)
+        self.invoice.refresh_from_db()  # Refresh the invoice instance from the database
+        self.assertFalse(self.invoice.soft_deleted)
+        self.assertIsNotNone(invoice_get(invoice_id=self.invoice.uuid.__str__()))
