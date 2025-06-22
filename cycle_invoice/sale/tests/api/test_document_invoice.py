@@ -30,8 +30,8 @@ class InvoiceListApiTest(TestCase):
         data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(data["results"]), 2)
-        self.assertEqual(self.invoice1.id, data["results"][0]["id"])
-        self.assertEqual(self.invoice1.customer.id, data["results"][0]["customer"])
+        self.assertEqual(self.invoice1.uuid.__str__(), data["results"][0]["uuid"])
+        self.assertEqual(self.invoice1.customer.uuid.__str__(), data["results"][0]["customer"])
         self.assertEqual(self.invoice1.invoice_number, data["results"][0]["invoice_number"])
         self.assertEqual(self.invoice1.date.isoformat(), data["results"][0]["date"])
         self.assertEqual(self.invoice1.due_date.isoformat(), data["results"][0]["due_date"])
@@ -68,7 +68,7 @@ class InvoiceDetailApiTest(TestCase):
         self.invoice = fake_document_invoice(save=True)
         self.token_admin = token_admin_create(self.client)
         self.token_norights = token_norights_create(self.client)
-        self.url = reverse("document-invoice-detail", kwargs={"pk": self.invoice.pk})
+        self.url = reverse("document-invoice-detail", kwargs={"invoice_uuid": self.invoice.uuid})
 
     def test_get_invoice_with_admin(self) -> None:
         """Test GET request returns the invoice with all details."""
@@ -85,7 +85,8 @@ class InvoiceDetailApiTest(TestCase):
 
         # Make sure only expected fields are returned
         self.assertSetEqual(set(data.keys()),
-                            {"uuid", "invoice_number", "date", "due_date", "header_text", "footer_text", "customer"})
+                            {"uuid", "invoice_number", "date", "due_date", "header_text", "footer_text", "customer",
+                             "created_by", "created_at", "updated_by", "updated_at"})
         self.assertEqual(set(data["customer"].keys()), {"uuid", "name"})
 
     def test_get_invoice_with_rights(self) -> None:
@@ -101,7 +102,8 @@ class InvoiceDetailApiTest(TestCase):
 
     def test_get_invoice_with_invalid_id(self) -> None:
         """Test GET request with an invalid invoice ID returns 404 Not Found."""
-        invalid_url = reverse("document-invoice-detail", kwargs={"pk": 9999})
+        invalid_url = reverse("document-invoice-detail",
+                              kwargs={"invoice_uuid": "4398f182-3c41-480a-afc7-15387ce5511c"})
         response = self.client.get(invalid_url, HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
         self.assertEqual(response.status_code, 404)
 
@@ -142,7 +144,8 @@ class InvoiceCreateApiTest(TestCase):
         self.assertEqual(self.content["footer_text"], data["footer_text"])
         self.assertEqual(self.customer.__str__(), data["customer"]["name"])
         self.assertSetEqual(set(data.keys()),
-                            {"uuid", "invoice_number", "date", "due_date", "header_text", "footer_text", "customer"})
+                            {"uuid", "invoice_number", "date", "due_date", "header_text", "footer_text", "customer",
+                             "created_by", "created_at", "updated_by", "updated_at"})
         self.assertEqual(set(data["customer"].keys()), {"uuid", "name"})
 
     def test_post_with_rights_returns_201(self) -> None:
@@ -242,7 +245,7 @@ class InvoiceUpdateApiTest(TestCase):
         self.token_admin = token_admin_create(self.client)
         self.token_norights = token_norights_create(self.client)
         self.invoice = fake_document_invoice(save=True)
-        self.url = reverse("document-invoice-update", kwargs={"pk": self.invoice.id})
+        self.url = reverse("document-invoice-update", kwargs={"invoice_uuid": self.invoice.uuid})
 
     def test_patch_invoice_with_admin(self) -> None:
         """Test PATCH request returns the updated invoice."""
@@ -256,7 +259,8 @@ class InvoiceUpdateApiTest(TestCase):
 
         # Make sure only expected fields are returned
         self.assertSetEqual(set(data.keys()),
-                            {"uuid", "invoice_number", "date", "due_date", "header_text", "footer_text", "customer"})
+                            {"uuid", "invoice_number", "date", "due_date", "header_text", "footer_text", "customer",
+                             "created_by", "created_at", "updated_by", "updated_at"})
         self.assertEqual(set(data["customer"].keys()), {"uuid", "name"})
 
     def test_get_invoice_with_rights(self) -> None:
@@ -313,7 +317,7 @@ class InvoiceUpdateApiTest(TestCase):
 
     def test_patch_invalid_invoice_returns_404(self) -> None:
         """Test PATCH request with an invalid invoice ID returns 404 Not Found."""
-        url = reverse("document-invoice-update", kwargs={"pk": 9999})
+        url = reverse("document-invoice-update", kwargs={"invoice_uuid": "4398f182-3c41-480a-afc7-15387ce5511c"})
         content = {"invoice_number": "INV-12345-UPDATED"}
         response = self.client.patch(url, content, content_type="application/json",
                                      HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")

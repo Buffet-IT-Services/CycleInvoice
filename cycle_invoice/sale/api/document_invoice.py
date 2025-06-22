@@ -1,6 +1,7 @@
 """API views for handling sale operations."""
 from django.http import Http404
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -31,11 +32,12 @@ class InvoiceListApi(ApiAuthMixin, APIView):
     class OutputSerializer(serializers.Serializer):
         """Serializer for outputting invoice data."""
 
-        id = serializers.IntegerField()
-        customer = serializers.IntegerField(source="customer.id")
+        uuid = serializers.UUIDField()
+        customer = serializers.UUIDField(source="customer.uuid")
         invoice_number = serializers.CharField()
         date = serializers.DateField()
         due_date = serializers.DateField()
+        total_sum = serializers.DecimalField(max_digits=10, decimal_places=2)
 
     def get(self, request: Request, *args, **kwargs) -> Response:
         """Handle GET requests to list invoices."""
@@ -67,14 +69,18 @@ class InvoiceDetailApi(ApiAuthMixin, APIView):
         due_date = serializers.DateField()
         header_text = serializers.CharField()
         footer_text = serializers.CharField()
+        created_by = serializers.PrimaryKeyRelatedField(read_only=True)
+        created_at = serializers.DateTimeField()
+        updated_by = serializers.PrimaryKeyRelatedField(read_only=True)
+        updated_at = serializers.DateTimeField()
         customer = inline_serializer(fields={
             "uuid": serializers.UUIDField(),
             "name": serializers.CharField(source="__str__"),
         })
 
-    def get(self, request: Request, pk: int, *args, **kwargs) -> Response:  # noqa: ARG002
+    def get(self, request: Request, invoice_uuid: str, *args, **kwargs) -> Response:  # noqa: ARG002
         """Handle GET requests to retrieve a single invoice."""
-        invoice = invoice_get(invoice_id=pk)
+        invoice = invoice_get(invoice_id=invoice_uuid)
 
         if invoice is None:
             raise Http404
@@ -158,9 +164,9 @@ class InvoiceUpdateApi(ApiAuthMixin, APIView):
                 raise serializers.ValidationError(error_message)
             return value
 
-    def patch(self, request: Request, pk: int, *args, **kwargs) -> Response:
+    def patch(self, request: Request, invoice_uuid: str, *args, **kwargs) -> Response:
         """Handle PUT requests to update an existing invoice."""
-        invoice = invoice_get(invoice_id=pk)
+        invoice = invoice_get(invoice_id=invoice_uuid)
 
         if invoice is None:
             raise Http404
@@ -173,3 +179,24 @@ class InvoiceUpdateApi(ApiAuthMixin, APIView):
         data = InvoiceDetailApi.OutputSerializer(invoice).data
 
         return Response(data, status=201)
+
+
+class InvoiceDeleteApi(ApiAuthMixin, APIView):
+    """API view to handle deleting an invoice."""
+
+    queryset = DocumentInvoice.objects.all()
+
+    def delete(self, request: Request, invoice_uuid: str, *args, **kwargs) -> Response:
+        """Handle DELETE requests to remove an invoice."""
+        invoice = invoice_get(invoice_id=invoice_uuid)
+
+        if invoice is None:
+            raise Http404
+
+        hard = request.data.get("hard_delete", False)
+        if hard and not request.user.is_superuser:
+            raise PermissionDenied()
+
+        invoice.delete(user=request.user, hard_delete=hard)
+
+        return Response(status=204)
