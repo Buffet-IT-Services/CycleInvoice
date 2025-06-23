@@ -69,9 +69,6 @@ class BaseModel(models.Model):
             error_message = "You must provide a user to save the model."
             raise ValueError(error_message)
 
-        # TODO: use update_model instead of directly modifying the field
-        # https://github.com/Buffet-IT-Services/CycleInvoice/issues/67
-        # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/67
         self.soft_deleted = True
         self.save(user=user)
 
