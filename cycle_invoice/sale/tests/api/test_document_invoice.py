@@ -287,6 +287,16 @@ class InvoiceUpdateApiTest(TestCase):
                                      HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
         self.assertEqual(response.status_code, 400)
 
+    def test_add_invoice_with_previous_invoice_number(self) -> None:
+        """Test PATCH request with the current invoice number returns the updated invoice."""
+        content = {"invoice_number": self.invoice.invoice_number, "footer_text": "Updated Footer"}
+        response = self.client.patch(self.url, content, content_type="application/json",
+                                     HTTP_AUTHORIZATION=f"Bearer {self.token_admin}")
+        content = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(content["invoice_number"], self.invoice.invoice_number)
+        self.assertEqual(content["footer_text"], "Updated Footer")
+
     def test_add_invoice_with_invalid_date(self) -> None:
         """Test PATCH request with an invalid date format returns 400 Bad Request."""
         content = {"date": "invalid-date"}

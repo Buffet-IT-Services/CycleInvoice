@@ -171,6 +171,10 @@ class InvoiceUpdateApi(ApiAuthMixin, APIView):
         if invoice is None:
             raise Http404
 
+        # Remove invoice_number from request data if it matches the current invoice number to prevent validation error
+        if request.data.get("invoice_number") == invoice.invoice_number:
+            request.data.pop("invoice_number", None)
+
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
