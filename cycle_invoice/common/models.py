@@ -1,9 +1,13 @@
 """Base models for the Cycle Invoice application."""
 import uuid
+from urllib.request import Request
 
 from django.contrib.auth.models import User
 from django.db import models
+from simple_history.admin import SimpleHistoryAdmin
 from simple_history.models import HistoricalRecords
+
+from cycle_invoice.common.services import model_update
 
 
 class BaseModel(models.Model):
@@ -50,10 +54,35 @@ class BaseModel(models.Model):
         if not user:
             error_message = "You must provide a user to save the model."
             raise ValueError(error_message)
+
         if not self.pk:
             self.created_by = user
+
         self.updated_by = user
         super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs) -> None:
+        """Override delete method to implement soft delete."""
+        hard_delete = kwargs.pop("hard_delete", False)
+        if hard_delete:
+            super().delete()
+            return
+
+        user = kwargs.pop("user", None)
+        if not user:
+            error_message = "You must provide a user to save the model."
+            raise ValueError(error_message)
+
+        model_update(instance=self, fields=["soft_deleted"], data={"soft_deleted": True}, user=user)
+
+
+class BaseModelAdmin(SimpleHistoryAdmin):
+    """Base admin class for models inheriting from BaseModel."""
+
+    def save_model(self, request: Request, obj: BaseModel, form: object, change: bool) -> None:  # noqa: FBT001,ARG002
+        """Override save_model to set the user."""
+        obj.save(user=request.user)
+
 
 class TestBaseModel(BaseModel):
     """Test model to verify BaseModel functionality."""

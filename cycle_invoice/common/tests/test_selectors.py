@@ -17,22 +17,44 @@ class GetObjectTest(TestCase):
 
     def test_get_object_returns_instance_by_pk(self) -> None:
         """Test that get_object returns the instance by primary key."""
-        obj = get_object(TestBaseModel, pk=self.instance.pk)
+        obj = get_object(TestBaseModel, search_id=self.instance.pk)
         self.assertEqual(obj, self.instance)
 
-    def test_get_object_returns_instance_by_queryset(self) -> None:
+    def test_get_object_returns_instance_by_uuid(self) -> None:
+        """Test that get_object returns the instance by primary key."""
+        obj = get_object(TestBaseModel, search_id=self.instance.uuid)
+        self.assertEqual(obj, self.instance)
+
+    def test_get_object_returns_instance_by_queryset_pk(self) -> None:
         """Test that get_object returns the instance from a queryset."""
         qs = TestBaseModel.objects.all()
-        obj = get_object(qs, pk=self.instance.pk)
+        obj = get_object(qs, search_id=self.instance.pk)
         self.assertEqual(obj, self.instance)
 
-    def test_get_object_returns_none_if_not_found(self) -> None:
+    def test_get_object_returns_instance_by_queryset_uuid(self) -> None:
+        """Test that get_object returns the instance from a queryset."""
+        qs = TestBaseModel.objects.all()
+        obj = get_object(qs, search_id=self.instance.uuid)
+        self.assertEqual(obj, self.instance)
+
+    def test_get_object_returns_none_if_not_found_int(self) -> None:
         """Test that get_object returns None if the instance is not found."""
-        obj = get_object(TestBaseModel, pk=99999)
+        obj = get_object(TestBaseModel, search_id=99999)
         self.assertIsNone(obj)
 
-    def test_get_object_with_queryset_returns_none_if_not_found(self) -> None:
+    def test_get_object_returns_none_if_not_found_str(self) -> None:
+        """Test that get_object returns None if the instance is not found."""
+        obj = get_object(TestBaseModel, search_id="4398f182-3c41-480a-afc7-15387ce5511c")
+        self.assertIsNone(obj)
+
+    def test_get_object_with_queryset_returns_none_if_not_found_pk(self) -> None:
         """Test that get_object returns None if the instance is not found in a queryset."""
         qs = TestBaseModel.objects.all()
-        obj = get_object(qs, pk=99999)
+        obj = get_object(qs, search_id=99999)
+        self.assertIsNone(obj)
+
+    def test_get_object_with_queryset_returns_none_if_not_found_uuid(self) -> None:
+        """Test that get_object returns None if the instance is not found in a queryset."""
+        qs = TestBaseModel.objects.all()
+        obj = get_object(qs, search_id="4398f182-3c41-480a-afc7-15387ce5511c")
         self.assertIsNone(obj)

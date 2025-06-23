@@ -44,7 +44,7 @@ class AccountTest(TestCase):
             default_buy=True,
         )
         with self.assertRaises(ValidationError):
-            account.delete()
+            account.delete(user=self.user)
 
     def test_prevent_default_sell_deletion(self) -> None:
         """Test that default sell account cannot be deleted."""
@@ -53,7 +53,25 @@ class AccountTest(TestCase):
             default_sell=True,
         )
         with self.assertRaises(ValidationError):
-            account.delete()
+            account.delete(user=self.user)
+
+    def test_prevent_default_buy_deletion_hard(self) -> None:
+        """Test that default buy account cannot be deleted."""
+        account = fake_account(
+            save=True,
+            default_buy=True,
+        )
+        with self.assertRaises(ValidationError):
+            account.delete(user=self.user, hard_delete=True)
+
+    def test_prevent_default_sell_deletion_hard(self) -> None:
+        """Test that default sell account cannot be deleted."""
+        account = fake_account(
+            save=True,
+            default_sell=True,
+        )
+        with self.assertRaises(ValidationError):
+            account.delete(user=self.user, hard_delete=True)
 
     # noinspection DuplicatedCode
     def test_only_one_default_buy_account(self) -> None:

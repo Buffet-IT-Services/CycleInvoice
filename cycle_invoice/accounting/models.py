@@ -36,6 +36,12 @@ class Account(BaseModel):
 
         verbose_name = "Account"
         verbose_name_plural = "Accounts"
+        constraints = [
+            models.CheckConstraint(
+                check=~(models.Q(soft_deleted=True) & (models.Q(default_buy=True) | models.Q(default_sell=True))),
+                name="%(app_label)s_%(class)s_prevent_soft_delete_if_default_buy_or_sell",
+            ),
+        ]
 
     def clean(self) -> None:
         """
