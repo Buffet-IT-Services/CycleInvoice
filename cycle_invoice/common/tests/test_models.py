@@ -48,7 +48,6 @@ class TestBaseModelTest(TestCase):
         """Test that soft delete sets soft_deleted flag and updated_by."""
         instance = TestBaseModel(name="Soft Delete")
         instance.save(user=self.user1)
-        print("before delete")
         instance.delete(user=self.user2)
         instance.refresh_from_db()
         self.assertTrue(instance.soft_deleted)

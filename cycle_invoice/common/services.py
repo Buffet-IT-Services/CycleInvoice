@@ -53,6 +53,9 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
         update_fields.append("updated_at")
         instance.updated_at = timezone.now()
 
+        update_fields.append("updated_by")
+        instance.updated_by = user
+
         instance.full_clean()
 
         # Update only the fields that are meant to be updated.
