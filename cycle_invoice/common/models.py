@@ -7,6 +7,8 @@ from django.db import models
 from simple_history.admin import SimpleHistoryAdmin
 from simple_history.models import HistoricalRecords
 
+from cycle_invoice.common.services import model_update
+
 
 class BaseModel(models.Model):
     """Base model to inherit from for common fields."""
@@ -52,8 +54,10 @@ class BaseModel(models.Model):
         if not user:
             error_message = "You must provide a user to save the model."
             raise ValueError(error_message)
+
         if not self.pk:
             self.created_by = user
+
         self.updated_by = user
         super().save(*args, **kwargs)
 
@@ -69,8 +73,7 @@ class BaseModel(models.Model):
             error_message = "You must provide a user to save the model."
             raise ValueError(error_message)
 
-        self.soft_deleted = True
-        self.save(user=user)
+        model_update(instance=self, fields=["soft_deleted"], data={"soft_deleted": True}, user=user)
 
 
 class BaseModelAdmin(SimpleHistoryAdmin):

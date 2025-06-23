@@ -44,10 +44,7 @@ class AccountTest(TestCase):
             default_buy=True,
         )
         with self.assertRaises(ValidationError):
-            # TODO: Fix this ugly workaround for the hard delete issue
-            # https://github.com/Buffet-IT-Services/CycleInvoice/issues/66
-            # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/66
-            account.delete(user=self.user, hard_delete=True)
+            account.delete(user=self.user)
 
     def test_prevent_default_sell_deletion(self) -> None:
         """Test that default sell account cannot be deleted."""
@@ -56,10 +53,7 @@ class AccountTest(TestCase):
             default_sell=True,
         )
         with self.assertRaises(ValidationError):
-            # TODO: Fix this ugly workaround for the hard delete issue
-            # https://github.com/Buffet-IT-Services/CycleInvoice/issues/65
-            # Issue URL: https://github.com/Buffet-IT-Services/CycleInvoice/issues/65
-            account.delete(user=self.user, hard_delete=True)
+            account.delete(user=self.user)
 
     # noinspection DuplicatedCode
     def test_only_one_default_buy_account(self) -> None:
