@@ -1,7 +1,7 @@
 """Celery configuration for Cycle Invoice."""
 from celery.schedules import crontab
 
-CELERY_BROKER_URL = "redis://:foobared@192.168.0.37:6379/0"
+CELERY_BROKER_URL = "redis://:foobared@redis:6379/0"
 
 CELERY_TIMEZONE = "Europe/Zurich"
 
