@@ -25,4 +25,3 @@ drf-jwt>=1.19.2 # JWT authentication for Django REST framework
 # for testing
 factory_boy>=3.3.3 # For creating test data
 Faker>=37.4.0 # For generating fake data
-gunicorn>=21.2.0 # WSGI HTTP server for UNIX
