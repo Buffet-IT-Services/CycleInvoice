@@ -5,9 +5,9 @@ services:
       dockerfile: Dockerfile
     command: >
       sh -c "python manage.py wait_for_db &&
-            python manage.py migrate &&
-            python manage.py collectstatic --noinput &&
-            gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/code
       - static_volume:/code/staticfiles
@@ -21,8 +21,6 @@ services:
       - JWT_AUTH_COOKIE=${JWT_AUTH_COOKIE:-jwt}
       - JWT_AUTH_COOKIE_SAMESITE=${JWT_AUTH_COOKIE_SAMESITE:-Lax}
       - JWT_AUTH_HEADER_PREFIX=${JWT_AUTH_HEADER_PREFIX:-Bearer}
-    ports:
-      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -30,8 +28,10 @@ services:
         condition: service_healthy
     networks:
       - cycleinvoice-network
+    ports:
+      - "8000:8000"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/healthcheck/"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -73,7 +73,7 @@ services:
       dockerfile: Dockerfile
     command: >
       sh -c "python manage.py wait_for_db &&
-            celery -A cycle_invoice.celery worker --loglevel=info"
+             celery -A cycle_invoice.celery worker --loglevel=info"
     volumes:
       - .:/code
     environment:
@@ -83,6 +83,7 @@ services:
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
     depends_on:
       db:
         condition: service_healthy
@@ -97,7 +98,7 @@ services:
       dockerfile: Dockerfile
     command: >
       sh -c "python manage.py wait_for_db &&
-            celery -A cycle_invoice.celery beat --loglevel=info"
+             celery -A cycle_invoice.celery beat --loglevel=info"
     volumes:
       - .:/code
     environment:
@@ -107,6 +108,7 @@ services:
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
     depends_on:
       db:
         condition: service_healthy
