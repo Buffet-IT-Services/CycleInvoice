@@ -17,19 +17,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", "False")
-
-ALLOWED_HOSTS = []
+BASE_DIR = Path(__file__).resolve().parent.parent.parent # three levels up to reach project root
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")  # keep the secret key used in production secret!
+DEBUG = os.environ.get("DJANGO_DEBUG", default=0)  # don't run with debug turned on in production!
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")  # adjust this to your needs
 
 # Application definition
-
 LOCAL_APPS = [
     "cycle_invoice.accounting.apps.AccountingConfig",  # for accounting management
     "cycle_invoice.api.apps.ApiConfig",  # for API endpoints
