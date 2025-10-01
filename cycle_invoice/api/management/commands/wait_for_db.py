@@ -23,7 +23,7 @@ class Command(BaseCommand):
                 db_conn.cursor()
             except OperationalError:
                 self.stdout.write("Database unavailable, waiting 1 second...")
-                time.sleep(1)
+                time.sleep(attempt)
                 attempt += 1
             else:
                 self.stdout.write(self.style.SUCCESS("Database available!"))
