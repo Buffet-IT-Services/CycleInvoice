@@ -19,4 +19,4 @@ def get_default_test_user(username: str = "default_test_user") -> get_user_model
         defaults={
             "password": username
         }
-    )
+    )[0]
