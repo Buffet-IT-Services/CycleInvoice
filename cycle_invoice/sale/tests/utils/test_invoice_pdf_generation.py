@@ -273,6 +273,6 @@ class InvoicePDFGenerationTest(TestCase):
         mock_content_file.assert_called_once_with(b"PDFDATA")
         # Check default_storage.save called with correct filename and ContentFile
         mock_default_storage.save.assert_called_once()
-        args, kwargs = mock_default_storage.save.call_args
+        args = mock_default_storage.save.call_args
         self.assertEqual(args[0], "test_invoice.pdf")
         self.assertIs(args[1], mock_content_file.return_value)

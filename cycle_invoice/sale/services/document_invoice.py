@@ -39,6 +39,4 @@ def document_invoice_update(*, invoice: DocumentInvoice, data: dict, user: get_u
     if "customer" in data and isinstance(data["customer"], int):
         data["customer"] = customer_get(data["customer"])
 
-    invoice, has_updates = model_update(instance=invoice, fields=non_side_effect_fields, data=data, user=user)
-
-    return invoice
+    return model_update(instance=invoice, fields=non_side_effect_fields, data=data, user=user)[0]
