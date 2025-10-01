@@ -14,10 +14,9 @@ def get_default_test_user(username: str = "default_test_user") -> get_user_model
     :return: A user instance, creating it if it does not exist.
     """
     user_model = get_user_model()
-    user, created = user_model.objects.get_or_create(
+    return user_model.objects.get_or_create(
         username=username,
         defaults={
             "password": username
         }
-    )
-    return user
+    )[0]
