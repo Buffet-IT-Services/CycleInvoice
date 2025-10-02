@@ -3,7 +3,7 @@ python-dotenv==1.1.1 # For environment variable management
 django-simple-history==3.10.1 # For tracking model changes
 python-dateutil==2.9.0.post0 # Date and time utilities
 
-django-storages[s3]==1.14.0 # For S3 storage support
+django-storages[s3]==1.14.6 # For S3 storage support
 
 psycopg2==2.9.10 # PostgreSQL database adapter
 
