@@ -10,5 +10,5 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-    versioning-strategy: auto  # increases version bounds (e.g., >=4.2,<4.3 → >=5.x)
+    versioning-strategy: auto  # uses Dependabot's default behavior, which varies by ecosystem
     open-pull-requests-limit: 10  # limit to 10 open PRs
