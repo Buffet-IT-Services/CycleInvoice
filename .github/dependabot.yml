@@ -9,7 +9,6 @@ updates:
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "weekly"
-    allow:
-      - dependency-type: "all"   # including transitive dependencies
-    versioning-strategy: increase  # increases version bounds (e.g., >=4.2,<4.3 → >=5.x)
+      interval: "daily"
+    versioning-strategy: auto  # increases version bounds (e.g., >=4.2,<4.3 → >=5.x)
+    open-pull-requests-limit: 10  # limit to 10 open PRs
