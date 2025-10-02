@@ -12,5 +12,4 @@ updates:
       interval: "weekly"
     allow:
       - dependency-type: "all"   # including transitive dependencies
-    ignore: []                   # no extra ignores
     versioning-strategy: increase  # increases version bounds (e.g., >=4.2,<4.3 → >=5.x)
