@@ -8,7 +8,7 @@ django-storages[s3]==1.14.0 # For S3 storage support
 psycopg2==2.9.10 # PostgreSQL database adapter
 
 # Task queue
-redis==6.2.0 # For caching and message brokering
+redis==6.4.0 # For caching and message brokering
 celery==5.5.3 # Asynchronous task queue
 
 # for PDF generation and manipulation
