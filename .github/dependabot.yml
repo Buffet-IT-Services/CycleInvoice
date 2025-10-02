@@ -10,3 +10,7 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    allow:
+      - dependency-type: "all"   # auch transitive Dependencies
+    ignore: []                   # keine extra Ignores
+    versioning-strategy: increase  # hebt Versionsgrenzen an (z. B. >=4.2,<4.3 → >=5.x)
