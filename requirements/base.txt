@@ -1,0 +1,27 @@
+Django==5.2.0 # Django framework
+python-dotenv==1.1.1 # For environment variable management
+django-simple-history==3.10.1 # For tracking model changes
+python-dateutil==2.9.0.post0 # Date and time utilities
+
+django-storages[s3]==1.14.6 # For S3 storage support
+
+psycopg2==2.9.10 # PostgreSQL database adapter
+
+# Task queue
+redis==6.4.0 # For caching and message brokering
+celery==5.5.3 # Asynchronous task queue
+
+# for PDF generation and manipulation
+qrbill==1.1.0
+pypdf==6.1.1
+reportlab==4.4.4
+weasyprint==66.0
+
+# for API
+djangorestframework==3.16.1 # Django REST framework for building APIs
+django-filter==25.1 # For filtering API results
+drf-jwt==1.19.2 # JWT authentication for Django REST framework
+
+# for testing
+factory_boy==3.3.3 # For creating test data
+Faker==37.8.0 # For generating fake data
