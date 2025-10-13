@@ -19,7 +19,7 @@ weasyprint==66.0
 
 # for API
 djangorestframework==3.16.1 # Django REST framework for building APIs
-django-filter==25.1 # For filtering API results
+django-filter==25.2 # For filtering API results
 drf-jwt==1.19.2 # JWT authentication for Django REST framework
 
 # for testing
