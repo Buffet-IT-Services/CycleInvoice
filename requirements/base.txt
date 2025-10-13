@@ -5,7 +5,7 @@ python-dateutil==2.9.0.post0 # Date and time utilities
 
 django-storages[s3]==1.14.6 # For S3 storage support
 
-psycopg2==2.9.10 # PostgreSQL database adapter
+psycopg2==2.9.11 # PostgreSQL database adapter
 
 # Task queue
 redis==6.4.0 # For caching and message brokering
