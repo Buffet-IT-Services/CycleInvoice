@@ -2,4 +2,4 @@
 
 ruff==0.14.2 # Linter for Python code
 coverage==7.11.0 # Code coverage tool
-tblib==3.1.0 # Traceback library for better error reporting
+tblib==3.2.0 # Traceback library for better error reporting
