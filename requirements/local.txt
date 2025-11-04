@@ -1,5 +1,5 @@
 -r base.txt
 
-ruff==0.14.2 # Linter for Python code
+ruff==0.14.3 # Linter for Python code
 coverage==7.11.0 # Code coverage tool
 tblib==3.2.1 # Traceback library for better error reporting
