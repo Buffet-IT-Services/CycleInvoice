@@ -1,4 +1,4 @@
-Django==5.2.7 # Django framework
+Django==5.2.8 # Django framework
 python-dotenv==1.2.1 # For environment variable management
 django-simple-history==3.10.1 # For tracking model changes
 python-dateutil==2.9.0.post0 # Date and time utilities
@@ -12,8 +12,8 @@ redis==7.0.1 # For caching and message brokering
 celery==5.5.3 # Asynchronous task queue
 
 # for PDF generation and manipulation
-qrbill==1.1.0
-pypdf==6.1.3
+qrbill==1.2.0
+pypdf==6.2.0
 reportlab==4.4.4
 weasyprint==66.0
 
@@ -24,4 +24,4 @@ drf-jwt==1.19.2 # JWT authentication for Django REST framework
 
 # for testing
 factory_boy==3.3.3 # For creating test data
-Faker==37.12.0 # For generating fake data
+Faker==38.0.0 # For generating fake data
