@@ -61,7 +61,7 @@ party : Party
 title : String
 description : String
 }
-DocumentItem --> Par
+DocumentItem --> Party
 DocumentItem --> Document
 
 class SubscriptionItem <? extends DocumentItem> {
