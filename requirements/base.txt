@@ -24,4 +24,4 @@ drf-jwt==1.19.2 # JWT authentication for Django REST framework
 
 # for testing
 factory_boy==3.3.3 # For creating test data
-Faker==38.0.0 # For generating fake data
+Faker==38.2.0 # For generating fake data
