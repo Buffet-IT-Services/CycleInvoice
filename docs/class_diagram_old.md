@@ -97,7 +97,7 @@ class Payment <? extends Transaction> {
 payment_method : String
 invoice : DocumentInvoice
 }
-Payment *- Transaction
+Payment --|> Transaction
 Payment --> DocumentInvoice
 
 class Product <? extends Base_Model> {

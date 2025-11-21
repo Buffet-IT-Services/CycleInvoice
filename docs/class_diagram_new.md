@@ -40,7 +40,7 @@ soft_deleted : Boolean
 history : History
 }
 
-class Organisation <? extends Par> {
+class Organisation <? extends Party> {
 name : String
 uid : String
 }
@@ -67,20 +67,20 @@ DocumentItem --> Document
 class SubscriptionItem <? extends DocumentItem> {
 subscription : Subscription
 }
-SubscriptionItem --> DocumentItem
+SubscriptionItem --|> DocumentItem
 SubscriptionItem --> Subscription
 
 class ProductItem <? extends DocumentItem> {
 product : Product
 }
-ProductItem --> DocumentItem
+ProductItem --|> DocumentItem
 ProductItem --> Product
 
 class TimeItem <? extends DocumentItem> {
     time_entry : TimeEntry
 }
 TimeItem --> TimeEntry
-TimeItem --> DocumentItem
+TimeItem --|> DocumentItem
 
 class TimeEntry <? extends Base_Model> {
     time_type : TimeType
@@ -105,7 +105,7 @@ class Invoice <? extends Document> {
 invoice_number : String
 due_date : Date
 }
-Invoice --> Document
+Invoice --|> Document
 
 class Domain <? extends Base_Model> {
 name : String
