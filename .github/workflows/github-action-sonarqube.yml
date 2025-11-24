@@ -38,8 +38,8 @@ jobs:
           echo "DJANGO_SECRET_KEY=supersecretkey" >> .env
           echo "JWT_SECRET_KEY=supersecretjwt" >> .env
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
@@ -49,6 +49,13 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements/local.txt || true
 
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U cycleinvoice && break
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 2
+          done
       - name: Run Django tests
         run: pytest --cov=cycle_invoice --cov-report=xml:coverage.xml
 
