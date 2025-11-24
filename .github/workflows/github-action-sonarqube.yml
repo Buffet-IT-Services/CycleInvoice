@@ -60,8 +60,10 @@ jobs:
             echo "Waiting for PostgreSQL to be ready..."
             sleep 2
           done
-      - name: Run Django tests
-        run: coverage run --rcfile=.coveragerc manage.py test
+      - name: Run Django tests and collect coverage
+        run: |
+          coverage run --rcfile=.coveragerc manage.py test
+          coverage xml -o coverage.xml
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
