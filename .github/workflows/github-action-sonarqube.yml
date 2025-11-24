@@ -51,7 +51,7 @@ jobs:
 
       - name: Install test dependencies
         run: |
-          pip install pytest pytest-django pytest-cov
+          pip install coverage
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -61,7 +61,7 @@ jobs:
             sleep 2
           done
       - name: Run Django tests
-        run: pytest --cov=cycle_invoice --cov-report=xml:coverage.xml
+        run: coverage run --rcfile=.coveragerc manage.py test
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
