@@ -1,5 +1,9 @@
 # pyproject.toml
 
+[project]
+name = "cycle_invoice"
+version = "0.0.1"
+
 [tool.ruff]
 exclude = [
     ".direnv",
@@ -57,3 +61,7 @@ ignore-variadic-names = true
 
 [tool.ruff.lint.isort]
 case-sensitive = true # Sort imports in a case-sensitive manner.
+
+[tool.setuptools.packages.find]
+include = ["cycle_invoice*",]
+exclude = ["docker", "static", "config", "templates"]
