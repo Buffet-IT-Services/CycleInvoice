@@ -50,7 +50,7 @@ jobs:
           pip install -r requirements/local.txt || true
 
       - name: Run Django tests
-        run: python manage.py test
+        run: pytest --cov=cycle_invoice --cov-report=xml:coverage.xml
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
