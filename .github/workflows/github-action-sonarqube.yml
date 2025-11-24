@@ -49,6 +49,10 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements/local.txt || true
 
+      - name: Install test dependencies
+        run: |
+          pip install pytest pytest-django pytest-cov
+
       - name: Wait for PostgreSQL to be ready
         run: |
           for i in {1..30}; do
