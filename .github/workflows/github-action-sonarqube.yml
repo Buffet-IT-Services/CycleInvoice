@@ -23,7 +23,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install tox and dependencies
-        run: pip install tox
+        run: pip install django
 
       - name: Run Django tests
         run: python manage.py test
