@@ -17,18 +17,18 @@ role : String
 CompanyContact --> Contact
 CompanyContact --> Organisation
 
-class Contact <? extends Customer> {
+class Contact <? extends Party> {
 first_name : String
 last_name : String
 }
-Contact --|> Customer
+Contact --|> Party
 
-class Customer <? extends Base_Model> {
+class Party <? extends Base_Model> {
 address : Address
 email : E-Mail
 phone : String
 }
-Customer --> Address
+Party --> Address
 
 class Base_Model {
 uuid : UUID
