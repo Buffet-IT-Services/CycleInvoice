@@ -63,14 +63,12 @@ jobs:
           coverage xml -o coverage.xml
 
       - name: SonarQube Scan
-        if: ${{ secrets.SONAR_TOKEN && secrets.SONAR_HOST_URL }}
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: SonarQube Quality Gate Check
-        if: ${{ secrets.SONAR_TOKEN && secrets.SONAR_HOST_URL }}
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 5
         env:
