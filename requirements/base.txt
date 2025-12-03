@@ -1,4 +1,4 @@
-Django==5.2.8 # Django framework
+Django==5.2.9 # Django framework
 python-dotenv==1.2.1 # For environment variable management
 django-simple-history==3.10.1 # For tracking model changes
 python-dateutil==2.9.0.post0 # Date and time utilities
