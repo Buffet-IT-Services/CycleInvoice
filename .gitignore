@@ -7,3 +7,5 @@
 /celerybeat-schedule-shm
 /celerybeat-schedule-wal
 /.idea/
+# actionlint binary
+actionlint
