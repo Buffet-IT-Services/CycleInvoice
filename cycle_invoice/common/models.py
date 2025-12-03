@@ -43,7 +43,7 @@ class BaseModel(models.Model):
         inherit=True
     )
 
-    class Meta:
+    class Meta(object):
         """Meta options for BaseModel."""
 
         abstract = True
@@ -94,7 +94,7 @@ class TestBaseModel(BaseModel):
         blank=True,
     )
 
-    class Meta:
+    class Meta(object):
         """Meta options for TestBaseModel."""
 
         verbose_name = "Test Base Model"
