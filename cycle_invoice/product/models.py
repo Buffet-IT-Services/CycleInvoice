@@ -6,7 +6,6 @@ from cycle_invoice.accounting.models import Account, get_default_buy_account, ge
 from cycle_invoice.common.models import BaseModel
 
 
-# Create your models here.
 class Product(BaseModel):
     """Model representing a sale product."""
 
