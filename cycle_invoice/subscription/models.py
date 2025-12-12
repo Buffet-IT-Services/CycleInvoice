@@ -9,7 +9,7 @@ from cycle_invoice.common.models import BaseModel
 from cycle_invoice.product.models import Product
 
 
-class SubscriptionProduct(BaseModel):
+class SubscriptionPlan(BaseModel):
     """Model representing a subscription."""
 
     RECURRENCE_CHOICES = [
@@ -50,8 +50,8 @@ class SubscriptionProduct(BaseModel):
 class Subscription(BaseModel):
     """Model representing a subscription."""
 
-    product = models.ForeignKey(
-        SubscriptionProduct,
+    plan = models.ForeignKey(
+        SubscriptionPlan,
         on_delete=models.CASCADE,
         related_name="subscription"
     )

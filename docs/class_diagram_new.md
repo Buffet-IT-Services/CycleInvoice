@@ -17,18 +17,18 @@ role : String
 CompanyContact --> Contact
 CompanyContact --> Organisation
 
-class Contact <? extends Customer> {
+class Contact <? extends Party> {
 first_name : String
 last_name : String
 }
-Contact --|> Customer
+Contact --|> Party
 
-class Customer <? extends Base_Model> {
+class Party <? extends Base_Model> {
 address : Address
 email : E-Mail
 phone : String
 }
-Customer --> Address
+Party --> Address
 
 class Base_Model {
 uuid : UUID
@@ -60,6 +60,7 @@ document : Document
 party : Party
 title : String
 description : String
+status: enum (draft, sent, cancelled)
 }
 DocumentItem --> Party
 DocumentItem --> Document
@@ -91,6 +92,7 @@ class TimeEntry <? extends Base_Model> {
     billable : Boolean
     title: String
     description : String
+    user: User
 }
 TimeEntry -> TimeType
 
@@ -128,6 +130,7 @@ party : Party
 start_date : Date
 end_billed_date : Date
 cancelled_date : Date
+status: enum (active, cancelled. expired)
 }
 Subscription --> SubscriptionPlan
 Subscription --> Party

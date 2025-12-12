@@ -3,7 +3,7 @@
 from django.db import models
 
 from cycle_invoice.common.models import BaseModel
-from cycle_invoice.contact.models import Customer
+from cycle_invoice.contact.models import Party
 
 
 class Domain(BaseModel):
@@ -13,8 +13,8 @@ class Domain(BaseModel):
         max_length=255,
         unique=True
     )
-    customer = models.ForeignKey(
-        Customer,
+    party = models.ForeignKey(
+        Party,
         on_delete=models.CASCADE
     )
 

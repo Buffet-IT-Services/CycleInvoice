@@ -9,8 +9,8 @@ from cycle_invoice.common.models import BaseModel
 logger = logging.getLogger(__name__)
 
 
-class Customer(BaseModel):
-    """Model representing a customer."""
+class Party(BaseModel):
+    """Model representing a party."""
 
     address = models.OneToOneField(
         "Address",
@@ -53,7 +53,7 @@ class Customer(BaseModel):
         return str(self)
 
 
-class Organisation(Customer):
+class Organisation(Party):
     """Model representing an organisation."""
 
     name = models.CharField(
@@ -80,7 +80,7 @@ class Organisation(Customer):
         return self.name
 
 
-class Contact(Customer):
+class Contact(Party):
     """Model representing a contact."""
 
     first_name = models.CharField(
