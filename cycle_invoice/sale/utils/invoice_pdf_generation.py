@@ -19,7 +19,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
 
-from cycle_invoice.sale.models import Invoice, DocumentItem
+from cycle_invoice.sale.models import DocumentItem, Invoice
 from cycle_invoice.sale.utils.swiss_qr import generate_swiss_qr
 
 
