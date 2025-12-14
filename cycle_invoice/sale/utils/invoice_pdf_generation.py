@@ -19,7 +19,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
 
-from cycle_invoice.sale.models import DocumentInvoice, DocumentItem
+from cycle_invoice.sale.models import Invoice, DocumentItem
 from cycle_invoice.sale.utils.swiss_qr import generate_swiss_qr
 
 
@@ -39,7 +39,7 @@ def generate_content(invoice_id: int) -> dict[str, Any]:
         dict: The dictionary containing all necessary data for rendering the invoice
 
     """
-    invoice = DocumentInvoice.objects.get(pk=invoice_id)
+    invoice = Invoice.objects.get(pk=invoice_id)
 
     document_items = DocumentItem.objects.filter(invoice=invoice)
     invoice_items = [
