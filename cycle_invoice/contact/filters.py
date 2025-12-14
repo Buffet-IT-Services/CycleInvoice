@@ -1,7 +1,7 @@
 """Filters for contact app models."""
 import django_filters
 
-from cycle_invoice.contact.models import Address, Contact, Party, Organisation
+from cycle_invoice.contact.models import Address, Contact, Organisation, Party
 
 
 class CustomerFilter(django_filters.FilterSet):
