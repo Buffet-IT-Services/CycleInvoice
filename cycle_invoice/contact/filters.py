@@ -1,7 +1,7 @@
 """Filters for contact app models."""
 import django_filters
 
-from cycle_invoice.contact.models import Address, Contact, Customer, Organisation
+from cycle_invoice.contact.models import Address, Contact, Party, Organisation
 
 
 class CustomerFilter(django_filters.FilterSet):
@@ -10,7 +10,7 @@ class CustomerFilter(django_filters.FilterSet):
     class Meta:
         """Metaclass for CustomerFiler."""
 
-        model = Customer
+        model = Party
         fields = ("uuid", "address", "email", "phone")
 
 

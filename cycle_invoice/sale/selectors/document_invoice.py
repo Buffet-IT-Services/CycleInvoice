@@ -5,18 +5,18 @@ from django.db.models import QuerySet
 
 from cycle_invoice.common.selectors import get_object
 from cycle_invoice.sale.filters import DocumentInvoiceFilter
-from cycle_invoice.sale.models import DocumentInvoice
+from cycle_invoice.sale.models import Invoice
 
 
-def invoice_list(*, filters: dict[str, Any] | None = None) -> QuerySet[DocumentInvoice]:
+def invoice_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Invoice]:
     """Retrieve a list of invoices with optional filters."""
     filters = filters or {}
 
-    qs = DocumentInvoice.objects.all()
+    qs = Invoice.objects.all()
 
     return DocumentInvoiceFilter(filters, queryset=qs).qs
 
 
-def invoice_get(invoice_id: int | str) -> DocumentInvoice | None:
+def invoice_get(invoice_id: int | str) -> Invoice | None:
     """Retrieve a single invoice by its ID."""
-    return get_object(DocumentInvoice, search_id=invoice_id)
+    return get_object(Invoice, search_id=invoice_id)

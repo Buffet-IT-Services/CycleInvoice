@@ -85,7 +85,7 @@ class Payment(Transaction):
     """Model representing a payment transaction."""
 
     payment_method = models.CharField(max_length=50, verbose_name=_("payment method"))
-    invoice = models.ForeignKey("sale.DocumentInvoice", on_delete=models.CASCADE,
+    invoice = models.ForeignKey("sale.Invoice", on_delete=models.CASCADE,
                                 verbose_name=_("invoice"))
 
     class Meta:

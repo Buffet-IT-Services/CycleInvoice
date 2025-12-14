@@ -9,8 +9,8 @@ from rest_framework.views import APIView
 from cycle_invoice.api.mixins import ApiAuthMixin
 from cycle_invoice.api.pagination import LimitOffsetPagination, get_paginated_response
 from cycle_invoice.api.serializers import inline_serializer
-from cycle_invoice.contact.models import Customer
-from cycle_invoice.sale.models import DocumentInvoice
+from cycle_invoice.contact.models import Party
+from cycle_invoice.sale.models import Invoice
 from cycle_invoice.sale.selectors.document_invoice import invoice_get, invoice_list
 from cycle_invoice.sale.services.document_invoice import document_invoice_create, document_invoice_update
 
@@ -18,7 +18,7 @@ from cycle_invoice.sale.services.document_invoice import document_invoice_create
 class InvoiceListApi(ApiAuthMixin, APIView):
     """API view to handle listing invoices."""
 
-    queryset = DocumentInvoice.objects.all()
+    queryset = Invoice.objects.all()
 
     class FiltersSerializer(serializers.Serializer):
         """Serializer for filtering invoices."""
@@ -58,7 +58,7 @@ class InvoiceListApi(ApiAuthMixin, APIView):
 class InvoiceDetailApi(ApiAuthMixin, APIView):
     """API view to handle retrieving a single invoice."""
 
-    queryset = DocumentInvoice.objects.all()
+    queryset = Invoice.objects.all()
 
     class OutputSerializer(serializers.Serializer):
         """Serializer for outputting invoice data."""
@@ -93,7 +93,7 @@ class InvoiceDetailApi(ApiAuthMixin, APIView):
 class InvoiceCreateApi(ApiAuthMixin, APIView):
     """API view to handle creating a new invoice."""
 
-    queryset = DocumentInvoice.objects.all()
+    queryset = Invoice.objects.all()
 
     class InputSerializer(serializers.Serializer):
         """Serializer for inputting invoice data."""
@@ -108,7 +108,7 @@ class InvoiceCreateApi(ApiAuthMixin, APIView):
         @staticmethod
         def validate_invoice_number(value: str) -> str:
             """Validate that the invoice number is not empty."""
-            if DocumentInvoice.objects.filter(invoice_number=value).exists():
+            if Invoice.objects.filter(invoice_number=value).exists():
                 error_message = "There is already an invoice with this number."
                 raise serializers.ValidationError(error_message)
             return value
@@ -116,7 +116,7 @@ class InvoiceCreateApi(ApiAuthMixin, APIView):
         @staticmethod
         def validate_customer(value: int) -> int:
             """Validate that the customer exists."""
-            if not Customer.objects.filter(id=value).exists():
+            if not Party.objects.filter(id=value).exists():
                 error_message = "Customer with this ID does not exist."
                 raise serializers.ValidationError(error_message)
             return value
@@ -136,7 +136,7 @@ class InvoiceCreateApi(ApiAuthMixin, APIView):
 class InvoiceUpdateApi(ApiAuthMixin, APIView):
     """API view to handle updating an existing invoice."""
 
-    queryset = DocumentInvoice.objects.all()
+    queryset = Invoice.objects.all()
 
     class InputSerializer(serializers.Serializer):
         """Serializer for inputting invoice data."""
@@ -151,7 +151,7 @@ class InvoiceUpdateApi(ApiAuthMixin, APIView):
         @staticmethod
         def validate_invoice_number(value: str) -> str:
             """Validate that the invoice number is not empty."""
-            if DocumentInvoice.objects.filter(invoice_number=value).exists():
+            if Invoice.objects.filter(invoice_number=value).exists():
                 error_message = "There is already an invoice with this number."
                 raise serializers.ValidationError(error_message)
             return value
@@ -159,7 +159,7 @@ class InvoiceUpdateApi(ApiAuthMixin, APIView):
         @staticmethod
         def validate_customer(value: int) -> int:
             """Validate that the customer exists."""
-            if not Customer.objects.filter(id=value).exists():
+            if not Party.objects.filter(id=value).exists():
                 error_message = "Customer with this ID does not exist."
                 raise serializers.ValidationError(error_message)
             return value
@@ -188,7 +188,7 @@ class InvoiceUpdateApi(ApiAuthMixin, APIView):
 class InvoiceDeleteApi(ApiAuthMixin, APIView):
     """API view to handle deleting an invoice."""
 
-    queryset = DocumentInvoice.objects.all()
+    queryset = Invoice.objects.all()
 
     def delete(self, request: Request, invoice_uuid: str, *args, **kwargs) -> Response:
         """Handle DELETE requests to remove an invoice."""

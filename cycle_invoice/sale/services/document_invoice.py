@@ -4,14 +4,14 @@ from django.db import transaction
 
 from cycle_invoice.common.services import model_update
 from cycle_invoice.contact.selectors.customer import customer_get
-from cycle_invoice.sale.models import DocumentInvoice
+from cycle_invoice.sale.models import Invoice
 
 
 @transaction.atomic
 def document_invoice_create(*, invoice_number: str, customer: int, date: str, due_date: str, header_text: str = "",
-                            footer_text: str = "", user: get_user_model) -> DocumentInvoice:
+                            footer_text: str = "", user: get_user_model) -> Invoice:
     """Create a new document invoice."""
-    document_invoice = DocumentInvoice(
+    document_invoice = Invoice(
         invoice_number=invoice_number,
         customer_id=customer,
         date=date,
@@ -24,7 +24,7 @@ def document_invoice_create(*, invoice_number: str, customer: int, date: str, du
 
 
 @transaction.atomic
-def document_invoice_update(*, invoice: DocumentInvoice, data: dict, user: get_user_model) -> DocumentInvoice:
+def document_invoice_update(*, invoice: Invoice, data: dict, user: get_user_model) -> Invoice:
     """Update an existing document invoice."""
     non_side_effect_fields: list[str] = [
         "invoice_number",

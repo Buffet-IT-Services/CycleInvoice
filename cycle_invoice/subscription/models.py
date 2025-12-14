@@ -56,7 +56,7 @@ class Subscription(BaseModel):
         related_name="subscription"
     )
     customer = models.ForeignKey(
-        "contact.Customer",
+        "contact.Party",
         on_delete=models.CASCADE,
         related_name="subscription"
     )

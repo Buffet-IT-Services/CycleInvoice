@@ -5,18 +5,18 @@ from django.db.models import QuerySet
 
 from cycle_invoice.common.selectors import get_object
 from cycle_invoice.contact.filters import CustomerFilter
-from cycle_invoice.contact.models import Customer
+from cycle_invoice.contact.models import Party
 
 
-def customer_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Customer]:
+def customer_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Party]:
     """Retrieve a list of customers with optional filters."""
     filters = filters or {}
 
-    qs = Customer.objects.all()
+    qs = Party.objects.all()
 
     return CustomerFilter(filters, queryset=qs).qs
 
 
-def customer_get(customer_id: int) -> Customer | None:
+def customer_get(customer_id: int) -> Party | None:
     """Retrieve a single customer by its ID."""
-    return get_object(Customer, id=customer_id)
+    return get_object(Party, id=customer_id)
