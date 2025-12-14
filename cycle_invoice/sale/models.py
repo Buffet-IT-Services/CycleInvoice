@@ -3,7 +3,6 @@
 from decimal import Decimal
 
 from django.db import models
-from django.db.models import CheckConstraint, Q
 from django.utils.translation import gettext_lazy as _
 
 from cycle_invoice.common.models import BaseModel
@@ -103,6 +102,7 @@ class DocumentItem(BaseModel):
 
     class DiscountType(models.TextChoices):
         """Discount types for document items."""
+
         PERCENT = "percent", "Percent"
         ABSOLUTE = "absolute", "Absolute"
 
