@@ -2,7 +2,8 @@
 from typing import Any
 
 from django.contrib.auth import get_user_model
-from django.db import models
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.db import models, transaction
 from django.utils import timezone
 
 from cycle_invoice.common.types import DjangoModelType
@@ -26,8 +27,12 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
         - There's a strict assertion that all values in `fields` are actual fields in `instance`.
         - `fields` can support m2m fields, which are handled after the update on `instance`.
     """
+    # Disallow any updates on already soft-deleted instances
+    if getattr(instance, "soft_deleted", False):
+        raise ValueError("Cannot update a soft-deleted object.")
+
     has_updated = False
-    update_fields = []
+    update_fields: list[str] = []
 
     model_fields = get_model_fields(instance)
 
@@ -50,16 +55,24 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
 
     # Perform an update only if any of the fields were actually changed
     if has_updated:
-        update_fields.append("updated_at")
-        instance.updated_at = timezone.now()
+        with transaction.atomic():
+            # touch update metadata
+            instance.updated_at = timezone.now()
+            instance.updated_by = user
 
-        update_fields.append("updated_by")
-        instance.updated_by = user
+            # Ensure simple_history captures the acting user
+            try:
+                instance._history_user = user  # type: ignore[attr-defined]
+            except Exception:  # pragma: no cover - safety only
+                pass
 
-        instance.full_clean()
+            # De-duplicate update fields and include metadata fields
+            update_fields = list(dict.fromkeys(update_fields + ["updated_at", "updated_by"]))
 
-        # Update only the fields that are meant to be updated.
-        instance.save(update_fields=update_fields, user=user)
+            instance.full_clean()
+
+            # Update only the fields that are meant to be updated.
+            instance.save(update_fields=update_fields, user=user)
 
     return instance, has_updated
 
@@ -67,3 +80,17 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
 def get_model_fields(instance: models.Model) -> dict[str, models.Field]:
     """Return a dict of model fields for a Django model instance."""
     return {field.name: field for field in instance._meta.get_fields()}  # noqa: SLF001
+
+
+def get_system_user() -> AbstractBaseUser:
+    """Return the system user, creating it if necessary.
+
+    The system user is used for automated/system tasks where a real user
+    is not available. The email can be configured via the
+    `SYSTEM_USER_EMAIL` Django setting (or `DJANGO_SYSTEM_USER_EMAIL` env var),
+    defaulting to `system@cycleinvoice.local`.
+    """
+
+    user_model = get_user_model()
+    return user_model.objects.get(email="system@cycleinvoice.local")
+

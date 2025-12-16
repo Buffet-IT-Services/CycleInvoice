@@ -1,22 +1,49 @@
 """Base models for the Cycle Invoice application."""
+import logging
 import uuid
-from urllib.request import Request
 
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.contrib import admin
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+from django.http import HttpRequest
 from simple_history.admin import SimpleHistoryAdmin
 from simple_history.models import HistoricalRecords
 
-from cycle_invoice.common.services import model_update
+from cycle_invoice.common.services import model_update, get_system_user
 
+logger = logging.getLogger(__name__)
 
 class BaseModel(models.Model):
     """Base model to inherit from for common fields."""
 
+    class ActiveQuerySet(models.QuerySet):
+        """Custom QuerySet to filter active and deleted records."""
+
+        def alive(self) -> models.QuerySet:
+            """Return only active records."""
+
+            return self.filter(soft_deleted=False)
+
+        def deleted(self) -> models.QuerySet:
+            """Return only deleted records."""
+
+            return self.filter(soft_deleted=True)
+
+    class ActiveManager(models.Manager):
+        """Custom Manager to return active and deleted records."""
+
+        def get_queryset(self) -> models.QuerySet:
+            """Return the active and deleted records."""
+
+            return super().get_queryset().filter(soft_deleted=False)
+
     uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
-        unique=True
+        unique=True,
+        db_index=True,
     )
     created_at = models.DateTimeField(
         auto_now_add=True
@@ -25,23 +52,28 @@ class BaseModel(models.Model):
         auto_now=True
     )
     created_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         editable=False,
         related_name="%(class)s_created_by"
     )
     updated_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         editable=False,
         related_name="%(class)s_updated_by"
     )
     soft_deleted = models.BooleanField(
-        default=False
+        default=False,
+        db_index=True,
     )
     history = HistoricalRecords(
         inherit=True
     )
+
+    # Managers
+    objects = ActiveManager()
+    objects_with_deleted = models.Manager()
 
     class Meta:
         """Meta options for BaseModel."""
@@ -51,14 +83,27 @@ class BaseModel(models.Model):
     def save(self, *args, **kwargs) -> None:
         """Override save method to set created_by and updated_by."""
         user = kwargs.pop("user", None)
-        if not user:
-            error_message = "You must provide a user to save the model."
+        # Allow framework/internal saves (e.g., Django updating last_login) by
+        # defaulting to the dedicated system user when an explicit user isn't provided.
+        if user is None:
+            logger.warning(
+                "BaseModel.save called without 'user'; falling back to system user for %s(id=%s, uuid=%s)",
+                self.__class__.__name__,
+                getattr(self, "pk", None),
+                getattr(self, "uuid", None),
+            )
+            user = get_system_user()
+
+        if self.pk and getattr(self, "soft_deleted", False):
+            error_message = "Cannot update a soft-deleted object."
             raise ValueError(error_message)
 
         if not self.pk:
             self.created_by = user
 
         self.updated_by = user
+        self._history_user = user
+
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs) -> None:
@@ -70,7 +115,7 @@ class BaseModel(models.Model):
 
         user = kwargs.pop("user", None)
         if not user:
-            error_message = "You must provide a user to save the model."
+            error_message = "You must provide a user to delete the model."
             raise ValueError(error_message)
 
         model_update(instance=self, fields=["soft_deleted"], data={"soft_deleted": True}, user=user)
@@ -79,27 +124,73 @@ class BaseModel(models.Model):
 class BaseModelAdmin(SimpleHistoryAdmin):
     """Base admin class for models inheriting from BaseModel."""
 
-    def save_model(self, request: Request, obj: BaseModel, form: object, change: bool) -> None:  # noqa: FBT001,ARG002
+    def save_model(self, request: HttpRequest, obj: BaseModel, form: object, change: bool) -> None:
         """Override save_model to set the user."""
         obj.save(user=request.user)
 
+    def delete_model(self, request: HttpRequest, obj: BaseModel) -> None:
+        """Override delete to pass the user for soft-delete."""
+        obj.delete(user=request.user)
 
-class TestBaseModel(BaseModel):
-    """Test model to verify BaseModel functionality."""
+    list_filter = ("soft_deleted",)
+    readonly_fields = ("uuid", "created_at", "updated_at", "created_by", "updated_by")
 
-    name = models.CharField(
-        max_length=255,
-        verbose_name="Name",
-        default="",
-        blank=True,
-    )
+    @admin.action(description="Soft delete selected")
+    def soft_delete_selected(self, request: HttpRequest, queryset: models.QuerySet) -> None:
+        """Soft delete selected records."""
 
-    class Meta:
-        """Meta options for TestBaseModel."""
+        for obj in queryset:
+            obj.delete(user=request.user)
 
-        verbose_name = "Test Base Model"
-        verbose_name_plural = "Test Base Models"
+    actions = ["soft_delete_selected"]
+
+class CustomUserManager(BaseUserManager):
+    """Custom user manager."""
+
+    def _create_user(self, email, password, **extra_fields):
+        """Create and save a new user with given details."""
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        # Use the system user for metadata when creating users via manager
+        system_user = get_system_user()
+        user.save(using=self._db, user=system_user)
+        return user
+
+    def create_user(self, email, password=None, **extra_fields):
+        """Create and save a new user with given details."""
+
+        extra_fields.setdefault("is_superuser", False)
+        extra_fields.setdefault("is_staff", False)
+        return self._create_user(email, password, **extra_fields)
+
+    def create_superuser(self, email, password, **extra_fields):
+        """Create and save a new superuser with given details."""
+
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_staff", True)
+        return self._create_user(email, password, **extra_fields)
+
+    def get_by_natural_key(self, username):
+        """Override this method to normalize the email input."""
+
+        email = self.normalize_email(username)
+        return self.get(**{self.model.USERNAME_FIELD: email})
+
+
+class User(AbstractBaseUser, BaseModel, PermissionsMixin):
+    """Custom user model."""
+
+    email = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+
+    USERNAME_FIELD = "email"
+
+    objects = CustomUserManager()
 
     def __str__(self) -> str:
-        """Return str representation of the TestBaseModel."""
-        return self.name
+        return self.email

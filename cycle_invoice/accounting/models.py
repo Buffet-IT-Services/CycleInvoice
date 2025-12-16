@@ -79,17 +79,3 @@ class Transaction(BaseModel):
         decimal_places=2,
         verbose_name=_("amount")
     )
-
-
-class Payment(Transaction):
-    """Model representing a payment transaction."""
-
-    payment_method = models.CharField(max_length=50, verbose_name=_("payment method"))
-    invoice = models.ForeignKey("sale.Invoice", on_delete=models.CASCADE,
-                                verbose_name=_("invoice"))
-
-    class Meta:
-        """Meta options for the Payment model."""
-
-        verbose_name = "Payment"
-        verbose_name_plural = "Payments"

@@ -139,6 +139,10 @@ REST_FRAMEWORK = {
 # Custom User Model
 AUTH_USER_MODEL = "common.User"
 
+# System user used for automated tasks (created on demand)
+# Configure via env var DJANGO_SYSTEM_USER_EMAIL if desired
+SYSTEM_USER_EMAIL = os.environ.get("DJANGO_SYSTEM_USER_EMAIL", "system@cycleinvoice.local")
+
 # Checks for runtime
 if not SECRET_KEY and not DEBUG:
     raise RuntimeError("DJANGO_SECRET_KEY is required when DEBUG is False")
