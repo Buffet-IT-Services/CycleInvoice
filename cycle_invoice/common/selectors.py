@@ -25,7 +25,6 @@ def get_object[T](model_or_queryset: type[T] | QuerySet, *, include_deleted: boo
     Some important notes:
         - `search_id`: accepts int, numeric string, or UUID string.
     """
-
     # Parse search_id into pk or uuid
     if "search_id" in kwargs:
         search_id = kwargs.pop("search_id")
@@ -36,7 +35,7 @@ def get_object[T](model_or_queryset: type[T] | QuerySet, *, include_deleted: boo
                 kwargs["uuid"] = UUID(str(search_id))  # Attempt to parse as UUID
             except (ValueError, TypeError):
                 error_message = f"search_id '{search_id}' is not a valid pk or UUID."
-                raise ValueError(error_message)
+                raise ValueError(error_message) from None
 
     # Respect soft-delete by default
     if isinstance(model_or_queryset, QuerySet):
@@ -57,7 +56,7 @@ def get_object[T](model_or_queryset: type[T] | QuerySet, *, include_deleted: boo
 
 def get_model_fields(instance: models.Model) -> dict[str, models.Field]:
     """
-    Returns a dict of model fields for a Django model instance.
+    Return a dict of model fields for a Django model instance.
 
     :param instance: A Django model instance.
 
