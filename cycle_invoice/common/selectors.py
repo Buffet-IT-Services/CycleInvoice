@@ -1,6 +1,6 @@
 """Common selectors for Django models."""
 
-from typing import TypeVar, TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, TypeVar, cast
 from uuid import UUID
 
 from django.contrib.auth import get_user_model

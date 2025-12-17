@@ -9,8 +9,7 @@ class TestSelectorsGetSystemUser(TestCase):
     """Tests for selector method get_system_user()."""
 
     def test_get_system_user_values(self) -> None:
-        """Test get_system_user()"""
-
+        """Test get_system_user()."""
         user = get_system_user()
         self.assertEqual(user.email, "system@cycleinvoice.local")
         self.assertEqual(user.first_name, "System")
@@ -20,8 +19,7 @@ class TestSelectorsGetSystemUser(TestCase):
         self.assertFalse(user.is_superuser)
 
     def test_get_system_user_idempotence(self) -> None:
-        """Test get_system_user() idempotence"""
-
+        """Test get_system_user() idempotence."""
         user1 = get_system_user()
         user2 = get_system_user()
         self.assertEqual(user1, user2)
