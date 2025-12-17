@@ -1,23 +1,23 @@
 """Common services for Django models."""
 from typing import Any
 
-from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import transaction
 from django.utils import timezone
 
+from cycle_invoice.common.models import User
 from cycle_invoice.common.selectors import get_model_fields
 from cycle_invoice.common.types import DjangoModelType
 
 
-def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str, Any], user: AbstractBaseUser) \
+def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str, Any], user: User) \
         -> tuple[DjangoModelType, bool]:
     """
     Update service for Django models.
 
-    :param instance: The model instance to be updated.
+    :param instance: The model instance that should be updated.
     :param fields: A list of field names that should be updated.
     :param data: A dictionary containing the new values for the fields.
-    :param user: Pass the user who is performing the update, used for setting `updated_by`.
+    :param user: Pass the user performing the update, used for setting `updated_by`.
 
     :return: A tuple containing the updated instance and a boolean indicating whether any fields were updated.
 
@@ -44,7 +44,7 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
         if field not in data:
             continue
 
-        # If field is not an actual model field, raise an error
+        # If a field is not an actual model field, raise an error
         model_field = model_fields.get(field)
         if model_field is None:
             error_message = f"Field '{field}' is not part of {instance.__class__.__name__}."

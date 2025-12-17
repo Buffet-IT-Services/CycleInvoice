@@ -3,8 +3,8 @@ import datetime
 import logging
 
 from celery import shared_task
-
 from cycle_invoice.common.system import get_system_user
+
 from cycle_invoice.sale.models import Subscription
 from cycle_invoice.subscription.services.subscription import subscription_extension
 
