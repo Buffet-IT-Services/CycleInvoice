@@ -1,16 +1,16 @@
 """Common services for Django models."""
 from typing import Any
 
-from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.db import models, transaction
+from django.db import transaction
 from django.utils import timezone
 
+from cycle_invoice.common.selectors import get_model_fields
 from cycle_invoice.common.types import DjangoModelType
 
 
-def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str, Any], user: get_user_model) -> tuple[
-    DjangoModelType, bool]:
+def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str, Any], user: AbstractBaseUser) \
+        -> tuple[DjangoModelType, bool]:
     """
     Update service for Django models.
 
@@ -25,11 +25,12 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
         - Only keys present in `fields` will be taken from `data`.
         - If something is present in `fields` but not present in `data`, we simply skip.
         - There's a strict assertion that all values in `fields` are actual fields in `instance`.
-        - `fields` can support m2m fields, which are handled after the update on `instance`.
+        - `fields` can support m2m fields, which are handled after the update on `instance
+        - `soft_deleted` objects cannot be updated.
     """
-    # Disallow any updates on already soft-deleted instances
+    # Reject updates on soft-deleted objects
     if getattr(instance, "soft_deleted", False):
-        error_message = f"Cannot update a soft-deleted {instance.__class__.__name__} object."
+        error_message = f"Cannot update a soft-deleted {instance.__class__.__name__}."
         raise ValueError(error_message)
 
     has_updated = False
@@ -38,17 +39,18 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
     model_fields = get_model_fields(instance)
 
     for field in fields:
+
         # Skip if a field is not present in the actual data
         if field not in data:
             continue
 
         # If field is not an actual model field, raise an error
         model_field = model_fields.get(field)
-
         if model_field is None:
-            error_message = f"Field '{field}' is not part of {instance.__class__.__name__}"
-            raise AssertionError(error_message)
+            error_message = f"Field '{field}' is not part of {instance.__class__.__name__}."
+            raise ValueError(error_message)
 
+        # Update only if the value has changed
         if getattr(instance, field) != data[field]:
             has_updated = True
             update_fields.append(field)
@@ -67,25 +69,6 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
             instance.full_clean()
 
             # Update only the fields that are meant to be updated.
-            instance.save(update_fields=update_fields, user=user)
+            instance.save(update_fields=update_fields)
 
     return instance, has_updated
-
-
-def get_model_fields(instance: models.Model) -> dict[str, models.Field]:
-    """Return a dict of model fields for a Django model instance."""
-    return {field.name: field for field in instance._meta.get_fields()}  # noqa: SLF001
-
-
-def get_system_user() -> AbstractBaseUser:
-    """
-    Return the system user, creating it if necessary.
-
-    The system user is used for automated/system tasks where a real user
-    is not available. The email can be configured via the
-    `SYSTEM_USER_EMAIL` Django setting (or `DJANGO_SYSTEM_USER_EMAIL` env var),
-    defaulting to `system@cycleinvoice.local`.
-    """
-    user_model = get_user_model()
-    return user_model.objects.get(email="system@cycleinvoice.local")
-
