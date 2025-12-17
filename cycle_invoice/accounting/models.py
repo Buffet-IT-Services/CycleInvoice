@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from cycle_invoice.common.models import BaseModel
-from cycle_invoice.common.system import get_system_user
+from cycle_invoice.common.selectors import get_system_user
 
 
 class Account(BaseModel):

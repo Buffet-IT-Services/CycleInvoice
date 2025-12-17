@@ -1,16 +1,29 @@
 """Common selectors for Django models."""
 
-from typing import TypeVar
+from typing import TypeVar, TYPE_CHECKING, cast
 from uuid import UUID
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models import Model, QuerySet
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
+if TYPE_CHECKING:
+    from cycle_invoice.common.models import User
+
 T = TypeVar("T", bound=Model)
+
+
+def get_model_fields(instance: models.Model) -> dict[str, models.Field]:
+    """
+    Return a dict of model fields for a Django model instance.
+
+    :param instance: A Django model instance.
+
+    :return: A dictionary mapping field names to their corresponding Field objects.
+    """
+    return {field.name: field for field in instance._meta.get_fields()}  # noqa: SLF001
 
 
 def get_object[T](model_or_queryset: type[T] | QuerySet, *, include_deleted: bool = False, **kwargs) -> T | None:
@@ -28,14 +41,16 @@ def get_object[T](model_or_queryset: type[T] | QuerySet, *, include_deleted: boo
     # Parse search_id into pk or uuid
     if "search_id" in kwargs:
         search_id = kwargs.pop("search_id")
-        try:
-            kwargs["pk"] = int(search_id)  # Attempt to parse as integer primary key
-        except (TypeError, ValueError):
+        if isinstance(search_id, UUID):
+            kwargs["uuid"] = search_id
+        else:
             try:
-                kwargs["uuid"] = UUID(str(search_id))  # Attempt to parse as UUID
-            except (ValueError, TypeError):
-                error_message = f"search_id '{search_id}' is not a valid pk or UUID."
-                raise ValueError(error_message) from None
+                kwargs["pk"] = int(search_id)  # Attempt to parse as an integer primary key
+            except (TypeError, ValueError):
+                try:
+                    kwargs["uuid"] = UUID(str(search_id))  # Attempt to parse as UUID
+                except (ValueError, TypeError):
+                    return None
 
     # Respect soft-delete by default
     if isinstance(model_or_queryset, QuerySet):
@@ -54,22 +69,11 @@ def get_object[T](model_or_queryset: type[T] | QuerySet, *, include_deleted: boo
         return None
 
 
-def get_model_fields(instance: models.Model) -> dict[str, models.Field]:
+def get_system_user() -> "User":
     """
-    Return a dict of model fields for a Django model instance.
+    Return the system user used for automated/system tasks.
 
-    :param instance: A Django model instance.
-
-    :return: A dictionary mapping field names to their corresponding Field objects.
-    """
-    return {field.name: field for field in instance._meta.get_fields()}  # noqa: SLF001
-
-
-def get_system_user() -> AbstractBaseUser:
-    """
-    Return the system user that is used for automated/system tasks.
-
-    :return: An AbstractBaseUser instance representing the system user.
+    :return: A User instance representing the system user.
     """
     user_model = get_user_model()
-    return user_model.objects.get(email="system@cycleinvoice.local")
+    return cast("User", user_model.objects.get(email="system@cycleinvoice.local"))

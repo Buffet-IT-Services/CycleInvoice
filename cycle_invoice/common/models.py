@@ -13,7 +13,8 @@ from django.db import models
 from simple_history.admin import SimpleHistoryAdmin
 from simple_history.models import HistoricalRecords
 
-from cycle_invoice.common.services import get_system_user, model_update
+from cycle_invoice.common.selectors import get_system_user
+from cycle_invoice.common.services import model_update
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
