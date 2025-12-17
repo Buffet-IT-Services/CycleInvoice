@@ -10,7 +10,8 @@ T = TypeVar("T", bound=Model)
 
 
 def get_object[T](model_or_queryset: type[T] | QuerySet, *, include_deleted: bool = False, **kwargs) -> T | None:
-    """Reuses get_object_or_404, catches Http404 and returns None.
+    """
+    Reuses get_object_or_404, catches Http404 and returns None.
 
     Enhancements:
     - `search_id`: accepts int, numeric string, or UUID string.
@@ -42,11 +43,7 @@ def get_object[T](model_or_queryset: type[T] | QuerySet, *, include_deleted: boo
     if isinstance(model_or_queryset, QuerySet):
         queryset = model_or_queryset
         if not include_deleted:
-            try:
-                queryset = queryset.filter(soft_deleted=False)
-            except Exception:
-                # Model may not have soft_deleted
-                pass
+            queryset = queryset.filter(soft_deleted=False)
     else:
         # A model class was provided; prefer appropriate manager
         model_cls = model_or_queryset

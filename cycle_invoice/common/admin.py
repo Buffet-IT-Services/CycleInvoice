@@ -3,11 +3,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
-from .models import User, BaseModelAdmin
+from .models import BaseModelAdmin, User
 
 
 @admin.register(User)
 class CustomUserAdmin(BaseModelAdmin, DjangoUserAdmin):
+    """Admin interface for the custom User model."""
+
     model = User
 
     ordering = ("email",)

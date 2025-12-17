@@ -2,6 +2,7 @@
 from collections import OrderedDict
 from unittest.mock import MagicMock
 
+from cycle_invoice.common.tests.base import get_default_test_user
 from django.db.models import QuerySet
 from django.test import TestCase
 from rest_framework.pagination import PageNumberPagination
@@ -12,7 +13,6 @@ from rest_framework.views import APIView
 
 from cycle_invoice.api.pagination import LimitOffsetPagination, get_paginated_response
 from cycle_invoice.common.models import TestBaseModel
-from cycle_invoice.common.tests.base import get_default_test_user
 
 
 class PaginationTest(TestCase):

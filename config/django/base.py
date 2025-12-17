@@ -145,9 +145,8 @@ SYSTEM_USER_EMAIL = os.environ.get("DJANGO_SYSTEM_USER_EMAIL", "system@cycleinvo
 
 # Checks for runtime
 if not SECRET_KEY and not DEBUG:
-    raise RuntimeError("DJANGO_SECRET_KEY is required when DEBUG is False")
-
-
+    error_message = "DJANGO_SECRET_KEY is required when DEBUG is False"
+    raise RuntimeError(error_message)
 
 from config.settings.celery import *  # noqa: E402, F403
 from config.settings.jwt import *  # noqa: E402, F403

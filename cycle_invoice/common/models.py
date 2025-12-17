@@ -1,19 +1,25 @@
 """Base models for the Cycle Invoice application."""
+from __future__ import annotations
+
 import logging
 import uuid
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-from django.http import HttpRequest
 from simple_history.admin import SimpleHistoryAdmin
 from simple_history.models import HistoricalRecords
 
-from cycle_invoice.common.services import model_update, get_system_user
+from cycle_invoice.common.services import get_system_user, model_update
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 logger = logging.getLogger(__name__)
+
 
 class BaseModel(models.Model):
     """Base model to inherit from for common fields."""
@@ -23,12 +29,10 @@ class BaseModel(models.Model):
 
         def alive(self) -> models.QuerySet:
             """Return only active records."""
-
             return self.filter(soft_deleted=False)
 
         def deleted(self) -> models.QuerySet:
             """Return only deleted records."""
-
             return self.filter(soft_deleted=True)
 
     class ActiveManager(models.Manager):
@@ -36,7 +40,6 @@ class BaseModel(models.Model):
 
         def get_queryset(self) -> models.QuerySet:
             """Return the active and deleted records."""
-
             return super().get_queryset().filter(soft_deleted=False)
 
     uuid = models.UUIDField(
@@ -71,9 +74,8 @@ class BaseModel(models.Model):
         inherit=True
     )
 
-    # Managers
-    objects = ActiveManager()
     objects_with_deleted = models.Manager()
+    objects = ActiveManager()
 
     class Meta:
         """Meta options for BaseModel."""
@@ -124,7 +126,8 @@ class BaseModel(models.Model):
 class BaseModelAdmin(SimpleHistoryAdmin):
     """Base admin class for models inheriting from BaseModel."""
 
-    def save_model(self, request: HttpRequest, obj: BaseModel, form: object, change: bool) -> None:
+    def save_model(self, request: HttpRequest, obj: BaseModel,
+                   form: object, change: bool) -> None:  # noqa: ARG002, FBT001
         """Override save_model to set the user."""
         obj.save(user=request.user)
 
@@ -138,16 +141,16 @@ class BaseModelAdmin(SimpleHistoryAdmin):
     @admin.action(description="Soft delete selected")
     def soft_delete_selected(self, request: HttpRequest, queryset: models.QuerySet) -> None:
         """Soft delete selected records."""
-
         for obj in queryset:
             obj.delete(user=request.user)
 
     actions = ["soft_delete_selected"]
 
+
 class CustomUserManager(BaseUserManager):
     """Custom user manager."""
 
-    def _create_user(self, email, password, **extra_fields):
+    def _create_user(self, email: str, password: str | None = None, **extra_fields) -> User:
         """Create and save a new user with given details."""
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
@@ -157,23 +160,20 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db, user=system_user)
         return user
 
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email: str, password: str | None = None, **extra_fields) -> User:
         """Create and save a new user with given details."""
-
         extra_fields.setdefault("is_superuser", False)
         extra_fields.setdefault("is_staff", False)
         return self._create_user(email, password, **extra_fields)
 
-    def create_superuser(self, email, password, **extra_fields):
+    def create_superuser(self, email: str, password: str | None = None, **extra_fields) -> User:
         """Create and save a new superuser with given details."""
-
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_staff", True)
         return self._create_user(email, password, **extra_fields)
 
-    def get_by_natural_key(self, username):
+    def get_by_natural_key(self, username: str) -> User:
         """Override this method to normalize the email input."""
-
         email = self.normalize_email(username)
         return self.get(**{self.model.USERNAME_FIELD: email})
 
@@ -193,4 +193,5 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     objects = CustomUserManager()
 
     def __str__(self) -> str:
+        """Return string representation of the user."""
         return self.email

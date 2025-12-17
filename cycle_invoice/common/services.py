@@ -29,7 +29,8 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
     """
     # Disallow any updates on already soft-deleted instances
     if getattr(instance, "soft_deleted", False):
-        raise ValueError("Cannot update a soft-deleted object.")
+        error_message = f"Cannot update a soft-deleted {instance.__class__.__name__} object."
+        raise ValueError(error_message)
 
     has_updated = False
     update_fields: list[str] = []
@@ -60,14 +61,8 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
             instance.updated_at = timezone.now()
             instance.updated_by = user
 
-            # Ensure simple_history captures the acting user
-            try:
-                instance._history_user = user  # type: ignore[attr-defined]
-            except Exception:  # pragma: no cover - safety only
-                pass
-
             # De-duplicate update fields and include metadata fields
-            update_fields = list(dict.fromkeys(update_fields + ["updated_at", "updated_by"]))
+            update_fields = [*update_fields, "updated_at", "updated_by"]
 
             instance.full_clean()
 
@@ -83,14 +78,14 @@ def get_model_fields(instance: models.Model) -> dict[str, models.Field]:
 
 
 def get_system_user() -> AbstractBaseUser:
-    """Return the system user, creating it if necessary.
+    """
+    Return the system user, creating it if necessary.
 
     The system user is used for automated/system tasks where a real user
     is not available. The email can be configured via the
     `SYSTEM_USER_EMAIL` Django setting (or `DJANGO_SYSTEM_USER_EMAIL` env var),
     defaulting to `system@cycleinvoice.local`.
     """
-
     user_model = get_user_model()
     return user_model.objects.get(email="system@cycleinvoice.local")
 
