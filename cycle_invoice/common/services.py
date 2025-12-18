@@ -1,15 +1,16 @@
 """Common services for Django models."""
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from django.db import transaction
 from django.utils import timezone
 
-from cycle_invoice.common.models import User
 from cycle_invoice.common.selectors import get_model_fields
 from cycle_invoice.common.types import DjangoModelType
 
+if TYPE_CHECKING:
+    from cycle_invoice.common.models import User
 
-def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str, Any], user: User) \
+def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str, Any], user: "User") \
         -> tuple[DjangoModelType, bool]:
     """
     Update service for Django models.

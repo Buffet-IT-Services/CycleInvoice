@@ -85,17 +85,8 @@ class BaseModel(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         """Override save method to set created_by and updated_by."""
+
         user = kwargs.pop("user", None)
-        # Allow framework/internal saves (e.g., Django updating last_login) by
-        # defaulting to the dedicated system user when an explicit user isn't provided.
-        if user is None:
-            logger.warning(
-                "BaseModel.save called without 'user'; falling back to system user for %s(id=%s, uuid=%s)",
-                self.__class__.__name__,
-                getattr(self, "pk", None),
-                getattr(self, "uuid", None),
-            )
-            user = get_system_user()
 
         if self.pk and getattr(self, "soft_deleted", False):
             error_message = "Cannot update a soft-deleted object."

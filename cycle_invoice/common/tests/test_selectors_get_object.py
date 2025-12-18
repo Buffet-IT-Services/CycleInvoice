@@ -4,7 +4,8 @@ from uuid import UUID
 from django.test import TestCase
 
 from cycle_invoice.common.models import User
-from cycle_invoice.common.selectors import get_object, get_system_user
+from cycle_invoice.common.selectors import get_object
+from cycle_invoice.common.tests.factories import UserFactory
 
 
 class TestSelectorGetObject(TestCase):
@@ -12,9 +13,7 @@ class TestSelectorGetObject(TestCase):
 
     def setUp(self) -> None:
         """Set up the test environment."""
-        self.user = get_system_user()
-        self.instance = User.objects.create_user(email="")
-        self.instance.save(user=self.user)
+        self.instance = UserFactory.create()
 
     def test_get_object_returns_instance_by_pk(self) -> None:
         """Test get_object() with a valid primary key."""

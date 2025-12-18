@@ -2,8 +2,8 @@
 
 from django.test import TestCase
 
-from cycle_invoice.common.models import User
 from cycle_invoice.common.selectors import get_model_fields
+from cycle_invoice.common.tests.factories import UserFactory
 
 
 class TestSelectorsGetModelFields(TestCase):
@@ -11,7 +11,7 @@ class TestSelectorsGetModelFields(TestCase):
 
     def test_get_model_fields(self) -> None:
         """Test get_model_fields() with a normal model."""
-        user = User.objects.create(email="")
+        user = UserFactory.create()
         return_value = get_model_fields(user)
         self.assertIn("email", return_value)
         self.assertIn("first_name", return_value)
@@ -22,8 +22,8 @@ class TestSelectorsGetModelFields(TestCase):
 
     def test_get_model_fields_idempotence(self) -> None:
         """Test get_model_fields() idempotence."""
-        user1 = User.objects.create(email="1")
-        user2 = User.objects.create(email="2")
+        user1 = UserFactory.create()
+        user2 = UserFactory.create()
         return_value1 = get_model_fields(user1)
         return_value2 = get_model_fields(user2)
         self.assertEqual(return_value1, return_value2)
