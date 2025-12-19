@@ -1,16 +1,16 @@
 """Common services for Django models."""
-from typing import Any, TYPE_CHECKING
+from __future__ import annotations
 
-from django.db import transaction
-from django.utils import timezone
+from typing import Any, TYPE_CHECKING
 
 from cycle_invoice.common.selectors import get_model_fields
 from cycle_invoice.common.types import DjangoModelType
 
 if TYPE_CHECKING:
-    from cycle_invoice.common.models import User
+    from cycle_invoice.common.models import User, BaseModel
 
-def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str, Any], user: "User") \
+
+def model_update(instance: BaseModel, fields: list[str], data: dict[str, Any], user: "User") \
         -> tuple[DjangoModelType, bool]:
     """
     Update service for Django models.
@@ -32,6 +32,12 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
     # Reject updates on soft-deleted objects
     if getattr(instance, "soft_deleted", False):
         error_message = f"Cannot update a soft-deleted {instance.__class__.__name__}."
+        raise ValueError(error_message)
+
+    # Reject updates if the user is not of the expected type
+    from cycle_invoice.common.models import User as UserModel
+    if user is None or not isinstance(user, UserModel):
+        error_message = f"User of type 'User' must be provided."
         raise ValueError(error_message)
 
     has_updated = False
@@ -59,17 +65,7 @@ def model_update(*, instance: DjangoModelType, fields: list[str], data: dict[str
 
     # Perform an update only if any of the fields were actually changed
     if has_updated:
-        with transaction.atomic():
-            # touch update metadata
-            instance.updated_at = timezone.now()
-            instance.updated_by = user
-
-            # De-duplicate update fields and include metadata fields
-            update_fields = [*update_fields, "updated_at", "updated_by"]
-
-            instance.full_clean()
-
-            # Update only the fields that are meant to be updated.
-            instance.save(update_fields=update_fields)
+        instance.full_clean()
+        instance.save(user=user)
 
     return instance, has_updated

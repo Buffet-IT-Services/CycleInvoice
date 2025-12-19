@@ -48,3 +48,4 @@ class UserFactory(BaseFactory):
     is_active = True
     is_staff = True
     is_superuser = True
+    password = LazyAttribute(lambda _: faker.password())

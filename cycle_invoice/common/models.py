@@ -10,6 +10,7 @@ from django.contrib import admin
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+from django.utils import timezone
 from simple_history.admin import SimpleHistoryAdmin
 from simple_history.models import HistoricalRecords
 
@@ -96,6 +97,7 @@ class BaseModel(models.Model):
             self.created_by = user
 
         self.updated_by = user
+        self.updated_at = timezone.now()
         self._history_user = user
 
         super().save(*args, **kwargs)
