@@ -1,4 +1,4 @@
-"""Models for the contact app."""
+"""Models for the party app."""
 import logging
 
 from django.db import models
@@ -32,18 +32,18 @@ class Party(BaseModel):
     )
 
     class Meta:
-        """Meta options for the Customer model."""
+        """Meta-options for the Party model."""
 
-        verbose_name = _("customer")
-        verbose_name_plural = _("customers")
+        verbose_name = _("party")
+        verbose_name_plural = _("parties")
 
     def __str__(self) -> str:
-        """Return a string representation of the customer."""
+        """Return a string representation of the party."""
         if hasattr(self, "contact"):
             return str(self.contact)
         if hasattr(self, "organisation"):
             return str(self.organisation)
-        return _("Customer")
+        raise ValueError("Party is no contact or organisation.")
 
     @property
     def address_block(self) -> str:
@@ -53,7 +53,7 @@ class Party(BaseModel):
         return str(self)
 
 
-class Organisation(Party):
+class Organization(Party):
     """Model representing an organisation."""
 
     name = models.CharField(
@@ -70,13 +70,14 @@ class Organisation(Party):
     )
 
     class Meta:
-        """Meta options for the Organisation model."""
+        """Meta-options for the Organization model."""
 
         verbose_name = _("company")
         verbose_name_plural = _("companies")
 
     def __str__(self) -> str:
-        """Return a string representation of the organisation."""
+        """Return a string representation of the organization."""
+
         return self.name
 
 
@@ -91,13 +92,13 @@ class Contact(Party):
         _("last name"),
         max_length=255
     )
-    company = models.ManyToManyField(
-        Organisation,
-        through="CompanyContact"
+    organization = models.ManyToManyField(
+        Organization,
+        through="OrganizationContact"
     )
 
     class Meta:
-        """Meta options for the Contact model."""
+        """Meta-options for the Contact model."""
 
         verbose_name = _("contact")
         verbose_name_plural = _("contacts")
@@ -107,11 +108,11 @@ class Contact(Party):
         return f"{self.first_name} {self.last_name}"
 
 
-class CompanyContact(BaseModel):
-    """Model representing a company contact."""
+class OrganizationContact(BaseModel):
+    """Model representing a organization contact."""
 
     company = models.ForeignKey(
-        Organisation,
+        Organization,
         on_delete=models.CASCADE,
         verbose_name=_("company")
     )
@@ -126,7 +127,7 @@ class CompanyContact(BaseModel):
     )
 
     class Meta:
-        """Meta options for the CompanyContact model."""
+        """Meta-options for the CompanyContact model."""
 
         verbose_name = _("company contact")
         verbose_name_plural = _("company contacts")
@@ -167,7 +168,7 @@ class Address(BaseModel):
     )
 
     class Meta:
-        """Meta options for the Address model."""
+        """Meta-options for the Address model."""
 
         verbose_name = _("address")
         verbose_name_plural = _("addresses")

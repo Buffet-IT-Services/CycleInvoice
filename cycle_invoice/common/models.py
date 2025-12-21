@@ -11,6 +11,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from simple_history.admin import SimpleHistoryAdmin
 from simple_history.models import HistoricalRecords
 
@@ -44,15 +45,18 @@ class BaseModel(models.Model):
             return super().get_queryset().filter(soft_deleted=False)
 
     uuid = models.UUIDField(
+        _("UUID"),
         default=uuid.uuid4,
         editable=False,
         unique=True,
         db_index=True,
     )
     created_at = models.DateTimeField(
+        _("created at"),
         auto_now_add=True
     )
     updated_at = models.DateTimeField(
+        _("updated at"),
         auto_now=True
     )
     created_by = models.ForeignKey(
@@ -68,6 +72,7 @@ class BaseModel(models.Model):
         related_name="%(class)s_updated_by"
     )
     soft_deleted = models.BooleanField(
+        _("soft deleted"),
         default=False,
         db_index=True,
     )

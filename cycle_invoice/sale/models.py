@@ -12,7 +12,7 @@ class Document(BaseModel):
     """Model representing a document."""
 
     party = models.ForeignKey(
-        "contact.Party",
+        "party.Party",
         on_delete=models.CASCADE,
         related_name="document_invoice"
     )
@@ -95,7 +95,7 @@ class DocumentItem(BaseModel):
         default=""
     )
     party = models.ForeignKey(
-        "contact.Party",
+        "party.Party",
         on_delete=models.CASCADE,
         related_name="document_customer"
     )

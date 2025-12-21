@@ -4,10 +4,10 @@ from django.contrib import admin
 
 from cycle_invoice.common.models import BaseModelAdmin
 
-from .models import Address, CompanyContact, Contact, Organisation, Party
+from .models import Address, OrganizationContact, Contact, Organization, Party
 
 admin.site.register(Party, BaseModelAdmin)
-admin.site.register(Organisation, BaseModelAdmin)
-admin.site.register(CompanyContact, BaseModelAdmin)
+admin.site.register(Organization, BaseModelAdmin)
+admin.site.register(OrganizationContact, BaseModelAdmin)
 admin.site.register(Address, BaseModelAdmin)
 admin.site.register(Contact, BaseModelAdmin)
