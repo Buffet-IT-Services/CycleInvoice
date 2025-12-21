@@ -1,16 +1,16 @@
 """Common services for Django models."""
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from cycle_invoice.common.selectors import get_model_fields
-from cycle_invoice.common.types import DjangoModelType
 
 if TYPE_CHECKING:
-    from cycle_invoice.common.models import User, BaseModel
+    from cycle_invoice.common.models import BaseModel, User
+    from cycle_invoice.common.types import DjangoModelType
 
 
-def model_update(instance: BaseModel, fields: list[str], data: dict[str, Any], user: "User") \
+def model_update(instance: BaseModel, fields: list[str], data: dict[str, Any], user: User) \
         -> tuple[DjangoModelType, bool]:
     """
     Update service for Django models.
@@ -35,9 +35,9 @@ def model_update(instance: BaseModel, fields: list[str], data: dict[str, Any], u
         raise ValueError(error_message)
 
     # Reject updates if the user is not of the expected type
-    from cycle_invoice.common.models import User as UserModel
+    from cycle_invoice.common.models import User as UserModel  # noqa: PLC0415 (to avoid circular import)
     if user is None or not isinstance(user, UserModel):
-        error_message = f"User of type 'User' must be provided."
+        error_message = "User of type 'User' must be provided."
         raise ValueError(error_message)
 
     has_updated = False

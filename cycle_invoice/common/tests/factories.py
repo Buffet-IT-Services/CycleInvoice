@@ -1,10 +1,9 @@
 """Factories for common app models."""
-from typing import Any
 
 from factory import LazyAttribute
 from factory.django import DjangoModelFactory
 
-from cycle_invoice.common.models import User, BaseModel
+from cycle_invoice.common.models import BaseModel, User
 from cycle_invoice.common.selectors import get_system_user
 from cycle_invoice.common.tests.faker import faker
 
@@ -23,11 +22,8 @@ class BaseFactory(DjangoModelFactory):
         abstract = True
 
     @classmethod
-    def _create(cls, model_class: type[BaseModel], *args: Any, **kwargs: Any) -> BaseModel:
-        """
-        Create a model instance using the system user unless explicitly overridden.
-        """
-
+    def _create(cls, model_class: type[BaseModel], *args, **kwargs) -> BaseModel:
+        """Create a model instance using the system user unless explicitly overridden."""
         user = kwargs.pop("user", None) or get_system_user()
 
         obj = model_class(*args, **kwargs)
@@ -40,6 +36,7 @@ class UserFactory(BaseFactory):
 
     class Meta:
         """Metaclass for UserFactory."""
+
         model = User
 
     email = LazyAttribute(lambda _: faker.unique.email())

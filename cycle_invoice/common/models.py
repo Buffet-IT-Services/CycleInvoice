@@ -15,7 +15,6 @@ from simple_history.admin import SimpleHistoryAdmin
 from simple_history.models import HistoricalRecords
 
 from cycle_invoice.common.selectors import get_system_user
-from cycle_invoice.common.services import model_update
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -29,7 +28,7 @@ class BaseModel(models.Model):
     class ActiveQuerySet(models.QuerySet):
         """Custom QuerySet to filter active and deleted records."""
 
-        def alive(self) -> models.QuerySet:
+        def active(self) -> models.QuerySet:
             """Return only active records."""
             return self.filter(soft_deleted=False)
 
@@ -86,19 +85,22 @@ class BaseModel(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         """Override save method to set created_by and updated_by."""
-
         user = kwargs.pop("user", None)
 
-        if self.pk and getattr(self, "soft_deleted", False):
-            error_message = "Cannot update a soft-deleted object."
-            raise ValueError(error_message)
+        if self.pk:
+            db_soft_deleted = (self.__class__.objects_with_deleted
+                               .filter(pk=self.pk)
+                               .values_list("soft_deleted", flat=True)
+                               .first())
+            if db_soft_deleted:
+                error_message = "Cannot update a soft-deleted object."
+                raise ValueError(error_message)
 
         if not self.pk:
             self.created_by = user
 
         self.updated_by = user
         self.updated_at = timezone.now()
-        self._history_user = user
 
         super().save(*args, **kwargs)
 
@@ -114,7 +116,25 @@ class BaseModel(models.Model):
             error_message = "You must provide a user to delete the model."
             raise ValueError(error_message)
 
-        model_update(instance=self, fields=["soft_deleted"], data={"soft_deleted": True}, user=user)
+        self.updated_by = user
+        self.updated_at = timezone.now()
+        self._history_user = user
+        self.soft_deleted = True
+
+        super().save(*args, **kwargs)
+
+    def recover(self, user: User) -> None:
+        """Recover a soft-deleted object."""
+        if not self.soft_deleted:
+            error_message = "Object is not soft-deleted."
+            raise ValueError(error_message)
+
+        self.updated_by = user
+        self.updated_at = timezone.now()
+        self._history_user = user
+        self.soft_deleted = False
+
+        super().save()
 
 
 class BaseModelAdmin(SimpleHistoryAdmin):
@@ -141,7 +161,7 @@ class BaseModelAdmin(SimpleHistoryAdmin):
     actions = ["soft_delete_selected"]
 
 
-class CustomUserManager(BaseUserManager):
+class CustomUserManager(BaseModel.ActiveManager, BaseUserManager):
     """Custom user manager."""
 
     def _create_user(self, email: str, password: str | None = None, **extra_fields) -> User:
@@ -149,21 +169,20 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
-        # Use the system user for metadata when creating users via manager
         system_user = get_system_user()
         user.save(using=self._db, user=system_user)
         return user
 
     def create_user(self, email: str, password: str | None = None, **extra_fields) -> User:
         """Create and save a new user with given details."""
-        extra_fields.setdefault("is_superuser", False)
-        extra_fields.setdefault("is_staff", False)
+        extra_fields["is_superuser"] = False
+        extra_fields["is_staff"] = False
         return self._create_user(email, password, **extra_fields)
 
     def create_superuser(self, email: str, password: str | None = None, **extra_fields) -> User:
         """Create and save a new superuser with given details."""
-        extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("is_staff", True)
+        extra_fields["is_superuser"] = True
+        extra_fields["is_staff"] = True
         return self._create_user(email, password, **extra_fields)
 
     def get_by_natural_key(self, username: str) -> User:
