@@ -3,7 +3,7 @@
 from django.db import models
 
 from cycle_invoice.common.models import BaseModel
-from cycle_invoice.contact.models import Party
+from cycle_invoice.party.models import Party
 
 
 class Domain(BaseModel):

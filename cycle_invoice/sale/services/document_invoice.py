@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 
 from cycle_invoice.common.services import model_update
-from cycle_invoice.contact.selectors.customer import customer_get
+from cycle_invoice.party.selectors.customer import customer_get
 from cycle_invoice.sale.models import Invoice
 
 

@@ -4,8 +4,8 @@ from typing import Any
 from django.db.models import QuerySet
 
 from cycle_invoice.common.selectors import get_object
-from cycle_invoice.contact.filters import ContactFilter
-from cycle_invoice.contact.models import Contact
+from cycle_invoice.party.filters import ContactFilter
+from cycle_invoice.party.models import Contact
 
 
 def contact_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Contact]:

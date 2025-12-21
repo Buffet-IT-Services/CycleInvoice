@@ -7,5 +7,5 @@ class ContactConfig(AppConfig):
     """Contact app configuration."""
 
     default_auto_field = "django.db.models.BigAutoField"
-    name = "cycle_invoice.contact"
+    name = "cycle_invoice.party"
     label = "contact"
