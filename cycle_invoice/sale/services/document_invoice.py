@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 
 from cycle_invoice.common.services import model_update
-from cycle_invoice.party.selectors.customer import customer_get
+from cycle_invoice.party.selectors.party import party_get
 from cycle_invoice.sale.models import Invoice
 
 
@@ -37,6 +37,6 @@ def document_invoice_update(*, invoice: Invoice, data: dict, user: get_user_mode
 
     # If 'customer' is provided as an ID, convert it to a Customer object
     if "customer" in data and isinstance(data["customer"], int):
-        data["customer"] = customer_get(data["customer"])
+        data["customer"] = party_get(data["customer"])
 
     return model_update(instance=invoice, fields=non_side_effect_fields, data=data, user=user)[0]

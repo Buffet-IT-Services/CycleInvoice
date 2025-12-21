@@ -7,7 +7,7 @@ from cycle_invoice.common.selectors import get_system_user
 from cycle_invoice.common.tests.factories import UserFactory
 
 
-class TestModelsBaseModel(TestCase):
+class TestBaseModel(TestCase):
     """Tests for the common model BaseModel."""
 
     def setUp(self) -> None:

@@ -4,13 +4,12 @@ from typing import Any
 from django.db.models import QuerySet
 
 from cycle_invoice.common.selectors import get_object
+from cycle_invoice.sale.filters import DocumentInvoiceFilter
 from cycle_invoice.sale.models import Invoice
 
 
 def invoice_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Invoice]:
     """Retrieve a list of invoices with optional filters."""
-    from cycle_invoice.sale.filters import DocumentInvoiceFilter
-
     filters = filters or {}
 
     qs = Invoice.objects.all()

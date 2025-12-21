@@ -1,22 +1,22 @@
-"""Selectors for the Organisation model."""
+"""Selectors for the Organization model."""
 from typing import Any
 
 from django.db.models import QuerySet
 
 from cycle_invoice.common.selectors import get_object
-from cycle_invoice.party.filters import OrganisationFilter
-from cycle_invoice.party.models import Organisation
+from cycle_invoice.party.filters import OrganizationFilter
+from cycle_invoice.party.models import Organization
 
 
-def organisation_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Organisation]:
-    """Retrieve a list of organisations with optional filters."""
+def organization_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Organization]:
+    """Retrieve a list of organizations with optional filters."""
     filters = filters or {}
 
-    qs = Organisation.objects.all()
+    qs = Organization.objects.all()
 
-    return OrganisationFilter(filters, queryset=qs).qs
+    return OrganizationFilter(filters, queryset=qs).qs
 
 
-def organisation_get(organisation_id: int) -> Organisation | None:
-    """Retrieve a single organisation by its ID."""
-    return get_object(Organisation, id=organisation_id)
+def organization_get(organisation_id: str) -> Organization | None:
+    """Retrieve a single organization by its ID."""
+    return get_object(Organization, search_id=organisation_id)

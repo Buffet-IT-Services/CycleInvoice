@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from cycle_invoice.common.models import User
 
 
-class TestServicesModelUpdate(TestCase):
+class TestModelUpdate(TestCase):
     """Tests for the common service method model_update()."""
 
     def setUp(self) -> None:

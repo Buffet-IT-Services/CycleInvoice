@@ -39,6 +39,7 @@ LOCAL_APPS = [
 THIRD_PARTY_APPS = [
     "simple_history",  # for history tracking
     "storages",  # for S3 storage
+    "polymorphic",  # for polymorphic models
 ]
 
 INSTALLED_APPS = [

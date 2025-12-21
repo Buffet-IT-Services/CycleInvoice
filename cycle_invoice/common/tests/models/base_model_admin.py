@@ -10,7 +10,7 @@ from cycle_invoice.common.models import BaseModelAdmin, User
 from cycle_invoice.common.selectors import get_system_user
 
 
-class TestModelsBaseModelAdmin(TestCase):
+class TestBaseModelAdmin(TestCase):
     """Tests for the common model BaseModelAdmin."""
 
     def setUp(self) -> None:

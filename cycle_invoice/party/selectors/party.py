@@ -4,20 +4,19 @@ from typing import Any
 from django.db.models import QuerySet
 
 from cycle_invoice.common.selectors import get_object
+from cycle_invoice.party.filters import PartyFilter
 from cycle_invoice.party.models import Party
 
 
-def customer_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Party]:
+def party_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Party]:
     """Retrieve a list of customers with optional filters."""
-    from cycle_invoice.party.filters import CustomerFilter
-
     filters = filters or {}
 
     qs = Party.objects.all()
 
-    return CustomerFilter(filters, queryset=qs).qs
+    return PartyFilter(filters, queryset=qs).qs
 
 
-def customer_get(customer_id: int) -> Party | None:
+def party_get(customer_id: str) -> Party | None:
     """Retrieve a single customer by its ID."""
-    return get_object(Party, id=customer_id)
+    return get_object(Party, search_id=customer_id)

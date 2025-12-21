@@ -37,12 +37,12 @@ class BaseModel(models.Model):
             """Return only deleted records."""
             return self.filter(soft_deleted=True)
 
-    class ActiveManager(models.Manager):
-        """Custom Manager to return active and deleted records."""
+    class ActiveManager(models.Manager.from_queryset(ActiveQuerySet)):
+        """Custom Manager to return active records."""
 
         def get_queryset(self) -> models.QuerySet:
-            """Return the active and deleted records."""
-            return super().get_queryset().filter(soft_deleted=False)
+            """Return the active records."""
+            return super().get_queryset().active()
 
     uuid = models.UUIDField(
         _("UUID"),
@@ -80,8 +80,8 @@ class BaseModel(models.Model):
         inherit=True
     )
 
-    objects_with_deleted = models.Manager()
     objects = ActiveManager()
+    objects_with_deleted = models.Manager()
 
     class Meta:
         """Meta options for BaseModel."""

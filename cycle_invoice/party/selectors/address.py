@@ -17,6 +17,6 @@ def address_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Address]:
     return AddressFilter(filters, queryset=qs).qs
 
 
-def address_get(address_id: int) -> Address | None:
+def address_get(address_id: str) -> Address | None:
     """Retrieve a single address by its ID."""
-    return get_object(Address, id=address_id)
+    return get_object(Address, search_id=address_id)

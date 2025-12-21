@@ -6,7 +6,7 @@ from cycle_invoice.common.selectors import get_model_fields
 from cycle_invoice.common.tests.factories import UserFactory
 
 
-class TestSelectorsGetModelFields(TestCase):
+class TestGetModelFields(TestCase):
     """Tests for selector method get_model_fields(instance: models.Model) -> dict[str, models.Field]."""
 
     def test_get_model_fields(self) -> None:

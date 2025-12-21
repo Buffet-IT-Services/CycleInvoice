@@ -3,13 +3,14 @@ import logging
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from polymorphic.models import PolymorphicModel
 
 from cycle_invoice.common.models import BaseModel
 
 logger = logging.getLogger(__name__)
 
 
-class Party(BaseModel):
+class Party(BaseModel, PolymorphicModel):
     """Model representing a party."""
 
     address = models.OneToOneField(
@@ -27,7 +28,7 @@ class Party(BaseModel):
     )
     phone = models.CharField(
         _("phone"),
-        max_length=20,
+        max_length=25,
         blank=True
     )
 
@@ -37,19 +38,11 @@ class Party(BaseModel):
         verbose_name = _("party")
         verbose_name_plural = _("parties")
 
-    def __str__(self) -> str:
-        """Return a string representation of the party."""
-        if hasattr(self, "contact"):
-            return str(self.contact)
-        if hasattr(self, "organisation"):
-            return str(self.organisation)
-        raise ValueError("Party is no contact or organisation.")
-
     @property
     def address_block(self) -> str:
-        """Return the address block for the customer."""
+        """Return the address block for the party."""
         if self.address is not None:
-            return str(self) + "\n" + address_block(self.address)
+            return str(self) + "\n" + self.address.address_block
         return str(self)
 
 
@@ -77,7 +70,6 @@ class Organization(Party):
 
     def __str__(self) -> str:
         """Return a string representation of the organization."""
-
         return self.name
 
 
@@ -109,12 +101,12 @@ class Contact(Party):
 
 
 class OrganizationContact(BaseModel):
-    """Model representing a organization contact."""
+    """Model representing an organization contact."""
 
-    company = models.ForeignKey(
+    organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
-        verbose_name=_("company")
+        verbose_name=_("organization")
     )
     contact = models.ForeignKey(
         Contact,
@@ -129,13 +121,13 @@ class OrganizationContact(BaseModel):
     class Meta:
         """Meta-options for the CompanyContact model."""
 
-        verbose_name = _("company contact")
-        verbose_name_plural = _("company contacts")
-        constraints = [models.UniqueConstraint(fields=["company", "contact"], name="unique_company_contact")]
+        verbose_name = _("organization contact")
+        verbose_name_plural = _("organization contacts")
+        constraints = [models.UniqueConstraint(fields=["organization", "contact"], name="unique_company_contact")]
 
     def __str__(self) -> str:
         """Return a string representation of the company contact."""
-        return f"{self.company} - {self.contact} - {self.role}"
+        return f"{self.organization} - {self.contact} - {self.role}"
 
 
 class Address(BaseModel):
@@ -178,8 +170,8 @@ class Address(BaseModel):
         additional = f"{self.additional}, " if self.additional else ""
         return f"{additional}{self.street} {self.number}, {self.zip_code} {self.city}, {self.country}"
 
-
-def address_block(address: Address) -> str:
-    """Return the address block for the given address."""
-    additional = f"{address.additional}\n" if address.additional else ""
-    return f"{additional}{address.street} {address.number}\n{address.zip_code} {address.city}\n{address.country}"
+    @property
+    def address_block(self) -> str:
+        """Return the address block for the given address."""
+        additional = f"{self.additional}\n" if self.additional else ""
+        return f"{additional}{self.street} {self.number}\n{self.zip_code} {self.city}\n{self.country}"

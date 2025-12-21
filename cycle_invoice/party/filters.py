@@ -4,8 +4,8 @@ import django_filters
 from cycle_invoice.party.models import Address, Contact, Organization, Party
 
 
-class CustomerFilter(django_filters.FilterSet):
-    """Filter class for Customer model."""
+class PartyFilter(django_filters.FilterSet):
+    """Filter class for the Customer model."""
 
     class Meta:
         """Metaclass for CustomerFiler."""
@@ -14,8 +14,8 @@ class CustomerFilter(django_filters.FilterSet):
         fields = ("uuid", "address", "email", "phone")
 
 
-class OrganisationFilter(django_filters.FilterSet):
-    """Filter class for Organization model."""
+class OrganizationFilter(django_filters.FilterSet):
+    """Filter class for the Organization model."""
 
     class Meta:
         """Metaclass for OrganizationFilter."""
@@ -25,7 +25,7 @@ class OrganisationFilter(django_filters.FilterSet):
 
 
 class ContactFilter(django_filters.FilterSet):
-    """Filter class for Contact model."""
+    """Filter class for the Contact model."""
 
     class Meta:
         """Metaclass for ContactFilter."""
@@ -35,7 +35,7 @@ class ContactFilter(django_filters.FilterSet):
 
 
 class AddressFilter(django_filters.FilterSet):
-    """Filter class for Address model."""
+    """Filter class for the Address model."""
 
     class Meta:
         """Metaclass for AddressFilter."""

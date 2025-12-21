@@ -7,7 +7,7 @@ from cycle_invoice.common.tests.factories import UserFactory
 from cycle_invoice.common.tests.faker import faker
 
 
-class TestModelsCustomUserManager(TestCase):
+class TestCustomUserManager(TestCase):
     """Tests for the CustomUserManager attached to the User model."""
 
     def setUp(self) -> None:

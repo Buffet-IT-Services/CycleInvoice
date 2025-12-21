@@ -5,7 +5,7 @@ from django.test import TestCase
 from cycle_invoice.common.selectors import get_system_user
 
 
-class TestSelectorsGetSystemUser(TestCase):
+class TestGetSystemUser(TestCase):
     """Tests for selector method get_system_user()."""
 
     def test_get_system_user_values(self) -> None:

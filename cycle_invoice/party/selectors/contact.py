@@ -17,6 +17,6 @@ def contact_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Contact]:
     return ContactFilter(filters, queryset=qs).qs
 
 
-def contact_get(contact_id: int) -> Contact | None:
+def contact_get(contact_id: str) -> Contact | None:
     """Retrieve a single contact by its ID."""
-    return get_object(Contact, id=contact_id)
+    return get_object(Contact, search_id=contact_id)

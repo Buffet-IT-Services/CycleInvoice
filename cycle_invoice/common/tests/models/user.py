@@ -5,7 +5,7 @@ from django.test import TestCase
 from cycle_invoice.common.tests.factories import UserFactory
 
 
-class TestModelsUser(TestCase):
+class TestUser(TestCase):
     """Tests for the common model User."""
 
     def test_user_str(self) -> None:

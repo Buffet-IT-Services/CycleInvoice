@@ -8,7 +8,7 @@ from cycle_invoice.common.selectors import get_object
 from cycle_invoice.common.tests.factories import UserFactory
 
 
-class TestSelectorGetObject(TestCase):
+class TestGetObject(TestCase):
     """Tests for the common selector method get_object[T]() -> T | None."""
 
     def setUp(self) -> None:
