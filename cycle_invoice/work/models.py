@@ -2,7 +2,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from cycle_invoice.accounting.models import get_default_sell_account
 from cycle_invoice.common.models import BaseModel
 
 
@@ -15,8 +14,7 @@ class WorkType(BaseModel):
     )
     account = models.ForeignKey(
         "accounting.Account",
-        on_delete=models.SET_DEFAULT,
-        default=get_default_sell_account,
+        on_delete=models.PROTECT,
         related_name="work_type_account",
     )
     price_per_hour = models.DecimalField(

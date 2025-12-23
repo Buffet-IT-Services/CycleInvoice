@@ -14,8 +14,8 @@ STORAGES = {
             {
                 "access_key": os.getenv("S3_ACCESS_KEY"),
                 "secret_key": os.getenv("S3_SECRET_KEY"),
-                "bucket_name": "cycleinvoice",
-                "endpoint_url": "https://minio.buffetitcloud.ch",
+                "bucket_name": os.getenv("S3_BUCKET_NAME"),
+                "endpoint_url": os.getenv("S3_ENDPOINT_URL"),
                 "addressing_style": "path",
                 "use_ssl": True,
                 "default_acl": None,
