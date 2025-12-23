@@ -10,7 +10,6 @@ from django.contrib import admin
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-from django.db.models import Manager
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from polymorphic.managers import PolymorphicManager
@@ -80,8 +79,8 @@ class BaseModel(models.Model):
             """Return the active records."""
             return super().get_queryset().active()
 
+    objects_with_deleted = models.Manager()
     objects = ActiveManager()
-    objects_with_deleted = Manager()
 
     class Meta:
         """Meta options for BaseModel."""
