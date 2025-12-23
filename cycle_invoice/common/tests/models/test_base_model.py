@@ -37,14 +37,6 @@ class TestBaseModel(TestCase):
         self.assertIn(self.user1, active_qs)
         self.assertNotIn(self.user2, active_qs)
 
-    def test_base_model_active_query_set_deleted(self) -> None:
-        """deleted() should return only soft-deleted objects."""
-        qs = BaseModel.ActiveQuerySet(model=User)
-
-        deleted_qs = qs.deleted()
-        self.assertNotIn(self.user1, deleted_qs)
-        self.assertIn(self.user2, deleted_qs)
-
     def test_base_model_save_rejects_deleted(self) -> None:
         """save() should reject soft-deleted objects."""
         with self.assertRaises(ValueError):

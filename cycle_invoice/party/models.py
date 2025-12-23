@@ -3,14 +3,13 @@ import logging
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from polymorphic.models import PolymorphicModel
 
-from cycle_invoice.common.models import BaseModel
+from cycle_invoice.common.models import BaseModel, BasePolymorphicModel
 
 logger = logging.getLogger(__name__)
 
 
-class Party(BaseModel, PolymorphicModel):
+class Party(BasePolymorphicModel):
     """Model representing a party."""
 
     address = models.OneToOneField(

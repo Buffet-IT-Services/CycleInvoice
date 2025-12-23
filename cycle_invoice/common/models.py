@@ -10,8 +10,12 @@ from django.contrib import admin
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+from django.db.models import Manager
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from polymorphic.managers import PolymorphicManager
+from polymorphic.models import PolymorphicModel
+from polymorphic.query import PolymorphicQuerySet
 from simple_history.admin import SimpleHistoryAdmin
 from simple_history.models import HistoricalRecords
 
@@ -25,24 +29,6 @@ logger = logging.getLogger(__name__)
 
 class BaseModel(models.Model):
     """Base model to inherit from for common fields."""
-
-    class ActiveQuerySet(models.QuerySet):
-        """Custom QuerySet to filter active and deleted records."""
-
-        def active(self) -> models.QuerySet:
-            """Return only active records."""
-            return self.filter(soft_deleted=False)
-
-        def deleted(self) -> models.QuerySet:
-            """Return only deleted records."""
-            return self.filter(soft_deleted=True)
-
-    class ActiveManager(models.Manager.from_queryset(ActiveQuerySet)):
-        """Custom Manager to return active records."""
-
-        def get_queryset(self) -> models.QuerySet:
-            """Return the active records."""
-            return super().get_queryset().active()
 
     uuid = models.UUIDField(
         _("UUID"),
@@ -80,8 +66,22 @@ class BaseModel(models.Model):
         inherit=True
     )
 
+    class ActiveQuerySet(models.QuerySet):
+        """Custom QuerySet to filter active and deleted records."""
+
+        def active(self) -> models.QuerySet:
+            """Return only active records."""
+            return self.filter(soft_deleted=False)
+
+    class ActiveManager(models.Manager.from_queryset(ActiveQuerySet)):
+        """Custom Manager to return active records."""
+
+        def get_queryset(self) -> models.QuerySet:
+            """Return the active records."""
+            return super().get_queryset().active()
+
     objects = ActiveManager()
-    objects_with_deleted = models.Manager()
+    objects_with_deleted = Manager()
 
     class Meta:
         """Meta options for BaseModel."""
@@ -140,6 +140,32 @@ class BaseModel(models.Model):
         self.soft_deleted = False
 
         super().save()
+
+
+class BasePolymorphicModel(BaseModel, PolymorphicModel):
+    """Base polymorphic model to inherit from for common fields."""
+
+    class PolymorphicActiveQuerySet(PolymorphicQuerySet):
+        """Custom Polymorphic QuerySet to filter active and deleted records."""
+
+        def active(self) -> models.QuerySet:
+            """Return only active records."""
+            return self.filter(soft_deleted=False)
+
+    class PolymorphicActiveManager(PolymorphicManager.from_queryset(PolymorphicActiveQuerySet)):
+        """Custom Manager to return active records and retain polymorphic behavior."""
+
+        def get_queryset(self) -> models.QuerySet:
+            """Return the active records."""
+            return super().get_queryset().active()
+
+    objects = PolymorphicActiveManager()
+    objects_with_deleted = PolymorphicManager()
+
+    class Meta:
+        """Meta-options for BasePolymorphicModel."""
+
+        abstract = True
 
 
 class BaseModelAdmin(SimpleHistoryAdmin):

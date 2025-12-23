@@ -1,4 +1,4 @@
-"""Selectors for the Customer model."""
+"""Selectors for the Party model."""
 from typing import Any
 
 from django.db.models import QuerySet

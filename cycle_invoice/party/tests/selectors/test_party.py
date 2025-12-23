@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from cycle_invoice.common.selectors import get_system_user
 from cycle_invoice.party.selectors.party import party_get, party_list
-from cycle_invoice.party.tests.factories import OrganizationFactory, ContactFactory
+from cycle_invoice.party.tests.factories import ContactFactory, OrganizationFactory
 
 
 class PartyTest(TestCase):
