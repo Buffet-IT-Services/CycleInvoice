@@ -63,6 +63,3 @@ class OrganizationContactFactory(BaseFactory):
     organization = factory.SubFactory(OrganizationFactory)
     contact = factory.SubFactory(ContactFactory)
     role = faker.job()
-
-class Party(BaseFactory):
-    """Base factory for Party models."""
