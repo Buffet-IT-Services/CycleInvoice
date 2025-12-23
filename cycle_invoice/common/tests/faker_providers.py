@@ -4,7 +4,7 @@ import secrets
 from faker.providers import BaseProvider
 
 
-class SwissUIDProvider(BaseProvider):
+class SwissProvider(BaseProvider):
     """Faker provider for Swiss UID."""
 
     def swiss_uid(self) -> str:
@@ -16,3 +16,20 @@ class SwissUIDProvider(BaseProvider):
             f"{digits[3]}{digits[4]}{digits[5]}."
             f"{digits[6]}{digits[7]}{digits[8]}"
         )
+
+
+class RandomProvider(BaseProvider):
+    """Faker provider for random values."""
+
+    def bs_max(self, max_len: int) -> str:
+        """Generate a faker.bs() string limited to max_len characters."""
+        words = self.generator.bs().split()
+        result = ""
+
+        for w in words:
+            candidate = f"{result} {w}".strip()
+            if len(candidate) > max_len:
+                break
+            result = candidate
+
+        return result if result else "General"
