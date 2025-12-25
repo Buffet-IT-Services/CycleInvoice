@@ -31,8 +31,6 @@ LOCAL_APPS = [
     "cycle_invoice.product.apps.ProductConfig",  # for product management
     "cycle_invoice.sale.apps.SaleConfig",  # for sale management
     "cycle_invoice.subscription.apps.SubscriptionConfig",  # for subscription management
-    "cycle_invoice.vehicle.apps.VehicleConfig",  # for vehicle management
-    "cycle_invoice.web.apps.WebConfig",  # for web application
     "cycle_invoice.work.apps.WorkConfig",  # for work management
 ]
 
