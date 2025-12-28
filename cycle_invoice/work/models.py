@@ -24,7 +24,7 @@ class WorkType(BaseModel):
     )
 
     class Meta:
-        """Meta options for the WorkType model."""
+        """Meta-options for the WorkType model."""
 
         verbose_name = "Work Type"
         verbose_name_plural = "Work Types"

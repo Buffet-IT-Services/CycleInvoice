@@ -36,7 +36,7 @@ class Product(BaseModel):
     )
 
     class Meta:
-        """Meta options for the Product model."""
+        """Meta-options for the Product model."""
 
         verbose_name = "Product"
         verbose_name_plural = "Products"
