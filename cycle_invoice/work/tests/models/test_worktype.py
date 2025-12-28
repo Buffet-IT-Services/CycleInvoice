@@ -14,4 +14,4 @@ class TestWorkType(TestCase):
 
     def test_worktype_str(self) -> None:
         """Test WorkType.__str__()."""
-        self.assertEqual(f"{self.work_type.name} - {self.work_type.price_per_hour}", str(self.work_type))
+        self.assertEqual(f"{self.work_type.name} - {self.work_type.price_per_hour:.2f}", str(self.work_type))
