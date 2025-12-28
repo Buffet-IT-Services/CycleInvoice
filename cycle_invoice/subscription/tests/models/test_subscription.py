@@ -1,5 +1,5 @@
 """Tests for the subscription model Subscription."""
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 from dateutil.relativedelta import relativedelta
 from django.test import TestCase

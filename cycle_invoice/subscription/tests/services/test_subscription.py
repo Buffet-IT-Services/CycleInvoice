@@ -1,5 +1,5 @@
 """Tests for the subscription service Subscription."""
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 from django.test import TestCase
 
