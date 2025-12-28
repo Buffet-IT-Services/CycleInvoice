@@ -238,3 +238,9 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     def __str__(self) -> str:
         """Return string representation of the user."""
         return self.email
+
+
+class DiscountType(models.TextChoices):
+    """Discount type choices."""
+    PERCENT = "percent", "Percent"
+    ABSOLUTE = "absolute", "Absolute"

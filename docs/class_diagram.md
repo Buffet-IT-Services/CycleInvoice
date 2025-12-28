@@ -109,12 +109,6 @@ due_date : Date
 }
 Invoice --|> Document
 
-class Domain <? extends Base_Model> {
-name : String
-party : Party
-}
-Domain --> Party
-
 class Product <? extends Base_Model> {
 name : String
 description : String
@@ -150,13 +144,6 @@ account_to : Account
 amount : Decimal
 }
 Transaction --> Account
-
-class Vehicle <? extends Base_Model> {
-name_internal : String
-name_external : String
-km_buy : Decimal
-km_sell : Decimal
-}
 
 class TimeType <? extends Base_Model> {
 name : String

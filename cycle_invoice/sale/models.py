@@ -5,7 +5,8 @@ from decimal import Decimal
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from cycle_invoice.common.models import BaseModel
+from cycle_invoice import accounting
+from cycle_invoice.common.models import BaseModel, BasePolymorphicModel, DiscountType
 
 
 class Document(BaseModel):
@@ -57,7 +58,7 @@ class Invoice(Document):
         return sum((item.total for item in self.document_item.all()), start=Decimal(0))
 
 
-class DocumentItem(BaseModel):
+class DocumentItem(BasePolymorphicModel):
     """Model representing a document item."""
 
     price = models.DecimalField(
@@ -69,12 +70,6 @@ class DocumentItem(BaseModel):
         max_digits=14,
         decimal_places=2,
         verbose_name=_("quantity")
-    )
-    discount = models.DecimalField(
-        verbose_name=_("discount percent"),
-        max_digits=5,
-        decimal_places=4,
-        default=0
     )
     document = models.ForeignKey(
         Document,
@@ -97,19 +92,24 @@ class DocumentItem(BaseModel):
     party = models.ForeignKey(
         "party.Party",
         on_delete=models.CASCADE,
-        related_name="document_customer"
+        related_name="sale_document_item_party",
+    )
+    account = models.ForeignKey(
+        "accounting.Account",
+        on_delete=models.PROTECT,
+        related_name="sale_document_item_account",
     )
 
-    class DiscountType(models.TextChoices):
-        """Discount types for document items."""
-
-        PERCENT = "percent", "Percent"
-        ABSOLUTE = "absolute", "Absolute"
-
+    discount_value = models.DecimalField(
+        verbose_name=_("discount value"),
+        max_digits=5,
+        decimal_places=4,
+        default=0
+    )
     discount_type = models.CharField(
-        max_length=50,
-        choices=DiscountType.choices,
         verbose_name=_("discount type"),
+        max_length=10,
+        choices=DiscountType.choices,
         default=DiscountType.PERCENT,
     )
 
