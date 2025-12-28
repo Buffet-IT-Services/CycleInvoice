@@ -3,7 +3,6 @@
 from django.test import TestCase
 
 from cycle_invoice.subscription.tests.factories import SubscriptionPlanFactory
-from cycle_invoice.work.tests.factories import WorkTypeFactory
 
 
 class TestSubscriptionPlan(TestCase):

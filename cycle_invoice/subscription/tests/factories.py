@@ -2,11 +2,11 @@
 
 from factory import LazyAttribute, SubFactory
 
-from cycle_invoice.common.tests.faker import faker
 from cycle_invoice.common.tests.factories import BaseFactory
+from cycle_invoice.common.tests.faker import faker
 from cycle_invoice.party.tests.factories import OrganizationFactory
 from cycle_invoice.product.tests.factories import ProductFactory
-from cycle_invoice.subscription.models import SubscriptionPlan, Subscription
+from cycle_invoice.subscription.models import Subscription, SubscriptionPlan
 
 
 class SubscriptionPlanFactory(BaseFactory):

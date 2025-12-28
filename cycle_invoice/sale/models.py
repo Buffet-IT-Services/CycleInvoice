@@ -5,7 +5,6 @@ from decimal import Decimal
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from cycle_invoice import accounting
 from cycle_invoice.common.models import BaseModel, BasePolymorphicModel, DiscountType
 
 

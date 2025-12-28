@@ -242,5 +242,6 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
 
 class DiscountType(models.TextChoices):
     """Discount type choices."""
+
     PERCENT = "percent", "Percent"
     ABSOLUTE = "absolute", "Absolute"

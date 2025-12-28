@@ -1,5 +1,5 @@
 """Tests for the subscription service Subscription."""
-from datetime import date
+from datetime import datetime
 
 from django.test import TestCase
 
@@ -16,7 +16,8 @@ class TestSubscription(TestCase):
     def setUp(self) -> None:
         """Create a normal subscription and a canceled subscription used by tests."""
         self.subscription = SubscriptionFactory.create()
-        self.subscription_cancelled = SubscriptionFactory.create(cancelled_date=date.today())
+        self.subscription_cancelled = SubscriptionFactory.create(
+            cancelled_date=datetime.now(tz=datetime.timezone.utc).date())
 
     def test_subscription_extension_block_cancelled(self) -> None:
         """Assert extending a canceled subscription raises SubscriptionExtensionError."""
