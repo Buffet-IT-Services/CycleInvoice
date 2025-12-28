@@ -1,5 +1,5 @@
 """Tests for the common model BaseModelAdmin."""
-
+from collections.abc import Iterator
 from unittest.mock import Mock
 
 from django.contrib import admin
@@ -40,7 +40,7 @@ class TestBaseModelAdmin(TestCase):
         objs = [Mock(), Mock(), Mock()]
         queryset_mock = Mock(spec=QuerySet)
 
-        def _queryset_iter(_=None) -> QuerySet:
+        def _queryset_iter(_: object = None) -> Iterator[Mock]:
             """Return an iterator over the mocked queryset."""
             return iter(objs)
 
