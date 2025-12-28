@@ -39,7 +39,12 @@ class TestBaseModelAdmin(TestCase):
         """soft_delete_selected action should call delete for every obj in the queryset."""
         objs = [Mock(), Mock(), Mock()]
         queryset_mock = Mock(spec=QuerySet)
-        queryset_mock.__iter__ = lambda _=None: iter(objs)
+
+        def _queryset_iter(_=None) -> QuerySet:
+            """Return an iterator over the mocked queryset."""
+            return iter(objs)
+
+        queryset_mock.__iter__ = _queryset_iter
 
         self.admin.soft_delete_selected(self.request, queryset_mock)
         for o in objs:

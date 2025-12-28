@@ -33,5 +33,5 @@ class ContactTest(TestCase):
 
     def test_contact_get_returns_none_for_invalid_id(self) -> None:
         """Test that contact_list returns None for an invalid ID."""
-        contact = contact_get(99999)
+        contact = contact_get("99999")
         self.assertIsNone(contact)

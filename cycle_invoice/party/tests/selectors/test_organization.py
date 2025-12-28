@@ -33,5 +33,5 @@ class OrganizationTest(TestCase):
 
     def test_organization_get_returns_none_for_invalid_id(self) -> None:
         """Test that organization_get returns None for an invalid ID."""
-        organization = organization_get(99999)
+        organization = organization_get("99999")
         self.assertIsNone(organization)

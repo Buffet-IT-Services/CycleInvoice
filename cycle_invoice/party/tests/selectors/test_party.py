@@ -47,5 +47,5 @@ class PartyTest(TestCase):
 
     def test_party_get_returns_none_for_invalid_id(self) -> None:
         """Test that party_get returns None for an invalid ID."""
-        party = party_get(99999)
+        party = party_get("99999")
         self.assertIsNone(party)

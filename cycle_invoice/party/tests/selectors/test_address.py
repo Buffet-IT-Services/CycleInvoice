@@ -33,5 +33,5 @@ class AddressTest(TestCase):
 
     def test_address_get_returns_none_for_invalid_id(self) -> None:
         """Test that address_get returns None for an invalid ID."""
-        address = address_get(99999)
+        address = address_get("99999")
         self.assertIsNone(address)
