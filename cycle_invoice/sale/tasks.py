@@ -1,11 +1,11 @@
-"""Tasks from the app sale that are run by Celery."""
+"""Tasks from the app sale that Celery runs."""
 import datetime
 import logging
 
 from celery import shared_task
-from cycle_invoice.common.system import get_system_user
 
-from cycle_invoice.sale.models import Subscription
+from cycle_invoice.common.selectors import get_system_user
+from cycle_invoice.subscription.models import Subscription
 from cycle_invoice.subscription.services.subscription import subscription_extension
 
 logger = logging.getLogger(__name__)
