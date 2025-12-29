@@ -134,7 +134,7 @@ class DocumentItem(BasePolymorphicModel):
         if self.discount_type == DiscountType.ABSOLUTE:
             total = price * quantity - discount_value
         else:
-            total = price * quantity * (Decimal("1") - discount_value / Decimal("100"))
+            total = price * quantity * (Decimal(1) - discount_value / Decimal(100))
         return round(total, 2)
 
     @property
@@ -148,5 +148,4 @@ class DocumentItem(BasePolymorphicModel):
         discount_value = Decimal(str(self.discount_value))
         if self.discount_type == DiscountType.ABSOLUTE:
             return f"-{discount_value:.2f}" if discount_value != 0 else ""
-        else:
-            return f"{(100 * discount_value):.2f}%" if discount_value != 0 else ""
+        return f"{(100 * discount_value):.2f}%" if discount_value != 0 else ""

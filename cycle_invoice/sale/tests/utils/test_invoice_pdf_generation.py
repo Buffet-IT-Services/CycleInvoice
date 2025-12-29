@@ -5,7 +5,6 @@ from io import BytesIO
 from unittest.mock import NonCallableMock, patch
 
 from django.http import HttpRequest
-from django.core.files.storage import default_storage
 from django.test import TestCase, override_settings
 from pypdf import PdfReader
 from reportlab.lib.pagesizes import A4

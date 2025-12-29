@@ -1,6 +1,6 @@
 """URLs for the api app."""
 from django.http import HttpRequest, JsonResponse
-from django.urls import include, path
+from django.urls import path
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 

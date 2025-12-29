@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from cycle_invoice.common.models import DiscountType
 from cycle_invoice.common.selectors import get_system_user
-from cycle_invoice.sale.tests.factories import InvoiceFactory, DocumentItemFactory
+from cycle_invoice.sale.tests.factories import DocumentItemFactory, InvoiceFactory
 
 
 class TestInvoice(TestCase):

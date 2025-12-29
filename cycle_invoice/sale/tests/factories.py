@@ -6,7 +6,7 @@ from cycle_invoice.accounting.tests.factories import AccountFactory
 from cycle_invoice.common.tests.factories import BaseFactory
 from cycle_invoice.common.tests.faker import faker
 from cycle_invoice.party.tests.factories import OrganizationFactory
-from cycle_invoice.sale.models import Document, Invoice, DocumentItem
+from cycle_invoice.sale.models import Document, DocumentItem, Invoice
 
 
 class DocumentFactory(BaseFactory):
