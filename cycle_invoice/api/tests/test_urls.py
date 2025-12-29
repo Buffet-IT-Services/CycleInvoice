@@ -7,5 +7,5 @@ class UrlsTest(TestCase):
 
     def test_healthcheck(self) -> None:
         """Test the health check endpoint."""
-        response = self.client.get("/healthcheck/")
+        response = self.client.get("/api/healthcheck/")
         self.assertEqual(response.status_code, 200)
