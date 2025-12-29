@@ -7,7 +7,7 @@ STORAGES = {
         # Use S3Storage only if not running in GitHub Actions (CI) or pytest
         "BACKEND": (
             "storages.backends.s3.S3Storage"
-            if not (os.getenv("GITHUB_ACTIONS") == "true" or "pytest" in sys.modules)
+            if not (os.getenv("GITHUB_ACTIONS") == "true" or "pytest" in sys.modules or "test" in sys.argv)
             else "django.core.files.storage.FileSystemStorage"
         ),
         "OPTIONS": (
@@ -21,7 +21,7 @@ STORAGES = {
                 "default_acl": None,
                 "signature_version": "s3v4",
             }
-            if not (os.getenv("GITHUB_ACTIONS") == "true" or "pytest" in sys.modules)
+            if not (os.getenv("GITHUB_ACTIONS") == "true" or "pytest" in sys.modules or "test" in sys.argv)
             else {}
         ),
     },

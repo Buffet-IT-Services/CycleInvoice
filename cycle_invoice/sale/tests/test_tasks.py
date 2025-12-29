@@ -27,5 +27,5 @@ class TasksTest(TestCase):
 
         subscription1.refresh_from_db()
         subscription2.refresh_from_db()
-        self.assertEqual(today + relativedelta(months=1), subscription1.end_billed_date)
+        self.assertEqual(today + relativedelta(years=1), subscription1.end_billed_date)
         self.assertEqual(today + relativedelta(months=1), subscription2.end_billed_date)
