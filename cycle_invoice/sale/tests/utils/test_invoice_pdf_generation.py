@@ -2,6 +2,7 @@
 import hashlib
 import os
 from io import BytesIO
+from typing import Any
 from unittest.mock import NonCallableMock, patch
 
 from django.http import HttpRequest
@@ -108,7 +109,12 @@ class InvoicePDFGenerationTest(TestCase):
     @patch("cycle_invoice.sale.utils.invoice_pdf_generation.generate_swiss_qr")
     def test_generate_content(self, mock_qr: object) -> None:
         """Test that prepare_invoice_context returns the expected dictionary."""
-        mock_qr.side_effect = lambda ctx: ctx.update({"qr_bill_svg": "<svg>QR</svg>"})
+
+        def _mock_generate_qr(ctx: dict[str, Any]) -> None:
+            """Setzt das erwartete qr_bill_svg im übergebenen Kontext."""
+            ctx.update({"qr_bill_svg": "<svg>QR</svg>"})
+
+        mock_qr.side_effect = _mock_generate_qr
         context = generate_content(self.invoice.pk)
 
         # check company info
@@ -173,7 +179,7 @@ class InvoicePDFGenerationTest(TestCase):
     def test_generate_pdf_from_html(self) -> None:
         """Test that generate_pdf_from_html returns PDF bytes for valid HTML input."""
         html = "<html><body><h1>Test PDF</h1><p>Page 1</p></body></html>"
-        base_url = "http://testserver/"
+        base_url = "https://testserver/"
         pdf_bytes = generate_pdf_from_html(html, base_url)
         self.assertIsInstance(pdf_bytes, bytes)
         self.assertGreater(len(pdf_bytes), 100)  # Should be a non-trivial PDF
@@ -244,7 +250,12 @@ class InvoicePDFGenerationTest(TestCase):
 
         # Prepare request
         request = HttpRequest()
-        request.build_absolute_uri = lambda path="/": f"https://testserver{path}"
+
+        def build_absolute_uri(path: str = "/") -> str:
+            """Simulate a request to the test server with the given path."""
+            return f"https://testserver{path}"
+
+        request.build_absolute_uri = build_absolute_uri
 
         # Call the function
         generate_invoice_pdf(request, 42)
