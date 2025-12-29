@@ -6,7 +6,7 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 def healthcheck(request: HttpRequest) -> JsonResponse:  # noqa: ARG001
     """Return a health check status for the API."""
-    return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "ok"}, status=200)
 
 
 urlpatterns = [
