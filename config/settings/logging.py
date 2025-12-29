@@ -34,7 +34,7 @@ LOGGING = {
             "filename": LOG_DIR / "debug.log",
             "formatter": "verbose",
             "level": "INFO",
-            "mode": "w",
+            "mode": "a",
             "maxBytes": 10485760,  # 10 MB
             "backupCount": 5,  # Keep 5 backup files
         },

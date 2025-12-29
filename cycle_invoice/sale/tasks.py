@@ -1,11 +1,11 @@
-"""Tasks from the app sale that are run by Celery."""
+"""Tasks from the app sale that Celery runs."""
 import datetime
 import logging
 
 from celery import shared_task
 
-from cycle_invoice.common.system import get_system_user
-from cycle_invoice.sale.models import Subscription
+from cycle_invoice.common.selectors import get_system_user
+from cycle_invoice.subscription.models import Subscription
 from cycle_invoice.subscription.services.subscription import subscription_extension
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ def subscription_processing_to_document_items() -> None:
     subs = Subscription.objects.filter(cancelled_date__isnull=True)
     for sub in subs:
         next_end = sub.end_billed_date
-        bill_days = sub.product.bill_days_before_end
+        bill_days = sub.plan.bill_days_before_end
         if next_end and (next_end - today).days <= bill_days:
             log_message = f"Processing subscription {sub.id} with end_billed_date {next_end}"
             logger.info(log_message)

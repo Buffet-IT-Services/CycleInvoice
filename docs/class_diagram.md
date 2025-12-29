@@ -1,14 +1,5 @@
 ```plantuml
 @startuml
-class Account <? extends Base_Model> {
-name : String
-number : String
-default_buy : Boolean
-default_sell : Boolean
-Account get_default_buy_account()
-Account get_default_sell_account()
-}
-
 class Address <? extends Base_Model> {
 additional : String
 street : String
@@ -17,6 +8,27 @@ city : String
 zip_code : String
 country : String
 }
+
+class CompanyContact <? extends Base_Model> {
+contact : Contact
+company : Organisation
+role : String
+}
+CompanyContact --> Contact
+CompanyContact --> Organisation
+
+class Contact <? extends Party> {
+first_name : String
+last_name : String
+}
+Contact --|> Party
+
+class Party <? extends Base_Model> {
+address : Address
+email : E-Mail
+phone : String
+}
+Party --> Address
 
 class Base_Model {
 uuid : UUID
@@ -27,78 +39,75 @@ updated_by : User
 soft_deleted : Boolean
 history : History
 }
-Base_Model --> User
 
-class CompanyContact <? extends Base_Model> {
-contact : Contact
-company : Organisation
-role : String
-}
-CompanyContact --> Contact
-CompanyContact --> Organisation
-
-class Contact <? extends Customer> {
-first_name : String
-last_name : String
-}
-Contact --|> Customer
-
-class Customer <? extends Base_Model> {
-address : Address
-email : E-Mail
-phone : String
-}
-Customer --> Address
-
-class DocumentItem <? extends Base_Model> {
-item_type : ENUM
-price : Decimal
-quantity : Decimal
-discount : Decimal
-customer : Customer
-invoice : DocumentInvoice
-product : Product
-subscription : Subscription
-comment_title : String
-comment_description : String
-vehicle : Vehicle
-work_type : WorkType
-}
-DocumentItem --> Customer
-DocumentItem --> DocumentInvoice
-DocumentItem --> Product
-DocumentItem --> Subscription
-DocumentItem --> Vehicle
-DocumentItem --> WorkType
-
-class DocumentInvoice <? extends Base_Model> {
-customer : Customer
-invoice_number : String
-date : Date
-due_date : Date
-header_text : String
-footer_text : String
-}
-DocumentInvoice --> Customer
-
-class Domain <? extends Base_Model> {
-name : String
-customer : Customer
-}
-Domain --> Customer
-
-class Organisation <? extends Customer> {
+class Organisation <? extends Party> {
 name : String
 uid : String
 }
-Organisation --|> Customer
+Organisation --|> Party
 
-class Payment <? extends Transaction> {
-payment_method : String
-invoice : DocumentInvoice
+class Account <? extends Base_Model> {
+name : String
+number : String
 }
-Payment *- Transaction
-Payment --> DocumentInvoice
+
+class DocumentItem <? extends Base_Model> {
+price : Decimal
+quantity : Decimal
+discount : Decimal
+discount_type : enum (percent, absolute)
+document : Document
+party : Party
+title : String
+description : String
+status: enum (draft, sent, cancelled)
+}
+DocumentItem --> Party
+DocumentItem --> Document
+
+class SubscriptionItem <? extends DocumentItem> {
+subscription : Subscription
+}
+SubscriptionItem --|> DocumentItem
+SubscriptionItem --> Subscription
+
+class ProductItem <? extends DocumentItem> {
+product : Product
+}
+ProductItem --|> DocumentItem
+ProductItem --> Product
+
+class TimeItem <? extends DocumentItem> {
+    time_entry : TimeEntry
+}
+TimeItem --> TimeEntry
+TimeItem --|> DocumentItem
+
+class TimeEntry <? extends Base_Model> {
+    time_type : TimeType
+    date : Date
+    start_time : Time
+    end_time : Time
+    time : Decimal
+    billable : Boolean
+    title: String
+    description : String
+    user: User
+}
+TimeEntry -> TimeType
+
+class Document <? extends Base_Model> {
+    party : Party
+    date : Date
+    header_text : String
+    footer_text : String
+}
+
+class Invoice <? extends Document> {
+invoice_number : String
+due_date : Date
+}
+Invoice --|> Document
 
 class Product <? extends Base_Model> {
 name : String
@@ -110,22 +119,23 @@ price : Decimal
 Product --> Account
 
 class Subscription <? extends Base_Model> {
-product : Product
-customer : Customer
+plan: SubscriptionPlan
+party : Party
 start_date : Date
 end_billed_date : Date
 cancelled_date : Date
+status: enum (active, cancelled. expired)
 }
-Subscription --> Product
-Subscription --> Customer
+Subscription --> SubscriptionPlan
+Subscription --> Party
 
-class SubscriptionProduct <? extends Base_Model> {
+class SubscriptionPlan <? extends Base_Model> {
 product : Product
 price : Decimal
 recurrence : enum (yearly, monthly)
 bill_days_before_end : Integer
 }
-SubscriptionProduct --> Product
+SubscriptionPlan --> Product
 
 class Transaction <? extends Base_Model> {
 date : Date
@@ -135,18 +145,11 @@ amount : Decimal
 }
 Transaction --> Account
 
-class Vehicle <? extends Base_Model> {
-name_internal : String
-name_external : String
-km_buy : Decimal
-km_sell : Decimal
-}
-
-class WorkType <? extends Base_Model> {
+class TimeType <? extends Base_Model> {
 name : String
 account : Account
 price_per_hour : Decimal
 }
-WorkType --> Account
+TimeType --> Account
 @enduml
 ```

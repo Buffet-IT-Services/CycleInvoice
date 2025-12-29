@@ -42,9 +42,3 @@ part of the project.
 - Make your edits or additions with clear, descriptive commit messages.
 - Submit a pull request, providing a summary of your changes and why they are beneficial.
 - Be responsive to any feedback or requests for changes.
-
----
-
-Thank you again for contributing to the project!
-
-— The Cycle Invoice Team

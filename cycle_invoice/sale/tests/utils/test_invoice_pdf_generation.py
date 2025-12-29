@@ -2,18 +2,17 @@
 import hashlib
 import os
 from io import BytesIO
+from typing import Any
 from unittest.mock import NonCallableMock, patch
 
 from django.http import HttpRequest
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from pypdf import PdfReader
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
-from cycle_invoice.common.tests.base import get_default_test_user
-from cycle_invoice.contact.tests.models.test_address import fake_address
-from cycle_invoice.sale.tests.models.test_document_invoice import fake_document_invoice
-from cycle_invoice.sale.tests.models.test_document_item import fake_document_item_product, fake_document_item_work
+from cycle_invoice.common.selectors import get_system_user
+from cycle_invoice.sale.tests.factories import DocumentItemFactory, InvoiceFactory
 from cycle_invoice.sale.utils.invoice_pdf_generation import (
     PDFContent,
     add_page_numbers_to_pdf,
@@ -26,6 +25,10 @@ from cycle_invoice.sale.utils.invoice_pdf_generation import (
 )
 
 
+@override_settings(STORAGES={
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"}
+})
 class InvoicePDFGenerationTest(TestCase):
     """Test cases for the Invoice PDF generation utils."""
 
@@ -95,24 +98,23 @@ class InvoicePDFGenerationTest(TestCase):
         os.environ["COMPANY_COUNTRY"] = "Switzerland"
         os.environ["COMPANY_BANK_ACCOUNT"] = "CH12 3456 7890 1234 5678 9"
 
-        self.user = get_default_test_user()
+        self.user = get_system_user()
 
         # Create a fake customer and invoice with items
-        self.invoice = fake_document_invoice(save=True)
-        self.invoice.customer.address = fake_address(save=True)
-        self.invoice.customer.save(user=self.user)
-        self.item = fake_document_item_product(save=True)
-        self.item.invoice = self.invoice
-        self.item.save(user=self.user)
-        self.item = fake_document_item_work(save=True)
-        self.item.invoice = self.invoice
-        self.item.save(user=self.user)
+        self.invoice = InvoiceFactory.create()
+        self.item1 = DocumentItemFactory.create(document=self.invoice, party=self.invoice.party)
+        self.item2 = DocumentItemFactory.create(document=self.invoice, party=self.invoice.party)
 
     # noinspection DuplicatedCode
     @patch("cycle_invoice.sale.utils.invoice_pdf_generation.generate_swiss_qr")
     def test_generate_content(self, mock_qr: object) -> None:
         """Test that prepare_invoice_context returns the expected dictionary."""
-        mock_qr.side_effect = lambda ctx: ctx.update({"qr_bill_svg": "<svg>QR</svg>"})
+
+        def _mock_generate_qr(ctx: dict[str, Any]) -> None:
+            """Setzt das erwartete qr_bill_svg im übergebenen Kontext."""
+            ctx.update({"qr_bill_svg": "<svg>QR</svg>"})
+
+        mock_qr.side_effect = _mock_generate_qr
         context = generate_content(self.invoice.pk)
 
         # check company info
@@ -129,7 +131,7 @@ class InvoicePDFGenerationTest(TestCase):
 
         # check invoice details
         self.assertEqual(context["invoice_details"]["total_sum"], str(self.invoice.total_sum))
-        self.assertEqual(context["invoice_details"]["invoice_number"], self.invoice.invoice_number)
+        self.assertEqual(context["invoice_details"]["invoice_number"], self.invoice.document_number)
         self.assertEqual(context["invoice_details"]["invoice_primary_key"], self.invoice.pk)
         self.assertEqual(context["invoice_details"]["created_date"], self.invoice.date.strftime("%d.%m.%Y"))
         self.assertEqual(context["invoice_details"]["due_date"], self.invoice.due_date.strftime("%d.%m.%Y"))
@@ -137,22 +139,22 @@ class InvoicePDFGenerationTest(TestCase):
         self.assertEqual(context["invoice_details"]["footer_text"], self.invoice.footer_text)
 
         # check customer details
-        self.assertEqual(context["customer"]["name"], str(self.invoice.customer))
+        self.assertEqual(context["customer"]["name"], str(self.invoice.party))
         self.assertEqual(context["customer"]["street"],
-                         f"{self.invoice.customer.address.street} {self.invoice.customer.address.number}")
-        self.assertEqual(context["customer"]["postal_code"], self.invoice.customer.address.zip_code)
-        self.assertEqual(context["customer"]["city"], self.invoice.customer.address.city)
-        self.assertEqual(context["customer"]["country"], self.invoice.customer.address.country)
-        self.assertEqual(context["customer"]["address_block"], self.invoice.customer.address_block)
+                         f"{self.invoice.party.address.street} {self.invoice.party.address.number}")
+        self.assertEqual(context["customer"]["postal_code"], self.invoice.party.address.zip_code)
+        self.assertEqual(context["customer"]["city"], self.invoice.party.address.city)
+        self.assertEqual(context["customer"]["country"], self.invoice.party.address.country)
+        self.assertEqual(context["customer"]["address_block"], self.invoice.party.address_block)
 
         # check invoice items
         self.assertEqual(len(context["invoice_items"]), 2)
-        self.assertEqual(context["invoice_items"][1]["product_name"], self.item.title)
-        self.assertEqual(context["invoice_items"][1]["product_description"], self.item.description)
-        self.assertEqual(context["invoice_items"][1]["quantity"], self.item.quantity_str)
-        self.assertEqual(context["invoice_items"][1]["price_single"], self.item.price_str)
-        self.assertEqual(context["invoice_items"][1]["discount"], self.item.discount_str)
-        self.assertEqual(context["invoice_items"][1]["price_total"], self.item.total_str)
+        self.assertEqual(context["invoice_items"][0]["product_name"], self.item1.title)
+        self.assertEqual(context["invoice_items"][0]["product_description"], self.item1.description)
+        self.assertEqual(context["invoice_items"][0]["quantity"], self.item1.quantity_str)
+        self.assertEqual(context["invoice_items"][0]["price_single"], self.item1.price_str)
+        self.assertEqual(context["invoice_items"][0]["discount"], self.item1.discount_str)
+        self.assertEqual(context["invoice_items"][0]["price_total"], self.item1.total_str)
 
         # check miscellaneous
         self.assertFalse(context["show_page_number"])
@@ -177,7 +179,7 @@ class InvoicePDFGenerationTest(TestCase):
     def test_generate_pdf_from_html(self) -> None:
         """Test that generate_pdf_from_html returns PDF bytes for valid HTML input."""
         html = "<html><body><h1>Test PDF</h1><p>Page 1</p></body></html>"
-        base_url = "http://testserver/"
+        base_url = "https://testserver/"
         pdf_bytes = generate_pdf_from_html(html, base_url)
         self.assertIsInstance(pdf_bytes, bytes)
         self.assertGreater(len(pdf_bytes), 100)  # Should be a non-trivial PDF
@@ -248,7 +250,12 @@ class InvoicePDFGenerationTest(TestCase):
 
         # Prepare request
         request = HttpRequest()
-        request.build_absolute_uri = lambda path="/": f"https://testserver{path}"
+
+        def build_absolute_uri(path: str = "/") -> str:
+            """Simulate a request to the test server with the given path."""
+            return f"https://testserver{path}"
+
+        request.build_absolute_uri = build_absolute_uri
 
         # Call the function
         generate_invoice_pdf(request, 42)

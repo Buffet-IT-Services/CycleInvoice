@@ -9,7 +9,3 @@ class AccountingConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "cycle_invoice.accounting"
     label = "accounting"
-
-    def ready(self) -> None:
-        """Call to import signals."""
-        from . import signals  # noqa: PLC0415,F401

@@ -1,26 +1,13 @@
-"""Test cases for the Product model."""
-
+"""Tests for the model product of the app product."""
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_test_user
-from cycle_invoice.sale.models import Product
+from cycle_invoice.product.tests.factories import ProductFactory
 
 
-def fake_product(save: bool) -> Product:  # noqa: FBT001
-    """Create a fake product."""
-    product = Product(
-        name="Test Product",
-        description="This is a test description.",
-        price=10.00
-    )
-    if save:
-        product.save(user=get_default_test_user())
-    return product
-
-
-class ProductTest(TestCase):
-    """Test cases for the Product model."""
+class TestProduct(TestCase):
+    """Tests for the model product of the app product."""
 
     def test_str(self) -> None:
-        """Test the __str__ of Product."""
-        self.assertEqual("Test Product", str(fake_product(save=False)))
+        """Test Product.__str__()."""
+        product = ProductFactory()
+        self.assertEqual(str(product), product.name)

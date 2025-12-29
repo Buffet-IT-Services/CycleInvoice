@@ -4,3 +4,4 @@ omit =
     manage.py
     */tests/*
     */__init__.py
+    config/*

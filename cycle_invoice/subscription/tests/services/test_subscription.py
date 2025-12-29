@@ -1,50 +1,56 @@
-"""Test cases for the Subscription services."""
-
-import datetime
+"""Tests for the subscription service Subscription."""
+from datetime import UTC, datetime
 
 from django.test import TestCase
 
-from cycle_invoice.common.tests.base import get_default_test_user
-from cycle_invoice.sale.models import DocumentItem
+from cycle_invoice.common.models import DiscountType
+from cycle_invoice.common.selectors import get_system_user
+from cycle_invoice.subscription.models import SubscriptionDocumentItem
 from cycle_invoice.subscription.services.subscription import SubscriptionExtensionError, subscription_extension
-from cycle_invoice.subscription.tests.models.test_subscription import fake_subscription
+from cycle_invoice.subscription.tests.factories import SubscriptionFactory
 
 
-class SubscriptionTest(TestCase):
-    """Test cases for the Subscription services."""
+class TestSubscription(TestCase):
+    """Tests behavior of the subscription_extension service function."""
 
     def setUp(self) -> None:
-        """Set up the test case with necessary data."""
-        self.user = get_default_test_user()
+        """Create a normal subscription and a canceled subscription used by tests."""
+        self.subscription = SubscriptionFactory.create()
+        self.subscription_cancelled = SubscriptionFactory.create(cancelled_date=datetime.now(tz=UTC).date())
 
-    def test_subscription_extension_valid(self) -> None:
-        """Test the subscription extension functionality."""
-        # Create a subscription
-        subscription = fake_subscription(save=True)
+    def test_subscription_extension_block_cancelled(self) -> None:
+        """Assert extending a canceled subscription raises SubscriptionExtensionError."""
+        with self.assertRaises(SubscriptionExtensionError):
+            subscription_extension(subscription_id=self.subscription_cancelled.id, user=get_system_user())
 
-        try:
-            subscription_extension(subscription.id, user=self.user)
-            subscription.refresh_from_db()
-            self.assertEqual(datetime.date(2000, 1, 31), subscription.end_billed_date)
-            subscription_item = DocumentItem.objects.get(subscription=subscription)
-            self.assertEqual(subscription, subscription_item.subscription)
-            self.assertEqual("01.01.2000 - 31.01.2000", subscription_item.comment_title)
-            self.assertEqual(subscription.product.product, subscription_item.product)
-            self.assertEqual(subscription.product.price, subscription_item.price)
-            self.assertEqual(1, subscription_item.quantity)
-            self.assertEqual(0, subscription_item.discount)
-            self.assertEqual(subscription.customer, subscription_item.customer)
-        except SubscriptionExtensionError:
-            self.fail("SubscriptionExtensionError raised unexpectedly when subscription is not cancelled")
+    def test_subscription_extension_creates_correct(self) -> None:
+        """Extend a subscription and assert dates change, and a correct SubscriptionDocumentItem is created."""
+        start = self.subscription.next_start_billed_date
+        end = self.subscription.next_end_billed_date
+        time_range = f"{start.strftime('%d.%m.%Y')} - {end.strftime('%d.%m.%Y')}"
+        subscription_extension(subscription_id=self.subscription.id, user=get_system_user())
+        self.subscription.refresh_from_db()
+        self.assertNotEqual(start, self.subscription.next_start_billed_date)
+        self.assertNotEqual(end, self.subscription.next_end_billed_date)
 
-    def test_subscription_extension_cancelled(self) -> None:
-        """Test the subscription extension functionality with a cancelled subscription."""
-        subscription = fake_subscription(save=True)
-        subscription.cancelled_date = datetime.date(2000, 1, 15)
-        subscription.save(user=self.user)
+        subscription_document_item = SubscriptionDocumentItem.objects.get(subscription=self.subscription)
+        self.assertEqual(subscription_document_item.price, self.subscription.plan.price)
+        self.assertEqual(subscription_document_item.quantity, 1)
+        self.assertIsNone(subscription_document_item.document)
+        self.assertEqual(subscription_document_item.title, f"{self.subscription.plan.product.name} - {time_range}")
+        self.assertEqual(subscription_document_item.description, self.subscription.plan.product.description)
+        self.assertEqual(subscription_document_item.party, self.subscription.party)
+        self.assertEqual(subscription_document_item.account, self.subscription.plan.product.account_sell)
+        self.assertEqual(subscription_document_item.discount_value, 0)
+        self.assertEqual(subscription_document_item.discount_type, DiscountType.PERCENT)
+        self.assertEqual(subscription_document_item.subscription, self.subscription)
 
-        try:
-            subscription_extension(subscription.id, self.user)
-            self.fail("SubscriptionExtensionError doesn't raise when subscription is cancelled")
-        except SubscriptionExtensionError:
-            self.assertTrue(subscription.is_cancelled)
+    def test_subscription_extension_no_user(self) -> None:
+        """Assert subscription_extension raises ValueError when no user is provided."""
+        with self.assertRaises(ValueError):
+            subscription_extension(subscription_id=self.subscription.id, user=None)
+
+    def test_subscription_extension_invalid_subscription(self) -> None:
+        """Assert subscription_extension raises ValueError for a non-existent subscription id."""
+        with self.assertRaises(ValueError):
+            subscription_extension(subscription_id=999999, user=get_system_user())

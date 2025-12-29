@@ -5,11 +5,12 @@ from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from cycle_invoice.common.models import BaseModel
+from cycle_invoice.common.models import BaseModel, DiscountType
 from cycle_invoice.product.models import Product
+from cycle_invoice.sale.models import DocumentItem
 
 
-class SubscriptionProduct(BaseModel):
+class SubscriptionPlan(BaseModel):
     """Model representing a subscription."""
 
     RECURRENCE_CHOICES = [
@@ -37,7 +38,7 @@ class SubscriptionProduct(BaseModel):
     )
 
     class Meta:
-        """Meta options for the Subscription model."""
+        """Meta-options for the Subscription model."""
 
         verbose_name = "Subscription Product"
         verbose_name_plural = "Subscription Products"
@@ -50,13 +51,13 @@ class SubscriptionProduct(BaseModel):
 class Subscription(BaseModel):
     """Model representing a subscription."""
 
-    product = models.ForeignKey(
-        SubscriptionProduct,
+    plan = models.ForeignKey(
+        SubscriptionPlan,
         on_delete=models.CASCADE,
         related_name="subscription"
     )
-    customer = models.ForeignKey(
-        "contact.Customer",
+    party = models.ForeignKey(
+        "party.Party",
         on_delete=models.CASCADE,
         related_name="subscription"
     )
@@ -73,16 +74,28 @@ class Subscription(BaseModel):
         null=True,
         blank=True
     )
+    discount_value = models.DecimalField(
+        verbose_name=_("discount value"),
+        max_digits=5,
+        decimal_places=4,
+        default=0
+    )
+    discount_type = models.CharField(
+        verbose_name=_("discount type"),
+        max_length=10,
+        choices=DiscountType.choices,
+        default=DiscountType.PERCENT,
+    )
 
     class Meta:
-        """Meta options for the Subscription model."""
+        """Meta-options for the Subscription model."""
 
         verbose_name = "Subscription"
         verbose_name_plural = "Subscriptions"
 
     def __str__(self) -> str:
         """Return a string representation of the Subscription."""
-        return f"{self.product.product.name} - {self.customer}"
+        return f"{self.plan.product.name} - {self.party}"
 
     @property
     def is_cancelled(self) -> bool:
@@ -101,10 +114,16 @@ class Subscription(BaseModel):
         """Calculates the next billing date based on end_billed_date and recurrence."""
         if not self.end_billed_date:
             self.end_billed_date = self.start_date - relativedelta(days=1)
-        recurrence = self.product.recurrence
+        recurrence = self.plan.recurrence
         if recurrence == "monthly":
             return self.end_billed_date + relativedelta(days=1) + relativedelta(months=1) - relativedelta(days=1)
         if recurrence == "yearly":
             return self.end_billed_date + relativedelta(years=1)
         error_message = f"Recurrence type '{recurrence}' is unknown."
         raise ValueError(error_message)
+
+
+class SubscriptionDocumentItem(DocumentItem):
+    """Model representing a subscription document item."""
+
+    subscription = models.ForeignKey(Subscription, on_delete=models.PROTECT, related_name="document_item")

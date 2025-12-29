@@ -19,7 +19,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from weasyprint import HTML
 
-from cycle_invoice.sale.models import DocumentInvoice, DocumentItem
+from cycle_invoice.sale.models import DocumentItem, Invoice
 from cycle_invoice.sale.utils.swiss_qr import generate_swiss_qr
 
 
@@ -39,9 +39,9 @@ def generate_content(invoice_id: int) -> dict[str, Any]:
         dict: The dictionary containing all necessary data for rendering the invoice
 
     """
-    invoice = DocumentInvoice.objects.get(pk=invoice_id)
+    invoice = Invoice.objects.get(pk=invoice_id)
 
-    document_items = DocumentItem.objects.filter(invoice=invoice)
+    document_items = DocumentItem.objects.filter(document=invoice)
     invoice_items = [
         {
             "product_name": item.title,
@@ -69,7 +69,7 @@ def generate_content(invoice_id: int) -> dict[str, Any]:
         },
         "invoice_details": {
             "total_sum": invoice.total_sum.__str__(),
-            "invoice_number": invoice.invoice_number,
+            "invoice_number": invoice.document_number,
             "invoice_primary_key": invoice_id,
             "created_date": invoice.date.strftime("%d.%m.%Y"),
             "due_date": invoice.due_date.strftime("%d.%m.%Y"),
@@ -77,12 +77,12 @@ def generate_content(invoice_id: int) -> dict[str, Any]:
             "footer_text": invoice.footer_text,
         },
         "customer": {
-            "name": invoice.customer.__str__(),
-            "street": f"{invoice.customer.address.street} {invoice.customer.address.number}",
-            "postal_code": invoice.customer.address.zip_code,
-            "city": invoice.customer.address.city,
-            "country": invoice.customer.address.country,
-            "address_block": invoice.customer.address_block,
+            "name": invoice.party.__str__(),
+            "street": f"{invoice.party.address.street} {invoice.party.address.number}",
+            "postal_code": invoice.party.address.zip_code,
+            "city": invoice.party.address.city,
+            "country": invoice.party.address.country,
+            "address_block": invoice.party.address_block,
         },
         "show_page_number": False,
         "invoice_items": invoice_items
