@@ -12,6 +12,5 @@ def healthcheck(request: HttpRequest) -> JsonResponse:  # noqa: ARG001
 urlpatterns = [
     path("token/", obtain_jwt_token, name="jwt-token-obtain"),
     path("token/refresh/", refresh_jwt_token),
-    path("sale/", include("cycle_invoice.sale.urls")),
     path("healthcheck/", healthcheck, name="healthcheck"),
 ]

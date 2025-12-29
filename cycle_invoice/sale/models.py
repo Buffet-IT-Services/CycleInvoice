@@ -33,6 +33,10 @@ class Document(BaseModel):
         blank=True
     )
 
+    def __str__(self) -> str:
+        """Return a string representation of the DocumentInvoice."""
+        return f"{self.document_number} - {self.party}"
+
 
 class Invoice(Document):
     """Model representing an invoice."""
@@ -42,14 +46,10 @@ class Invoice(Document):
     )
 
     class Meta:
-        """Meta options for the Invoice model."""
+        """Meta-options for the Invoice model."""
 
         verbose_name = "Invoice"
         verbose_name_plural = "Invoices"
-
-    def __str__(self) -> str:
-        """Return a string representation of the DocumentInvoice."""
-        return f"{self.invoice_number} - {self.customer}"
 
     @property
     def total_sum(self) -> Decimal:
@@ -98,11 +98,10 @@ class DocumentItem(BasePolymorphicModel):
         on_delete=models.PROTECT,
         related_name="sale_document_item_account",
     )
-
     discount_value = models.DecimalField(
         verbose_name=_("discount value"),
-        max_digits=5,
-        decimal_places=4,
+        max_digits=14,
+        decimal_places=2,
         default=0
     )
     discount_type = models.CharField(
@@ -115,19 +114,28 @@ class DocumentItem(BasePolymorphicModel):
     @property
     def price_str(self) -> str:
         """Return the price as a string."""
-        return f"{self.price:.2f}"
+        return f"{Decimal(str(self.price)):.2f}"
 
     @property
     def quantity_str(self) -> str:
         """Return the quantity as a string."""
-        if self.quantity == int(self.quantity):
-            return str(int(self.quantity))
-        return f"{self.quantity:.2f}".rstrip("0").rstrip(".")
+        quantity = Decimal(str(self.quantity))
+        if quantity == int(quantity):
+            return str(int(quantity))
+        return f"{quantity:.2f}".rstrip("0").rstrip(".")
 
     @property
     def total(self) -> Decimal:
-        """Return the total price."""
-        return round(self.price * self.quantity * (1 - self.discount), 2)
+        """Return the total price considering discount."""
+        price = Decimal(str(self.price))
+        quantity = Decimal(str(self.quantity))
+        discount_value = Decimal(str(self.discount_value))
+
+        if self.discount_type == DiscountType.ABSOLUTE:
+            total = price * quantity - discount_value
+        else:
+            total = price * quantity * (Decimal("1") - discount_value / Decimal("100"))
+        return round(total, 2)
 
     @property
     def total_str(self) -> str:
@@ -137,4 +145,8 @@ class DocumentItem(BasePolymorphicModel):
     @property
     def discount_str(self) -> str:
         """Return the discount percentage as a string."""
-        return f"{(100 * self.discount):.2f}%" if self.discount != 0 else ""
+        discount_value = Decimal(str(self.discount_value))
+        if self.discount_type == DiscountType.ABSOLUTE:
+            return f"-{discount_value:.2f}" if discount_value != 0 else ""
+        else:
+            return f"{(100 * discount_value):.2f}%" if discount_value != 0 else ""
