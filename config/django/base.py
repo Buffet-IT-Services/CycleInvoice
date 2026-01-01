@@ -23,6 +23,11 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "0").lower() in ("1", "true", "yes")  # d
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")  # adjust this to your needs
 
 # Application definition
+
+HIGH_PRIORITY_THIRD_PARTY_APPS = [
+    "constance",  # for configuration management
+]
+
 LOCAL_APPS = [
     "cycle_invoice.accounting.apps.AccountingConfig",  # for accounting management
     "cycle_invoice.api.apps.ApiConfig",  # for API endpoints
@@ -47,6 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    *HIGH_PRIORITY_THIRD_PARTY_APPS,
     *LOCAL_APPS,
     *THIRD_PARTY_APPS,
 ]
@@ -148,6 +154,7 @@ if not SECRET_KEY and not DEBUG:
     raise RuntimeError(error_message)
 
 from config.settings.celery import *  # noqa: E402, F403
+from config.settings.constance import *  # noqa: E402, F403
 from config.settings.jwt import *  # noqa: E402, F403
 from config.settings.logging import *  # noqa: E402, F403
 from config.settings.storage import *  # noqa: E402, F403
