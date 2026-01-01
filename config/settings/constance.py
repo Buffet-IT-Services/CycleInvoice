@@ -13,8 +13,8 @@ CONSTANCE_ADDITIONAL_FIELDS = {
 CONSTANCE_FILE_ROOT = "constance"
 
 CONSTANCE_CONFIG = {
-    "Company Logo": ("CycleInvoice.png", _("The logo of the company."), "image_field"),
-    "Company Name": ("CycleInvoice", _("The name of the company."), str),
+    "COMPANY_LOGO": ("CycleInvoice.png", _("The logo of the company."), "image_field"),
+    "COMPANY_NAME": ("CycleInvoice", _("The name of the company."), str),
 }
 
 # Ordering the Fields to sets
@@ -22,7 +22,7 @@ CONSTANCE_CONFIG_FIELDSETS = (
     (
         _("Company Settings"),
         {
-            "fields": ("Company Logo", "Company Name"),
+            "fields": ("COMPANY_LOGO", "COMPANY_NAME"),
         }
     ),
 )
