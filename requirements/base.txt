@@ -5,6 +5,7 @@ python-dateutil==2.9.0.post0 # Date and time utilities
 django-polymorphic==4.5.1 # For polymorphic models
 
 django-storages[s3]==1.14.6 # For S3 storage support
+django-constance==4.3.4 # For dynamic settings management
 
 psycopg2==2.9.11 # PostgreSQL database adapter
 
