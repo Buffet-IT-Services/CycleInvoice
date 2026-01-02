@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
-import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -98,7 +97,6 @@ DATABASES = {
         "PASSWORD": "cycleinvoice",
         "HOST": os.getenv("DJANGO_DB_HOST", "localhost"),
         "PORT": "5432",
-        **({"OPTIONS": {"options": "-c search_path=cycleinvoice"}} if "test" not in sys.argv else {}),
     }
 }
 
