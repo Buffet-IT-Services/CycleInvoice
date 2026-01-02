@@ -30,7 +30,4 @@ RUN mkdir -p /code/staticfiles && \
 
 USER cycleinvoice
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:8123/api/healthcheck/ || exit 1
-
 EXPOSE 8000
