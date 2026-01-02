@@ -10,8 +10,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     curl \
     build-essential \
-    libffi-dev \
     libcairo2 \
+    libffi-dev \
     libgirepository-1.0-1 \
     libpango-1.0-0 \
     libpangocairo-1.0-0 \
