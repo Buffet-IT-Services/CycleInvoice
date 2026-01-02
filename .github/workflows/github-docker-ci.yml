@@ -45,7 +45,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: ${{ steps.decide.outputs.push == 'true' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
           annotations: ${{ steps.meta.outputs.annotations }}
           provenance: true
           sbom: true
