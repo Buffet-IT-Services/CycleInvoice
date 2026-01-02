@@ -34,5 +34,5 @@ def subscription_processing_to_document_items() -> None:
         if next_end and (next_end - today).days <= bill_days:
             log_message = f"Processing subscription {sub.id} with end_billed_date {next_end}"
             logger.info(log_message)
-            subscription_extension(sub, user=system_user)
+            subscription_extension(sub.id, user=system_user)
     logger.info("Finished subscription processing task.")
