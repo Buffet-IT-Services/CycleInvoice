@@ -98,7 +98,6 @@ DATABASES = {
         "PASSWORD": "cycleinvoice",
         "HOST": os.getenv("DJANGO_DB_HOST", "localhost"),
         "PORT": "5432",
-        **({"OPTIONS": {"options": "-c search_path=cycleinvoice"}} if "test" not in sys.argv else {}),
     }
 }
 
