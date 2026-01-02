@@ -99,7 +99,7 @@ class Subscription(BaseModel):
 
     @property
     def is_cancelled(self) -> bool:
-        """Check if the subscription is extending."""
+        """Check if the subscription is cancelled."""
         return self.cancelled_date is not None
 
     @property
