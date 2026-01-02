@@ -17,6 +17,6 @@ def organization_list(*, filters: dict[str, Any] | None = None) -> QuerySet[Orga
     return OrganizationFilter(filters, queryset=qs).qs
 
 
-def organization_get(organisation_id: str) -> Organization | None:
+def organization_get(organization_id: str) -> Organization | None:
     """Retrieve a single organization by its ID."""
-    return get_object(Organization, search_id=organisation_id)
+    return get_object(Organization, search_id=organization_id)
