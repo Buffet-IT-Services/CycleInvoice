@@ -1,6 +1,6 @@
 services:
   web:
-    image: florinbuffet/cycle-invoice:main
+    image: florinbuffet/cycle-invoice:latest
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
@@ -64,7 +64,7 @@ services:
       retries: 5
 
   celery:
-    image: florinbuffet/cycle-invoice:main
+    image: florinbuffet/cycle-invoice:latest
     command: >
       sh -c "python manage.py wait_for_db &&
              celery -A cycle_invoice.celery worker --loglevel=info"
@@ -85,7 +85,7 @@ services:
       - cycleinvoice-network
 
   celery-beat:
-    image: florinbuffet/cycle-invoice:main
+    image: florinbuffet/cycle-invoice:latest
     command: >
       sh -c "python manage.py wait_for_db &&
              celery -A cycle_invoice.celery beat --loglevel=info"
