@@ -1,15 +1,12 @@
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: florinbuffet/cycle-invoice:main
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
              python manage.py collectstatic --noinput &&
-             gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+             gunicorn config.wsgi:application --bind 0.0.0.0:8123"
     volumes:
-      - .:/code
       - static_volume:/code/staticfiles
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
@@ -29,7 +26,7 @@ services:
     networks:
       - cycleinvoice-network
     ports:
-      - "8000:8000"
+      - "8123:8000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/healthcheck/"]
       interval: 30s
@@ -45,7 +42,7 @@ services:
       - POSTGRES_PASSWORD=cycleinvoice
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/db-init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /opt/cycleinvoice/docker/db-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - cycleinvoice-network
     healthcheck:
@@ -68,14 +65,10 @@ services:
       retries: 5
 
   celery:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: florinbuffet/cycle-invoice:main
     command: >
       sh -c "python manage.py wait_for_db &&
              celery -A cycle_invoice.celery worker --loglevel=info"
-    volumes:
-      - .:/code
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
@@ -93,14 +86,10 @@ services:
       - cycleinvoice-network
 
   celery-beat:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: florinbuffet/cycle-invoice:main
     command: >
       sh -c "python manage.py wait_for_db &&
              celery -A cycle_invoice.celery beat --loglevel=info"
-    volumes:
-      - .:/code
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DJANGO_DEBUG=${DJANGO_DEBUG:-False}

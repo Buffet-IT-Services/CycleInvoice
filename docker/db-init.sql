@@ -1,1 +1,1 @@
-CREATE SCHEMA IF NOT EXISTS cycle_invoice;
+CREATE SCHEMA IF NOT EXISTS cycleinvoice;
