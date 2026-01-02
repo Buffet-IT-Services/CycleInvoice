@@ -6,8 +6,10 @@ WORKDIR /code
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc curl \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    curl \
+    gcc \
     libcairo2 \
     libgirepository-1.0-1 \
     libpango-1.0-0 \
