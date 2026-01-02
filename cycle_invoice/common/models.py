@@ -91,7 +91,7 @@ class BaseModel(models.Model):
         """Override save method to set created_by and updated_by."""
         user = kwargs.pop("user", None)
         if not user:
-            error_message = "You must provide a user to delete the model."
+            error_message = "You must provide a user to save the model."
             raise ValueError(error_message)
 
         if self.pk:
