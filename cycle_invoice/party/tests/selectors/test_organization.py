@@ -2,7 +2,7 @@
 from django.test import TestCase
 
 from cycle_invoice.common.selectors import get_system_user
-from cycle_invoice.party.selectors.organisation import organization_get, organization_list
+from cycle_invoice.party.selectors.organization import organization_get, organization_list
 from cycle_invoice.party.tests.factories import OrganizationFactory
 
 

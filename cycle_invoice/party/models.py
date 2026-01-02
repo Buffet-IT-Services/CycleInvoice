@@ -46,7 +46,7 @@ class Party(BasePolymorphicModel):
 
 
 class Organization(Party):
-    """Model representing an organisation."""
+    """Model representing an organization."""
 
     name = models.CharField(
         _("name"),

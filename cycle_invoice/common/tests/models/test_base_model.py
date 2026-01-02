@@ -42,6 +42,11 @@ class TestBaseModel(TestCase):
         with self.assertRaises(ValueError):
             self.user2.save(user=self.user)
 
+    def test_base_model_save_user_is_required(self) -> None:
+        """save() should raise an error if a user is not provided."""
+        with self.assertRaises(ValueError):
+            self.user1.save()
+
     def test_base_model_allow_save_for_active(self) -> None:
         """save() should allow active objects."""
         self.user1.save(user=self.user)
