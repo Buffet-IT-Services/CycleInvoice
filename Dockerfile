@@ -8,8 +8,8 @@ ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    curl \
     build-essential \
+    curl \
     libcairo2 \
     libffi-dev \
     libgirepository-1.0-1 \
