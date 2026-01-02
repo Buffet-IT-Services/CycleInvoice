@@ -21,12 +21,18 @@ def subscription_processing_to_document_items() -> None:
     logger.info("Starting subscription processing task...")
 
     today = datetime.datetime.now(tz=datetime.UTC).date()
-    subs = Subscription.objects.filter(cancelled_date__isnull=True)
-    for sub in subs:
+    system_user = get_system_user()
+    subscriptions = Subscription.objects.filter(cancelled_date__isnull=True).select_related(
+        "plan",
+        "plan__product",
+        "plan__product__account_sell",
+        "party",
+    )
+    for sub in subscriptions:
         next_end = sub.end_billed_date
         bill_days = sub.plan.bill_days_before_end
         if next_end and (next_end - today).days <= bill_days:
             log_message = f"Processing subscription {sub.id} with end_billed_date {next_end}"
             logger.info(log_message)
-            subscription_extension(sub.id, user=get_system_user())
+            subscription_extension(sub, user=system_user)
     logger.info("Finished subscription processing task.")
