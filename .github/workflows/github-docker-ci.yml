@@ -13,6 +13,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Decide whether to push
+        id: decide
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "push=true" >> $GITHUB_OUTPUT
+          else
+            echo "push=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Extract Docker image metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -20,6 +29,7 @@ jobs:
           images: ${{ vars.DOCKER_USERNAME }}/cycle-invoice
 
       - name: Log in to Docker Hub
+        if: ${{ steps.decide.outputs.push == 'true' }}
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKER_USERNAME }}
@@ -31,7 +41,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ steps.decide.outputs.push == 'true' }}
           tags: ${{ steps.meta.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
           provenance: true
