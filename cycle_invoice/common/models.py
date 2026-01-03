@@ -31,6 +31,7 @@ class BaseModel(models.Model):
 
     uuid = models.UUIDField(
         _("UUID"),
+        primary_key=True,
         default=uuid.uuid4,
         editable=False,
         unique=True,
