@@ -19,10 +19,15 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # three levels up to reach the project root
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")  # keep the secret key used in production secret!
 DEBUG = os.environ.get("DJANGO_DEBUG", "0").lower() in ("1", "true", "yes")  # don't run with debug turned on
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")  # minimal for security
+
+# Set Allowed Hosts
+raw_hosts = os.environ.get("DJANGO_ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [h.strip() for h in raw_hosts.split(",") if h.strip()]
+for host in ("127.0.0.1", "localhost"):
+    if host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host)
 
 # Application definition
-
 HIGH_PRIORITY_THIRD_PARTY_APPS = [
     "constance",  # for configuration management
 ]
@@ -92,11 +97,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "cycleinvoice",
-        "PASSWORD": "cycleinvoice",
+        "NAME": os.getenv("DJANGO_DB_NAME", "postgres"),
+        "USER": os.getenv("DJANGO_DB_USER", "cycleinvoice"),
+        "PASSWORD": os.getenv("DJANGO_DB_PASSWORD", "cycleinvoice"),
         "HOST": os.getenv("DJANGO_DB_HOST", "localhost"),
-        "PORT": "5432",
+        "PORT": os.getenv("DJANGO_DB_PORT", "5432"),
     }
 }
 
