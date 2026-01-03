@@ -4,6 +4,7 @@ services:
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
+             python manage.py ensure_default_superuser &&
              python manage.py collectstatic --noinput &&
              gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     volumes:
@@ -19,6 +20,8 @@ services:
       - JWT_AUTH_COOKIE=${JWT_AUTH_COOKIE:-jwt}
       - JWT_AUTH_COOKIE_SAMESITE=${JWT_AUTH_COOKIE_SAMESITE:-Lax}
       - JWT_AUTH_HEADER_PREFIX=${JWT_AUTH_HEADER_PREFIX:-Bearer}
+      - DEFAULT_SUPERUSER_EMAIL=${DEFAULT_SUPERUSER_EMAIL}
+      - DEFAULT_SUPERUSER_PASSWORD=${DEFAULT_SUPERUSER_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
