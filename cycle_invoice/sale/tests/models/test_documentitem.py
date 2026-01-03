@@ -39,7 +39,7 @@ class TestDocumentItem(TestCase):
         self.document_item.discount_type = DiscountType.PERCENT
         self.assertEqual(self.document_item.total,
                          round(self.document_item.price * self.document_item.quantity
-                               * Decimal(1 - (self.document_item.discount_value / 100)), 2))
+                               * (Decimal(1) - self.document_item.discount_value / Decimal(100)), 2))
 
     def test_documentitem_total_discount_fixed(self) -> None:
         """Test DocumentItem.total with discount."""
