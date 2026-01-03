@@ -97,7 +97,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DJANGO_DB_NAME", "cycleinvoice"),
+        "NAME": os.getenv("DJANGO_DB_NAME", "postgres"),
         "USER": os.getenv("DJANGO_DB_USER", "cycleinvoice"),
         "PASSWORD": os.getenv("DJANGO_DB_PASSWORD", "cycleinvoice"),
         "HOST": os.getenv("DJANGO_DB_HOST", "localhost"),
