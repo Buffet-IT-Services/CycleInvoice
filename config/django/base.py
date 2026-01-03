@@ -99,7 +99,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("DJANGO_DB_NAME", "cycleinvoice"),
         "USER": os.getenv("DJANGO_DB_USER", "cycleinvoice"),
-        "PASSWORD": os.getenv("DJANGO_DB_PASSWORD"),
+        "PASSWORD": os.getenv("DJANGO_DB_PASSWORD", "cycleinvoice"),
         "HOST": os.getenv("DJANGO_DB_HOST", "localhost"),
         "PORT": os.getenv("DJANGO_DB_PORT", "5432"),
     }
