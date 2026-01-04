@@ -90,14 +90,14 @@ class BaseModel(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         """Override save method to set created_by and updated_by."""
-
         user = kwargs.pop("user", None)
         if not user:
             error_message = "You must provide a user to save the model."
             raise ValueError(error_message)
 
-        if user._state.adding:
-            raise ValueError("User must be saved before saving the model.")
+        if user._state.adding:  # noqa: SLF001 because this is encouraged by django
+            error_message = "User must be saved before saving the model."
+            raise ValueError(error_message)
 
         if self.pk:
             db_soft_deleted = (self.__class__.objects_with_deleted
