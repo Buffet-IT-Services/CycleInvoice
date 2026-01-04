@@ -1,6 +1,7 @@
 """Models for the party app."""
 import logging
 
+from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -28,7 +29,13 @@ class Party(BasePolymorphicModel):
     phone = models.CharField(
         _("phone"),
         max_length=25,
-        blank=True
+        blank=True,
+        validators=[
+            RegexValidator(
+                regex=r"^\+?\d{1,4} ?\d{1,3} ?\d{1,4} ?\d{1,4} ?\d{1,9}$",
+                message="Phone number must be entered in the format: +412345678"
+            )
+        ]
     )
 
     class Meta:
