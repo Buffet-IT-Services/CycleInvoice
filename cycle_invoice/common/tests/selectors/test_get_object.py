@@ -25,16 +25,6 @@ class TestGetObject(TestCase):
         obj = get_object(User, pk=str(self.instance.pk))
         self.assertEqual(obj, self.instance)
 
-    def test_get_object_returns_none_for_invalid_pk(self) -> None:
-        """Test get_object() with an invalid primary key."""
-        obj = get_object(User, pk=999999)
-        self.assertIsNone(obj)
-
-    def test_get_object_returns_none_for_invalid_pk_string(self) -> None:
-        """Test get_object() with an invalid primary key."""
-        obj = get_object(User, pk=str(999999))
-        self.assertIsNone(obj)
-
     def test_get_object_returns_instance_by_uuid(self) -> None:
         """Test get_object() with a valid UUID."""
         obj = get_object(User, uuid=self.instance.uuid)
@@ -71,12 +61,6 @@ class TestGetObject(TestCase):
         """Test get_object() with an invalid primary key and a queryset."""
         queryset = User.objects.all()
         obj = get_object(queryset, pk=999999)
-        self.assertIsNone(obj)
-
-    def test_get_object_returns_none_for_invalid_pk_string_with_queryset(self) -> None:
-        """Test get_object() with an invalid primary key and a queryset."""
-        queryset = User.objects.all()
-        obj = get_object(queryset, pk=str(999999))
         self.assertIsNone(obj)
 
     def test_get_object_returns_instance_by_uuid_with_queryset(self) -> None:

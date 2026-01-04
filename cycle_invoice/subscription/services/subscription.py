@@ -1,4 +1,5 @@
 """Services for handling subscriptions."""
+import uuid
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -12,21 +13,21 @@ class SubscriptionExtensionError(Exception):
 
 
 @transaction.atomic
-def subscription_extension(subscription_id: int, user: get_user_model) -> None:
+def subscription_extension(subscription_uuid: uuid.UUID, user: get_user_model) -> None:
     """
     Extend a subscription by one billing period.
 
-    :param subscription_id:
-    :param user: User who is extending the subscription
+    :param subscription_uuid: UUID of the subscription to be extended
+    :param user: User extending the subscription
     """
-    subscription = get_object(model_or_queryset=Subscription, search_id=subscription_id)
+    subscription = get_object(model_or_queryset=Subscription, search_id=subscription_uuid)
 
     if subscription is None:
-        error_message = f"Subscription {subscription_id} does not exist."
+        error_message = f"Subscription {subscription_uuid} does not exist."
         raise ValueError(error_message)
 
     if subscription.is_cancelled:
-        error_message = f"Subscription {subscription_id} is canceled and cannot be extended."
+        error_message = f"Subscription {subscription_uuid} is canceled and cannot be extended."
         raise SubscriptionExtensionError(error_message)
 
     if user is None or not isinstance(user, get_user_model()):

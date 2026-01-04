@@ -26,11 +26,6 @@ class OrganizationTest(TestCase):
         organization = organization_get(self.organization1.uuid)
         self.assertEqual(organization, self.organization1)
 
-    def test_organization_get_returns_id(self) -> None:
-        """Test that organization_get returns the correct organization."""
-        organization = organization_get(self.organization1.id)
-        self.assertEqual(organization, self.organization1)
-
     def test_organization_get_returns_none_for_invalid_id(self) -> None:
         """Test that organization_get returns None for an invalid ID."""
         organization = organization_get("99999")

@@ -26,11 +26,6 @@ class ContactTest(TestCase):
         contact = contact_get(self.contact1.uuid)
         self.assertEqual(contact, self.contact1)
 
-    def test_contact_get_returns_id(self) -> None:
-        """Test that contact_list returns the correct contact."""
-        contact = contact_get(self.contact1.id)
-        self.assertEqual(contact, self.contact1)
-
     def test_contact_get_returns_none_for_invalid_id(self) -> None:
         """Test that contact_list returns None for an invalid ID."""
         contact = contact_get("99999")

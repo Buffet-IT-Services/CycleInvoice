@@ -26,11 +26,6 @@ class AddressTest(TestCase):
         address = address_get(self.address1.uuid)
         self.assertEqual(address, self.address1)
 
-    def test_address_get_returns_address_id(self) -> None:
-        """Test that address_get returns the correct address."""
-        address = address_get(self.address1.id)
-        self.assertEqual(address, self.address1)
-
     def test_address_get_returns_none_for_invalid_id(self) -> None:
         """Test that address_get returns None for an invalid ID."""
         address = address_get("99999")

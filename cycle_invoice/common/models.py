@@ -31,6 +31,7 @@ class BaseModel(models.Model):
 
     uuid = models.UUIDField(
         _("UUID"),
+        primary_key=True,
         default=uuid.uuid4,
         editable=False,
         unique=True,
@@ -94,6 +95,10 @@ class BaseModel(models.Model):
             error_message = "You must provide a user to save the model."
             raise ValueError(error_message)
 
+        if user._state.adding:  # noqa: SLF001 because this is encouraged by django
+            error_message = "User must be saved before saving the model."
+            raise ValueError(error_message)
+
         if self.pk:
             db_soft_deleted = (self.__class__.objects_with_deleted
                                .filter(pk=self.pk)
@@ -103,7 +108,7 @@ class BaseModel(models.Model):
                 error_message = "Cannot update a soft-deleted object."
                 raise ValueError(error_message)
 
-        if not self.pk:
+        if self._state.adding:
             self.created_by = user
 
         self.updated_by = user
