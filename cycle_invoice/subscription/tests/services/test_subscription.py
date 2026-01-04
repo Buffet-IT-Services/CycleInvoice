@@ -53,4 +53,4 @@ class TestSubscription(TestCase):
     def test_subscription_extension_invalid_subscription(self) -> None:
         """Assert subscription_extension raises ValueError for a non-existent subscription id."""
         with self.assertRaises(ValueError):
-            subscription_extension(subscription_uuid=999999, user=get_system_user())
+            subscription_extension(subscription_uuid="00000000-0000-0000-0000-000000000000", user=get_system_user())
