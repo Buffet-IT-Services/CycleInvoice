@@ -12,8 +12,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser: CommandParser) -> None:
         """Add custom arguments to the command."""
-        parser.add_argument("--email", type=str, help="Email for the superuser")
-        parser.add_argument("--password", type=str, help="Password for the superuser")
+        parser.add_argument("--email", type=str, required=True, help="Email for the superuser")
+        parser.add_argument("--password", type=str, required=True, help="Password for the superuser")
 
     def handle(self, *args, **options) -> None:
         """Create a superuser if it does not exist yet."""
