@@ -47,6 +47,9 @@ THIRD_PARTY_APPS = [
     "simple_history",  # for history tracking
     "storages",  # for S3 storage
     "polymorphic",  # for polymorphic models
+    "django_otp",  # for OTP authentication
+    "django_otp.plugins.otp_totp",  # for TOTP OTP authentication
+
 ]
 
 INSTALLED_APPS = [
@@ -70,6 +73,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",  # for history tracking
+    "django_otp.middleware.OTPMiddleware",  # for OTP authentication
 ]
 
 ROOT_URLCONF = "config.urls"
