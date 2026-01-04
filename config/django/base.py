@@ -49,7 +49,6 @@ THIRD_PARTY_APPS = [
     "polymorphic",  # for polymorphic models
     "django_otp",  # for OTP authentication
     "django_otp.plugins.otp_totp",  # for TOTP OTP authentication
-
 ]
 
 INSTALLED_APPS = [
