@@ -13,7 +13,7 @@ class TestCreateSuperuserIfNew(TestCase):
     def test_creates_superuser_when_missing(self) -> None:
         """Command should create a superuser when one does not exist for the email."""
         email = "admin@example.com"
-        password = "password"
+        password = "password"  # noqa: S105
 
         self.assertFalse(User.objects.filter(email=email).exists())
 
@@ -30,7 +30,7 @@ class TestCreateSuperuserIfNew(TestCase):
     def test_warns_when_user_exists(self) -> None:
         """Command should warn and not create a duplicate when the email already exists."""
         email = "existing@example.com"
-        password = "password"
+        password = "password"  # noqa: S105
 
         User.objects.create_superuser(email=email, password=password)
 
