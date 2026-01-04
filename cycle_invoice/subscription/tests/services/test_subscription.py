@@ -21,14 +21,14 @@ class TestSubscription(TestCase):
     def test_subscription_extension_block_cancelled(self) -> None:
         """Assert extending a canceled subscription raises SubscriptionExtensionError."""
         with self.assertRaises(SubscriptionExtensionError):
-            subscription_extension(subscription_id=self.subscription_cancelled.id, user=get_system_user())
+            subscription_extension(subscription_uuid=self.subscription_cancelled.uuid, user=get_system_user())
 
     def test_subscription_extension_creates_correct(self) -> None:
         """Extend a subscription and assert dates change, and a correct SubscriptionDocumentItem is created."""
         start = self.subscription.next_start_billed_date
         end = self.subscription.next_end_billed_date
         time_range = f"{start.strftime('%d.%m.%Y')} - {end.strftime('%d.%m.%Y')}"
-        subscription_extension(subscription_id=self.subscription.id, user=get_system_user())
+        subscription_extension(subscription_uuid=self.subscription.uuid, user=get_system_user())
         self.subscription.refresh_from_db()
         self.assertNotEqual(start, self.subscription.next_start_billed_date)
         self.assertNotEqual(end, self.subscription.next_end_billed_date)
@@ -48,9 +48,9 @@ class TestSubscription(TestCase):
     def test_subscription_extension_no_user(self) -> None:
         """Assert subscription_extension raises ValueError when no user is provided."""
         with self.assertRaises(ValueError):
-            subscription_extension(subscription_id=self.subscription.id, user=None)
+            subscription_extension(subscription_uuid=self.subscription.uuid, user=None)
 
     def test_subscription_extension_invalid_subscription(self) -> None:
         """Assert subscription_extension raises ValueError for a non-existent subscription id."""
         with self.assertRaises(ValueError):
-            subscription_extension(subscription_id=999999, user=get_system_user())
+            subscription_extension(subscription_uuid=999999, user=get_system_user())

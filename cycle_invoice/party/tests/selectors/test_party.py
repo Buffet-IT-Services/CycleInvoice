@@ -30,19 +30,9 @@ class PartyTest(TestCase):
         party = party_get(self.organization1.uuid)
         self.assertEqual(party, self.organization1)
 
-    def test_party_get_returns_id_organization(self) -> None:
-        """Test that party_get returns the correct party."""
-        party = party_get(self.organization1.id)
-        self.assertEqual(party, self.organization1)
-
     def test_party_get_returns_uuid_contact(self) -> None:
         """Test that party_get returns the correct party."""
         party = party_get(self.contact1.uuid)
-        self.assertEqual(party, self.contact1)
-
-    def test_party_get_returns_id_contact(self) -> None:
-        """Test that party_get returns the correct party."""
-        party = party_get(self.contact1.id)
         self.assertEqual(party, self.contact1)
 
     def test_party_get_returns_none_for_invalid_id(self) -> None:

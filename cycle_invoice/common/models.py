@@ -90,10 +90,14 @@ class BaseModel(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         """Override save method to set created_by and updated_by."""
+
         user = kwargs.pop("user", None)
         if not user:
             error_message = "You must provide a user to save the model."
             raise ValueError(error_message)
+
+        if user._state.adding:
+            raise ValueError("User must be saved before saving the model.")
 
         if self.pk:
             db_soft_deleted = (self.__class__.objects_with_deleted
@@ -104,7 +108,7 @@ class BaseModel(models.Model):
                 error_message = "Cannot update a soft-deleted object."
                 raise ValueError(error_message)
 
-        if not self.pk:
+        if self._state.adding:
             self.created_by = user
 
         self.updated_by = user
