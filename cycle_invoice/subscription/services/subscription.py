@@ -1,4 +1,5 @@
 """Services for handling subscriptions."""
+import uuid
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -12,7 +13,7 @@ class SubscriptionExtensionError(Exception):
 
 
 @transaction.atomic
-def subscription_extension(subscription_uuid: str, user: get_user_model) -> None:
+def subscription_extension(subscription_uuid: uuid.UUID, user: get_user_model) -> None:
     """
     Extend a subscription by one billing period.
 
