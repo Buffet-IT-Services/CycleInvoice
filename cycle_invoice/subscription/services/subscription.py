@@ -17,8 +17,8 @@ def subscription_extension(subscription_uuid: uuid.UUID, user: get_user_model) -
     """
     Extend a subscription by one billing period.
 
-    :param subscription_uuid:
-    :param user: User who is extending the subscription
+    :param subscription_uuid: UUID of the subscription to be extended
+    :param user: User extending the subscription
     """
     subscription = get_object(model_or_queryset=Subscription, search_id=subscription_uuid)
 
