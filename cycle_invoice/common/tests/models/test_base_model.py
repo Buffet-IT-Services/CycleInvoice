@@ -48,7 +48,7 @@ class TestBaseModel(TestCase):
             self.user1.save()
 
     def test_base_model_save_user_is_required_for_any_changes(self) -> None:
-        """save() should raise an error if no fields are updated."""
+        """save() should require a user when updating fields other than last_login."""
         with self.assertRaises(ValueError):
             self.user1.save(update_fields=["updated_at"])
 
