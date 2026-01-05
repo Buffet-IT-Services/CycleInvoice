@@ -92,8 +92,21 @@ class BaseModel(models.Model):
         """Override save method to set created_by and updated_by."""
         user = kwargs.pop("user", None)
         if not user:
-            error_message = "You must provide a user to save the model."
-            raise ValueError(error_message)
+            update_fields = kwargs.get("update_fields")
+            if update_fields is not None:
+                try:
+                    fields_set = set(update_fields)
+                except TypeError:
+                    fields_set = {update_fields}
+
+                if fields_set == {"last_login"}:
+                    user = get_system_user()
+                else:
+                    error_message = "You must provide a user to save the model."
+                    raise ValueError(error_message)
+            else:
+                error_message = "You must provide a user to save the model."
+                raise ValueError(error_message)
 
         if user._state.adding:  # noqa: SLF001 because this is encouraged by django
             error_message = "User must be saved before saving the model."
