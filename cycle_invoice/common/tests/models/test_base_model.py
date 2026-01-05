@@ -47,7 +47,7 @@ class TestBaseModel(TestCase):
         with self.assertRaises(ValueError):
             self.user1.save()
 
-    def test_base_model_stave_user_is_required_for_any_changes(self) -> None:
+    def test_base_model_save_user_is_required_for_any_changes(self) -> None:
         """save() should raise an error if no fields are updated."""
         with self.assertRaises(ValueError):
             self.user1.save(update_fields=["updated_at"])
