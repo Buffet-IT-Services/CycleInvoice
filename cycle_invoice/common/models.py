@@ -93,17 +93,8 @@ class BaseModel(models.Model):
         user = kwargs.pop("user", None)
         if not user:
             update_fields = kwargs.get("update_fields")
-            if update_fields is not None:
-                try:
-                    fields_set = set(update_fields)
-                except TypeError:
-                    fields_set = {update_fields}
-
-                if fields_set == {"last_login"}:
-                    user = get_system_user()
-                else:
-                    error_message = "You must provide a user to save the model."
-                    raise ValueError(error_message)
+            if update_fields is not None and update_fields == ["last_login"]:
+                user = get_system_user()
             else:
                 error_message = "You must provide a user to save the model."
                 raise ValueError(error_message)

@@ -47,6 +47,19 @@ class TestBaseModel(TestCase):
         with self.assertRaises(ValueError):
             self.user1.save()
 
+    def test_base_model_stave_user_is_required_for_any_changes(self) -> None:
+        """save() should raise an error if no fields are updated."""
+        with self.assertRaises(ValueError):
+            self.user1.save(update_fields=["updated_at"])
+
+    def test_base_model_save_user_not_required_for_last_login(self) -> None:
+        """save() should not raise an error if only last_login is updated."""
+        self.user1.last_login = None
+        try:
+            self.user1.save(update_fields=["last_login"])
+        except ValueError:
+            self.fail("save() raised ValueError unexpectedly!")
+
     def test_base_model_allow_save_for_active(self) -> None:
         """save() should allow active objects."""
         self.user1.save(user=self.user)
