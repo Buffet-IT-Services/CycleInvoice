@@ -7,6 +7,7 @@ django-otp==1.6.3 # For one-time password authentication
 
 django-storages[s3]==1.14.6 # For S3 storage support
 django-constance==4.3.4 # For dynamic settings management
+whitenoise==6.11.0  # For serving static files
 
 psycopg2==2.9.11 # PostgreSQL database adapter
 
