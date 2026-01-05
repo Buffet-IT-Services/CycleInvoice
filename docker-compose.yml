@@ -10,10 +10,11 @@ services:
     volumes:
       - static_volume:/code/staticfiles
     environment:
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_SECRET_KEY=${SECRET_KEY}
+      - DJANGO_DEBUG=${DEBUG:-False}
       - DJANGO_DB_HOST=db
       - DJANGO_ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - DJANGO_TIME_ZONE=${TIME_ZONE}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
