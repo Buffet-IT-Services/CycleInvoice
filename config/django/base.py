@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-import os
+from os import environ
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -17,11 +17,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # three levels up to reach the project root
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")  # keep the secret key used in production secret!
-DEBUG = os.environ.get("DJANGO_DEBUG", "0").lower() in ("1", "true", "yes")  # don't run with debug turned on
+SECRET_KEY = environ.get("DJANGO_SECRET_KEY")  # keep the secret key used in production secret!
+DEBUG = environ.get("DJANGO_DEBUG", "0").lower() in ("1", "true", "yes")  # don't run with debug turned on
 
 # Set Allowed Hosts
-raw_hosts = os.environ.get("DJANGO_ALLOWED_HOSTS", "")
+raw_hosts = environ.get("DJANGO_ALLOWED_HOSTS", "")
 ALLOWED_HOSTS = [h.strip() for h in raw_hosts.split(",") if h.strip()]
 for host in ("127.0.0.1", "localhost"):
     if host not in ALLOWED_HOSTS:
@@ -101,11 +101,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DJANGO_DB_NAME", "postgres"),
-        "USER": os.getenv("DJANGO_DB_USER", "cycleinvoice"),
-        "PASSWORD": os.getenv("DJANGO_DB_PASSWORD", "cycleinvoice"),
-        "HOST": os.getenv("DJANGO_DB_HOST", "localhost"),
-        "PORT": os.getenv("DJANGO_DB_PORT", "5432"),
+        "NAME": environ.get("DJANGO_DB_NAME", "postgres"),
+        "USER": environ.get("DJANGO_DB_USER", "cycleinvoice"),
+        "PASSWORD": environ.get("DJANGO_DB_PASSWORD", "cycleinvoice"),
+        "HOST": environ.get("DJANGO_DB_HOST", "localhost"),
+        "PORT": environ.get("DJANGO_DB_PORT", "5432"),
     }
 }
 
@@ -126,7 +126,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = os.environ.get("DJANGO_TIME_ZONE", "UTC")
+TIME_ZONE = environ.get("DJANGO_TIME_ZONE", "UTC")
 USE_TZ = True
 
 USE_I18N = True
@@ -156,7 +156,7 @@ AUTH_USER_MODEL = "common.User"
 
 # System user used for automated tasks (created on demand)
 # Configure via env var DJANGO_SYSTEM_USER_EMAIL if desired
-SYSTEM_USER_EMAIL = os.environ.get("DJANGO_SYSTEM_USER_EMAIL", "system@cycleinvoice.local")
+SYSTEM_USER_EMAIL = environ.get("DJANGO_SYSTEM_USER_EMAIL", "system@cycleinvoice.local")
 
 # Checks for runtime
 if not SECRET_KEY and not DEBUG:
