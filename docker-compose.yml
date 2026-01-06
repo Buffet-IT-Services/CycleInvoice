@@ -72,9 +72,10 @@ services:
       sh -c "python manage.py wait_for_db &&
              celery -A cycle_invoice.celery worker --loglevel=info"
     environment:
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_SECRET_KEY=${SECRET_KEY}
+      - DJANGO_DEBUG=${DEBUG:-False}
       - DJANGO_DB_HOST=db
+      - DJANGO_TIME_ZONE=${TIME_ZONE}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
@@ -93,9 +94,10 @@ services:
       sh -c "python manage.py wait_for_db &&
              celery -A cycle_invoice.celery beat --loglevel=info"
     environment:
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_SECRET_KEY=${SECRET_KEY}
+      - DJANGO_DEBUG=${DEBUG:-False}
       - DJANGO_DB_HOST=db
+      - DJANGO_TIME_ZONE=${TIME_ZONE}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
