@@ -21,6 +21,7 @@ services:
       - JWT_AUTH_COOKIE=${JWT_AUTH_COOKIE:-jwt}
       - JWT_AUTH_COOKIE_SAMESITE=${JWT_AUTH_COOKIE_SAMESITE:-Lax}
       - JWT_AUTH_HEADER_PREFIX=${JWT_AUTH_HEADER_PREFIX:-Bearer}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
     depends_on:
       db:
         condition: service_healthy
