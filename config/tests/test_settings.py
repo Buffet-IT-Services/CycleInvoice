@@ -85,7 +85,7 @@ class CeleryResultBackendConfigTest(TestCase):
         os.environ.update(self.original_env)
 
         # Remove imported modules
-        for key in list(sys.modules.keys()):
+        for key in sys.modules:
             if key not in self.original_modules and "config.settings" in key:
                 del sys.modules[key]
 
