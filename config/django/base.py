@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import os
+import sys
 from os import environ
 from pathlib import Path
 
@@ -52,11 +54,21 @@ THIRD_PARTY_APPS = [
     "health_check",  # required
     "health_check.db",  # stock Django health checkers
     "health_check.cache",
-    "health_check.storage",
     "health_check.contrib.migrations",
-    "health_check.contrib.celery",  # requires celery
-    "health_check.contrib.celery_ping",  # requires celery
 ]
+
+# Conditionally add health check apps based on service availability
+# Only include storage health check if S3 is configured (not in CI/test mode)
+should_check_s3_storage = not (os.getenv("GITHUB_ACTIONS") == "true" or "pytest" in sys.modules or "test" in sys.argv)
+if should_check_s3_storage and os.getenv("S3_BUCKET_NAME"):
+    THIRD_PARTY_APPS.append("health_check.storage")
+
+# Only include Celery health checks if Celery broker is configured
+if os.getenv("CELERY_BROKER_URL"):
+    THIRD_PARTY_APPS.extend([
+        "health_check.contrib.celery",  # requires celery
+        "health_check.contrib.celery_ping",  # requires celery
+    ])
 
 INSTALLED_APPS = [
     "django.contrib.admin",
