@@ -7,3 +7,8 @@
 /celerybeat-schedule-shm
 /celerybeat-schedule-wal
 /.idea/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
