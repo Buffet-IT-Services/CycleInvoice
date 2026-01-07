@@ -3,7 +3,7 @@ python-dotenv==1.2.1 # For environment variable management
 django-simple-history==3.11.0 # For tracking model changes
 python-dateutil==2.9.0.post0 # Date and time utilities
 django-polymorphic==4.6.0 # For polymorphic models
-django-otp==1.6.3 # For one-time password authentication
+django-otp==1.7.0 # For one-time password authentication
 
 django-storages[s3]==1.14.6 # For S3 storage support
 django-constance==4.3.4 # For dynamic settings management
