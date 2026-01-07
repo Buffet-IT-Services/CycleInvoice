@@ -59,8 +59,8 @@ THIRD_PARTY_APPS = [
 
 # Conditionally add health check apps based on service availability
 # Only include storage health check if S3 is configured (not in CI/test mode)
-is_not_ci_or_test = not (os.getenv("GITHUB_ACTIONS") == "true" or "pytest" in sys.modules or "test" in sys.argv)
-if is_not_ci_or_test and os.getenv("S3_BUCKET_NAME"):
+should_check_s3_storage = not (os.getenv("GITHUB_ACTIONS") == "true" or "pytest" in sys.modules or "test" in sys.argv)
+if should_check_s3_storage and os.getenv("S3_BUCKET_NAME"):
     THIRD_PARTY_APPS.append("health_check.storage")
 
 # Only include Celery health checks if Celery broker is configured
