@@ -10,25 +10,25 @@ class HealthCheckAppsConfigTest(TestCase):
     """Tests for conditional health check apps configuration."""
 
     def setUp(self) -> None:
-        """Set up test environment."""
+        """Set up the test environment."""
         # Store original values
         self.original_env = os.environ.copy()
         self.original_modules = sys.modules.copy()
 
     def tearDown(self) -> None:
-        """Clean up test environment."""
+        """Clean up the test environment."""
         # Restore original environment
         os.environ.clear()
         os.environ.update(self.original_env)
 
         # Restore sys.modules
-        for key in list(sys.modules.keys()):
+        for key in sys.modules.keys():
             if key not in self.original_modules:
                 del sys.modules[key]
 
     def test_storage_health_check_excluded_when_s3_not_configured(self) -> None:
         """Test that health_check.storage is excluded when S3_BUCKET_NAME is not set."""
-        # In test environment, storage health check should always be excluded
+        # In the test environment, storage health check should always be excluded
         # because 'test' is in sys.argv
         from config.django import base  # noqa: PLC0415
 
