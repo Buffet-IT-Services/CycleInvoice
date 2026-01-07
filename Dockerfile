@@ -30,4 +30,8 @@ RUN mkdir -p /code/staticfiles && \
 
 USER cycleinvoice
 
+# Containerfile / Dockerfile
+HEALTHCHECK --interval=30s --timeout=10s \
+  CMD python manage.py health_check --subset=container || exit 1
+
 EXPOSE 8000

@@ -1,7 +1,7 @@
 """
-URL configuration for cycle_invoice project.
+URL configuration for the cycle_invoice project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
+The `urlpatterns` list routes URLs to views. For more information, please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
 
 Examples:
@@ -23,4 +23,5 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("cycle_invoice.api.urls")),
+    path("healthcheck/", include("health_check.urls")),
 ]

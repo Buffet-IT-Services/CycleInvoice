@@ -31,11 +31,10 @@ services:
     ports:
       - "8123:8000"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/healthcheck/"]
-      interval: 30s
+      test: [ "CMD", "python", "manage.py", "health_check", "--subset", "container" ]
+      interval: 60s
       timeout: 10s
-      retries: 3
-      start_period: 40s
+      start_period: 60s
 
   db:
     image: postgres:16
@@ -48,7 +47,7 @@ services:
     networks:
       - cycleinvoice-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cycleinvoice -d postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U cycleinvoice -d postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -61,7 +60,7 @@ services:
     networks:
       - cycleinvoice-network
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "foobared", "ping"]
+      test: [ "CMD", "redis-cli", "-a", "foobared", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
