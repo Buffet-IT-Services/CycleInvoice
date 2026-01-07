@@ -5,6 +5,8 @@ from celery.schedules import crontab
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", os.getenv("CELERY_BROKER_URL"))
+
 CELERY_TIMEZONE = os.getenv("CELERY_TIMEZONE", "UTC")
 
 CELERY_TASK_TRACK_STARTED = True

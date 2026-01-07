@@ -22,6 +22,7 @@ services:
       - JWT_AUTH_COOKIE_SAMESITE=${JWT_AUTH_COOKIE_SAMESITE:-Lax}
       - JWT_AUTH_HEADER_PREFIX=${JWT_AUTH_HEADER_PREFIX:-Bearer}
       - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://:foobared@redis:6379/0}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND:-redis://:foobared@redis:6379/0}
     depends_on:
       db:
         condition: service_healthy
@@ -81,6 +82,7 @@ services:
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://:foobared@redis:6379/0}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND:-redis://:foobared@redis:6379/0}
     depends_on:
       db:
         condition: service_healthy
@@ -103,6 +105,7 @@ services:
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://:foobared@redis:6379/0}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND:-redis://:foobared@redis:6379/0}
     depends_on:
       db:
         condition: service_healthy
