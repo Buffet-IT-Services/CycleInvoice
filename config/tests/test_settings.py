@@ -21,8 +21,7 @@ class HealthCheckAppsConfigTest(TestCase):
         os.environ.clear()
         os.environ.update(self.original_env)
 
-        # Restore sys.modules
-        for key in sys.modules.keys():
+        for key in sys.modules:
             if key not in self.original_modules:
                 del sys.modules[key]
 
