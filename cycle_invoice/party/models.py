@@ -33,7 +33,7 @@ class Party(BasePolymorphicModel):
         validators=[
             RegexValidator(
                 regex=r"^\+?\d{1,4} ?\d{1,3} ?\d{1,4} ?\d{1,4} ?\d{1,9}$",
-                message="Phone number must be entered in the format: +41 23 456 7890"
+                message="Phone number must be entered in the format: +41 23 456 78 90"
             )
         ]
     )
