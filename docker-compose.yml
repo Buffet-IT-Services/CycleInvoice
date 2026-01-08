@@ -95,7 +95,8 @@ services:
     image: florinbuffet/cycle-invoice:latest
     command: >
       sh -c "python manage.py wait_for_db &&
-             celery -A cycle_invoice.celery beat --loglevel=info"
+             python manage.py setup_periodic_tasks &&
+             celery -A cycle_invoice.celery beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
@@ -111,6 +112,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      web:
+        condition: service_started
     networks:
       - cycleinvoice-network
 

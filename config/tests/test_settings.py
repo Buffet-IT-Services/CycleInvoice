@@ -133,3 +133,17 @@ class CeleryResultBackendConfigTest(TestCase):
         # Verify that both are None
         self.assertIsNone(celery.CELERY_BROKER_URL)
         self.assertIsNone(celery.CELERY_RESULT_BACKEND)
+
+
+class CeleryBeatSchedulerConfigTest(TestCase):
+    """Tests for CELERY_BEAT_SCHEDULER configuration."""
+
+    def test_beat_scheduler_uses_database_scheduler(self) -> None:
+        """Test that CELERY_BEAT_SCHEDULER is configured to use DatabaseScheduler."""
+        from config.settings import celery  # noqa: PLC0415
+
+        # Verify that CELERY_BEAT_SCHEDULER is set to DatabaseScheduler
+        self.assertEqual(
+            celery.CELERY_BEAT_SCHEDULER,
+            "django_celery_beat.schedulers:DatabaseScheduler"
+        )
