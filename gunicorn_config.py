@@ -1,4 +1,5 @@
-"""Gunicorn configuration file for CycleInvoice.
+"""
+Gunicorn configuration file for CycleInvoice.
 
 This configuration file is used to configure gunicorn for production deployment.
 It addresses the worker timeout issue by setting appropriate timeout values and
