@@ -11,10 +11,10 @@ class SetupPeriodicTasksCommandTest(TestCase):
         """Test that the command creates the crontab schedule and periodic task."""
         # Ensure no tasks exist initially
         self.assertEqual(PeriodicTask.objects.count(), 0)
-        
+
         # Run the management command
         call_command("setup_periodic_tasks")
-        
+
         # Verify the crontab schedule was created
         schedule = CrontabSchedule.objects.get(
             minute="0",
@@ -24,7 +24,7 @@ class SetupPeriodicTasksCommandTest(TestCase):
             month_of_year="*",
         )
         self.assertIsNotNone(schedule)
-        
+
         # Verify the periodic task was created
         task = PeriodicTask.objects.get(name="process-subscriptions-daily")
         self.assertEqual(task.task, "cycle_invoice.sale.tasks.subscription_processing_to_document_items")
@@ -47,10 +47,10 @@ class SetupPeriodicTasksCommandTest(TestCase):
             crontab=schedule,
             enabled=False,
         )
-        
+
         # Run the management command
         call_command("setup_periodic_tasks")
-        
+
         # Verify the task was updated
         task.refresh_from_db()
         self.assertEqual(task.task, "cycle_invoice.sale.tasks.subscription_processing_to_document_items")
@@ -61,10 +61,10 @@ class SetupPeriodicTasksCommandTest(TestCase):
         # Run the command twice
         call_command("setup_periodic_tasks")
         call_command("setup_periodic_tasks")
-        
+
         # Verify only one task exists
         self.assertEqual(PeriodicTask.objects.filter(name="process-subscriptions-daily").count(), 1)
-        
+
         # Verify only one schedule exists
         self.assertEqual(CrontabSchedule.objects.filter(
             minute="0",

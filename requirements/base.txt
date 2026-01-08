@@ -15,7 +15,7 @@ psycopg2==2.9.11 # PostgreSQL database adapter
 # Task queue
 redis==7.1.0 # For caching and message brokering
 celery==5.6.2 # Asynchronous task queue
-django-celery-beat==2.8.2 # Database-backed periodic tasks for Celery
+django-celery-beat>=2.8.0 # Database-backed periodic tasks for Celery
 
 # for PDF generation and manipulation
 qrbill==1.2.0
