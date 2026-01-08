@@ -51,7 +51,6 @@ THIRD_PARTY_APPS = [
     "polymorphic",  # for polymorphic models
     "django_otp",  # for OTP authentication
     "django_otp.plugins.otp_totp",  # for TOTP OTP authentication
-    "django_celery_beat",  # for database-backed periodic tasks
     "health_check",  # required
     "health_check.db",  # stock Django health checkers
     "health_check.cache",
