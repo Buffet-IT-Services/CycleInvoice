@@ -5,7 +5,6 @@ It addresses the worker timeout issue by setting appropriate timeout values and
 worker configurations.
 """
 
-import multiprocessing
 import os
 
 # Server socket
