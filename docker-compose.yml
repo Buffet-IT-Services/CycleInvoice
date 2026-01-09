@@ -23,6 +23,9 @@ services:
       - JWT_AUTH_HEADER_PREFIX=${JWT_AUTH_HEADER_PREFIX:-Bearer}
       - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://:foobared@redis:6379/0}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND:-redis://:foobared@redis:6379/0}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
