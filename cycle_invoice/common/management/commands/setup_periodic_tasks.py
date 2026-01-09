@@ -19,8 +19,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **kwargs) -> None:
         """Handle command."""
-
-        print("Deleting all periodic tasks and schedules...\n")
+        print("Deleting all periodic tasks and schedules...\n")  # noqa: T201
 
         IntervalSchedule.objects.all().delete()
         CrontabSchedule.objects.all().delete()
@@ -44,7 +43,7 @@ class Command(BaseCommand):
         timezone = get_default_timezone_name()
 
         for periodic_task in periodic_tasks_data:
-            print(f'Setting up {periodic_task["task"].name}')
+            print(f'Setting up {periodic_task["task"].name}') # noqa: T201
 
             cron = CrontabSchedule.objects.create(timezone=timezone, **periodic_task["cron"])
 

@@ -1,8 +1,6 @@
 """Celery settings for the Cycle Invoice."""
 import os
 
-from celery.schedules import crontab
-
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 
 CELERY_RESULT_BACKEND = "django-db"
