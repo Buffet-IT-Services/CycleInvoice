@@ -29,11 +29,17 @@ def email_send(email: Email) -> Email:
         error_message = f"Cannot send non-sending emails. Current status is {email.status}"
         raise ValueError(error_message)
 
+    # Ensure that the recipient email address is present and non-empty
+    recipient_email = getattr(getattr(email, "to", None), "email", None)
+    if not recipient_email or not str(recipient_email).strip():
+        error_message = "Cannot send email without a valid recipient email address."
+        raise ValueError(error_message)
+
     msg = EmailMultiAlternatives(
         subject=email.subject,
         body=email.plain_text,
         from_email=config.COMPANY_EMAIL_SEND,
-        to=[email.to.email],
+        to=[recipient_email],
         reply_to=[config.COMPANY_EMAIL_REPLY_TO],
         headers={
             "X-CycleInvoice-UUID": str(email.uuid),
