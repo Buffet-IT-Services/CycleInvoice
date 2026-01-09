@@ -7,6 +7,7 @@ from celery import shared_task
 from celery.app.task import Task
 from celery.utils.log import get_task_logger
 
+from cycle_invoice.common.selectors import get_object
 from cycle_invoice.emails.models import Email
 from cycle_invoice.emails.services import email_failed
 
@@ -24,15 +25,18 @@ def _email_send_failure(  # noqa: PLR0913
     """Handle an email send failure."""
     email_uuid: UUID = args[0]
     logger.warning("Email %s send failed: %s", email_uuid, exc)
-    email = Email.objects.get(uuid=email_uuid)
-
+    email = get_object(Email, uuid=email_uuid)
+    if email is None:
+        raise ValueError(f"Email with UUID {email_uuid} not found.")
     email_failed(email)
 
 
 @shared_task(bind=True, on_failure=_email_send_failure)
 def email_send(self: Task, email_uuid: UUID) -> None:
     """Send an email task using Celery."""
-    email = Email.objects.get(uuid=email_uuid)
+    email = get_object(Email, uuid=email_uuid)
+    if email is None:
+        raise ValueError(f"Email with UUID {email_uuid} not found.")
 
     from cycle_invoice.emails.services import email_send  # noqa: PLC0415
 

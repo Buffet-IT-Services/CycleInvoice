@@ -188,6 +188,7 @@ if not SECRET_KEY and not DEBUG:
 
 from config.settings.celery import *  # noqa: E402, F403
 from config.settings.constance import *  # noqa: E402, F403
+from config.settings.email import *  # noqa: E402, F403
 from config.settings.jwt import *  # noqa: E402, F403
 from config.settings.logging import *  # noqa: E402, F403
 from config.settings.storage import *  # noqa: E402, F403

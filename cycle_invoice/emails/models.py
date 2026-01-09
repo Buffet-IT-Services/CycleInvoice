@@ -12,12 +12,12 @@ class Email(BaseModel):
     class Status(models.TextChoices):
         """Status choices for the Email model."""
 
-        READY = "READY", "Ready"
+        DRAFT = "DRAFT", "Draft"
         SENDING = "SENDING", "Sending"
         SENT = "SENT", "Sent"
         FAILED = "FAILED", "Failed"
 
-    status = models.CharField(max_length=255, db_index=True, choices=Status.choices, default=Status.READY)
+    status = models.CharField(max_length=255, db_index=True, choices=Status.choices, default=Status.DRAFT)
 
     to = models.ForeignKey("party.Party",
                            on_delete=models.PROTECT,
