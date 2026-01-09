@@ -56,6 +56,8 @@ THIRD_PARTY_APPS = [
     "health_check.db",  # stock Django health checkers
     "health_check.cache",
     "health_check.contrib.migrations",
+    "django_celery_results",  # for storing task results
+    "django_celery_beat",  # for periodic tasks
 ]
 
 # Conditionally add health check apps based on service availability
