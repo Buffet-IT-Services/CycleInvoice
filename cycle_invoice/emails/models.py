@@ -17,7 +17,7 @@ class Email(BaseModel):
         SENT = "SENT", "Sent"
         FAILED = "FAILED", "Failed"
 
-    status = models.CharField(max_length=255, db_index=True, choices=Status.choices, default=Status.DRAFT)
+    status = models.CharField(max_length=255, choices=Status.choices, default=Status.DRAFT)
 
     to = models.ForeignKey("party.Party",
                            on_delete=models.PROTECT,
@@ -29,3 +29,10 @@ class Email(BaseModel):
     plain_text = models.TextField()
 
     sent_at = models.DateTimeField(blank=True, null=True)
+
+    def save(self, *args, **kwargs) -> None:
+        """Override save method to send email if status is SENDING."""
+        if self.status == self.Status.SENDING:
+            from cycle_invoice.emails.tasks import email_send as email_send_task
+            email_send_task.delay(self.pk)
+        return super().save(*args, **kwargs)
