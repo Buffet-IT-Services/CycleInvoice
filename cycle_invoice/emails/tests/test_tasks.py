@@ -24,6 +24,12 @@ class EmailsTest(TestCase):
         with self.assertRaises(ValueError):
             email_send("4398f182-3c41-480a-afc7-15387ce5511c")
 
+    def test_email_send_fail_wrong_status(self) -> None:
+        """Test the email send task."""
+        email = EmailFactory.create(status=Email.Status.FAILED)
+        with self.assertRaises(ValueError):
+            email_send(email.uuid)
+
     def test__email_send_failure_calls_email_failed(self) -> None:
         """If the email exists, email_failed is called."""
         email = EmailFactory.create()
