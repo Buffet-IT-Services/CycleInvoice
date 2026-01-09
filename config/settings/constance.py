@@ -16,9 +16,9 @@ CONSTANCE_CONFIG = {
     "COMPANY_LOGO": ("CycleInvoice.png", _("The logo of the company."), "image_field"),
     "COMPANY_NAME": ("CycleInvoice", _("The name of the company."), str),
 
-    "COMPANY_EMAIL_SEND": ("'CycleInvoice NoReply' <noreply@cycleinvoice.local>",
+    "COMPANY_EMAIL_SEND": ("CycleInvoice NoReply <noreply@cycleinvoice.local>",
                            _("The email address to send emails from."), str),
-    "COMPANY_EMAIL_REPLY_TO": ("'CycleInvoice Support' <support@cycleinvoice.local>",
+    "COMPANY_EMAIL_REPLY_TO": ("CycleInvoice Support <support@cycleinvoice.local>",
                                _("The email address to reply to emails from."), str),
 }
 
