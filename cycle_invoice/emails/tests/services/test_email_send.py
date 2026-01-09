@@ -13,7 +13,6 @@ class EmailSendTest(TestCase):
 
     def test_email_send_wrong_status(self) -> None:
         """Test email_send() with a wrong status."""
-
         for status in Email.Status:
             if status != Email.Status.SENDING:
                 email = EmailFactory.build(status=status)

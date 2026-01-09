@@ -27,7 +27,8 @@ def _email_send_failure(  # noqa: PLR0913
     logger.warning("Email %s send failed: %s", email_uuid, exc)
     email = get_object(Email, uuid=email_uuid)
     if email is None:
-        raise ValueError(f"Email with UUID {email_uuid} not found.")
+        error_message = f"Email with UUID {email_uuid} not found."
+        raise ValueError(error_message)
     email_failed(email)
 
 
@@ -36,7 +37,8 @@ def email_send(self: Task, email_uuid: UUID) -> None:
     """Send an email task using Celery."""
     email = get_object(Email, uuid=email_uuid)
     if email is None:
-        raise ValueError(f"Email with UUID {email_uuid} not found.")
+        error_message = f"Email with UUID {email_uuid} not found."
+        raise ValueError(error_message)
 
     from cycle_invoice.emails.services import email_send  # noqa: PLC0415
 

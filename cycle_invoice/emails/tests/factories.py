@@ -1,5 +1,5 @@
 """Factories for emails app models."""
-from factory import SubFactory, LazyAttribute
+from factory import LazyAttribute, SubFactory
 
 from cycle_invoice.common.tests.factories import BaseFactory
 from cycle_invoice.common.tests.faker import faker

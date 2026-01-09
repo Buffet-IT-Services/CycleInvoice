@@ -12,7 +12,6 @@ class EmailsTest(TestCase):
 
     def test_email_send_success(self) -> None:
         """Test the email send task."""
-
         email = EmailFactory.create()
         email_send(email.uuid)
         email.refresh_from_db()
