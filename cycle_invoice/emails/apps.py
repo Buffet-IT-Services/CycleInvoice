@@ -7,4 +7,4 @@ class EmailsConfig(AppConfig):
     """Emails app config."""
 
     name = "cycle_invoice.emails"
-    laben = "emails"
+    label = "emails"
