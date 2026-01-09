@@ -5,17 +5,12 @@ from celery.schedules import crontab
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", os.getenv("CELERY_BROKER_URL"))
+CELERY_RESULT_BACKEND = "django-db"
 
-CELERY_TIMEZONE = os.getenv("CELERY_TIMEZONE", "UTC")
+CELERY_TIMEZONE = os.getenv("TIME_ZONE", "UTC")
 
 CELERY_TASK_TRACK_STARTED = True
 
 CELERY_TASK_TIME_LIMIT = 300  # 5 minutes
 
-CELERY_BEAT_SCHEDULE = {
-    "process-subscriptions-daily": {
-        "task": "cycle_invoice.sale.tasks.subscription_processing_to_document_items",
-        "schedule": crontab(hour=0, minute=0),
-    },
-}
+CELERY_TASK_MAX_RETRIES = 3

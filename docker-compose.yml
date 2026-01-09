@@ -1,11 +1,13 @@
 services:
   web:
     image: florinbuffet/cycle-invoice:latest
+    restart: unless-stopped
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
              python manage.py collectstatic --clear --noinput &&
              python manage.py createsuperuserifnew --email admin@cycleinvoice.local --password Test123-Test123- &&
+             python manage.py setup_periodic_tasks &&
              gunicorn config.wsgi:application --config gunicorn_config.py"
     volumes:
       - static_volume:/code/staticfiles
@@ -44,6 +46,7 @@ services:
 
   db:
     image: postgres:16
+    restart: unless-stopped
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=cycleinvoice
@@ -60,6 +63,7 @@ services:
 
   redis:
     image: redis:7
+    restart: unless-stopped
     command: redis-server --requirepass foobared
     volumes:
       - redis_data:/data
@@ -73,6 +77,7 @@ services:
 
   celery:
     image: florinbuffet/cycle-invoice:latest
+    restart: unless-stopped
     command: >
       sh -c "python manage.py wait_for_db &&
              celery -A cycle_invoice.celery worker --loglevel=info"
@@ -96,6 +101,7 @@ services:
 
   celery-beat:
     image: florinbuffet/cycle-invoice:latest
+    restart: unless-stopped
     command: >
       sh -c "python manage.py wait_for_db &&
              celery -A cycle_invoice.celery beat --loglevel=info"
