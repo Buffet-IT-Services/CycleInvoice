@@ -38,6 +38,7 @@ LOCAL_APPS = [
     "cycle_invoice.accounting.apps.AccountingConfig",  # for accounting management
     "cycle_invoice.api.apps.ApiConfig",  # for API endpoints
     "cycle_invoice.common.apps.CommonConfig",  # for common utilities
+    "cycle_invoice.emails.apps.EmailsConfig",  # for email management
     "cycle_invoice.party.apps.ContactConfig",  # for contact management,
     "cycle_invoice.product.apps.ProductConfig",  # for product management
     "cycle_invoice.sale.apps.SaleConfig",  # for sale management
