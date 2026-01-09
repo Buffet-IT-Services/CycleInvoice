@@ -6,6 +6,7 @@ from cycle_invoice.common.selectors import get_system_user
 from cycle_invoice.emails.models import Email
 from cycle_invoice.emails.services import email_send
 from cycle_invoice.emails.tests.factories import EmailFactory
+from cycle_invoice.party.tests.factories import OrganizationFactory
 
 
 class EmailSendTest(TestCase):
@@ -26,3 +27,10 @@ class EmailSendTest(TestCase):
         self.assertEqual(email.status, Email.Status.SENT)
         self.assertIsNotNone(email.sent_at)
         self.assertEqual(email.updated_by, get_system_user())
+
+    def test_email_send_no_mail(self) -> None:
+        """Test email_send() with a non-existing email."""
+        organization = OrganizationFactory.build(email="")
+        email = EmailFactory.build(to=organization)
+        with self.assertRaises(ValueError):
+            email_send(email)
