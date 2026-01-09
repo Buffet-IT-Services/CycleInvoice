@@ -1,1 +1,1 @@
-"""Tests for the sale app."""
+"""Tests for the emails app."""
